@@ -1,0 +1,324 @@
+/* Settings & Administration Styles */
+
+:root {
+    --primary-color: #5CBDB4;
+    --text-color: #4A4A4A;
+    --bg-color: #FFFFFF;
+    --light-grey: #F8F9FA;
+    --success: #28A745;
+    --warning: #FFC107;
+    --danger: #DC3545;
+    --info: #17A2B8;
+}
+
+.settings-container {
+    padding: 20px;
+    background-color: var(--light-grey);
+    min-height: 100vh;
+}
+
+/* Form Styling */
+.settings-container .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.settings-container .card-header {
+    background-color: white;
+    border-bottom: 2px solid var(--light-grey);
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.settings-container .form-label {
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+.settings-container .form-control,
+.settings-container .form-select {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.settings-container .form-control:focus,
+.settings-container .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(92, 189, 180, 0.25);
+}
+
+/* Integration Cards */
+.integration-card {
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.integration-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.integration-card.connected {
+    border-color: var(--success);
+}
+
+.integration-card.not-connected {
+    border-color: #dee2e6;
+}
+
+.integration-status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.integration-status.connected {
+    background-color: #d4edda;
+    color: var(--success);
+}
+
+.integration-status.not-connected {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+/* User Table */
+.settings-container .table {
+    background: white;
+}
+
+.settings-container .table thead {
+    background-color: var(--light-grey);
+}
+
+.settings-container .table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.user-status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.user-status-badge.active {
+    background-color: #d4edda;
+    color: var(--success);
+}
+
+.user-status-badge.inactive {
+    background-color: #f8d7da;
+    color: var(--danger);
+}
+
+/* Key Individuals List */
+.key-individual-item {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.key-individual-item h6 {
+    margin-bottom: 10px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.key-individual-item .info-item {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+/* System Health Cards */
+.health-card {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.health-card h5 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.health-card .health-status {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+/* Backup Table */
+.backup-item {
+    padding: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.backup-item:last-child {
+    border-bottom: none;
+}
+
+.backup-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.backup-status.success {
+    background-color: #d4edda;
+    color: var(--success);
+}
+
+.backup-status.failed {
+    background-color: #f8d7da;
+    color: var(--danger);
+}
+
+/* Audit Log Table */
+.audit-log-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.audit-log-row:hover {
+    background-color: #f8f9fa;
+}
+
+.audit-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.audit-status.success {
+    background-color: #d4edda;
+    color: var(--success);
+}
+
+.audit-status.failed {
+    background-color: #f8d7da;
+    color: var(--danger);
+}
+
+.audit-status.warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.action-btn {
+    padding: 4px 8px;
+    border: none;
+    background: transparent;
+    color: var(--primary-color);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background-color: var(--light-grey);
+    color: var(--text-color);
+}
+
+.action-btn.danger {
+    color: var(--danger);
+}
+
+.action-btn.danger:hover {
+    background-color: #f8d7da;
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+}
+
+.form-section h6 {
+    color: var(--text-color);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 10px;
+    }
+
+    .settings-container .card {
+        margin-bottom: 15px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .integration-card {
+        margin-bottom: 15px;
+    }
+
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Success Messages */
+.success-message {
+    background-color: #d4edda;
+    color: var(--success);
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+/* Error Messages */
+.error-message {
+    background-color: #f8d7da;
+    color: var(--danger);
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+/* Info Messages */
+.info-message {
+    background-color: #d1ecf1;
+    color: var(--info);
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+

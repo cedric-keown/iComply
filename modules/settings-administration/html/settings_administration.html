@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings & Administration - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/settings-styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="settings-container">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab">
+                    <i class="fas fa-cog me-2"></i>General Settings
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                    <i class="fas fa-users me-2"></i>User Management
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fsp-tab" data-bs-toggle="tab" data-bs-target="#fsp" type="button" role="tab">
+                    <i class="fas fa-building me-2"></i>FSP Configuration
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button" role="tab">
+                    <i class="fas fa-bell me-2"></i>Notifications & Alerts
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
+                    <i class="fas fa-shield-alt me-2"></i>Security & Access
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="integrations-tab" data-bs-toggle="tab" data-bs-target="#integrations" type="button" role="tab">
+                    <i class="fas fa-plug me-2"></i>Integrations
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="maintenance-tab" data-bs-toggle="tab" data-bs-target="#maintenance" type="button" role="tab">
+                    <i class="fas fa-tools me-2"></i>System Maintenance
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">
+                    <i class="fas fa-clipboard-list me-2"></i>Audit Logs
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="settingsTabContent">
+            <!-- TAB 1: GENERAL SETTINGS -->
+            <div class="tab-pane fade show active" id="general" role="tabpanel">
+                <div class="mb-4">
+                    <h3>General Settings</h3>
+                    <p class="text-muted">Configure basic system preferences and defaults</p>
+                </div>
+
+                <!-- FSP Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">FSP Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="fspInfoForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">FSP Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="fspName" value="Bright Future Financial Services (Pty) Ltd" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">FSP License Number <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="fspLicense" value="FSP12345" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Registration Number</label>
+                                    <input type="text" class="form-control" id="regNumber" value="2015/123456/07">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">VAT Number</label>
+                                    <input type="text" class="form-control" id="vatNumber" value="4123456789">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Primary Business Address <span class="text-danger">*</span></label>
+                                </div>
+                                <div class="col-md-12">
+                                    <input type="text" class="form-control mb-2" id="street" placeholder="Street" value="123 Main Street" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control mb-2" id="suburb" placeholder="Suburb" value="Cape Town CBD" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control mb-2" id="city" placeholder="City" value="Cape Town" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <select class="form-select mb-2" id="province" required>
+                                        <option value="WC" selected>Western Cape</option>
+                                        <option value="EC">Eastern Cape</option>
+                                        <option value="FS">Free State</option>
+                                        <option value="GP">Gauteng</option>
+                                        <option value="KZN">KwaZulu-Natal</option>
+                                        <option value="LP">Limpopo</option>
+                                        <option value="MP">Mpumalanga</option>
+                                        <option value="NC">Northern Cape</option>
+                                        <option value="NW">North West</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" class="form-control mb-2" id="postalCode" placeholder="Postal Code" value="8001" required>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="samePostal" checked>
+                                        <label class="form-check-label" for="samePostal">
+                                            Same as business address
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" id="phone" value="+27 21 123 4567">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" value="info@brightfuture.co.za">
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn btn-secondary">Cancel</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Regional & Localization -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Regional & Localization</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="localizationForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Time Zone <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="timezone" required>
+                                        <option value="Africa/Johannesburg" selected>Africa/Johannesburg (SAST, UTC+2)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Date Format <span class="text-danger">*</span></label>
+                                    <div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="dateFormat" id="dateFormat1" value="DD/MM/YYYY" checked>
+                                            <label class="form-check-label" for="dateFormat1">
+                                                DD/MM/YYYY (e.g., 23/11/2024)
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="dateFormat" id="dateFormat2" value="MM/DD/YYYY">
+                                            <label class="form-check-label" for="dateFormat2">
+                                                MM/DD/YYYY (e.g., 11/23/2024)
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="dateFormat" id="dateFormat3" value="YYYY-MM-DD">
+                                            <label class="form-check-label" for="dateFormat3">
+                                                YYYY-MM-DD (e.g., 2024-11-23)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Time Format <span class="text-danger">*</span></label>
+                                    <div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="timeFormat" id="timeFormat1" value="24" checked>
+                                            <label class="form-check-label" for="timeFormat1">
+                                                24-hour (e.g., 15:30)
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="timeFormat" id="timeFormat2" value="12">
+                                            <label class="form-check-label" for="timeFormat2">
+                                                12-hour (e.g., 3:30 PM)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Currency <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="currency" required>
+                                        <option value="ZAR" selected>ZAR (South African Rand)</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn btn-secondary">Cancel</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Business Hours & Working Days -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Business Hours & Working Days</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="businessHoursForm">
+                            <div class="mb-3">
+                                <label class="form-label">Standard Working Days</label>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dayMon" checked>
+                                        <label class="form-check-label" for="dayMon">Monday</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dayTue" checked>
+                                        <label class="form-check-label" for="dayTue">Tuesday</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dayWed" checked>
+                                        <label class="form-check-label" for="dayWed">Wednesday</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dayThu" checked>
+                                        <label class="form-check-label" for="dayThu">Thursday</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="dayFri" checked>
+                                        <label class="form-check-label" for="dayFri">Friday</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="daySat">
+                                        <label class="form-check-label" for="daySat">Saturday</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="daySun">
+                                        <label class="form-check-label" for="daySun">Sunday</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Business Hours (Monday - Friday)</label>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <input type="time" class="form-control" id="startTime" value="08:00">
+                                        <span>to</span>
+                                        <input type="time" class="form-control" id="endTime" value="17:00">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Public Holidays</label>
+                                    <div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="publicHolidays" id="publicHolidays1" value="sa" checked>
+                                            <label class="form-check-label" for="publicHolidays1">
+                                                Use South African public holidays
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="publicHolidays" id="publicHolidays2" value="custom">
+                                            <label class="form-check-label" for="publicHolidays2">
+                                                Custom holiday calendar
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn btn-secondary">Cancel</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Compliance Cycle Settings -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Compliance Cycle Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="complianceCycleForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">CPD Cycle Period</label>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <select class="form-select" id="cpdStartMonth">
+                                            <option value="1" selected>1 June</option>
+                                        </select>
+                                        <span>to</span>
+                                        <select class="form-select" id="cpdEndMonth">
+                                            <option value="5" selected>31 May</option>
+                                        </select>
+                                    </div>
+                                    <small class="text-muted">Current Cycle: 1 June 2024 - 31 May 2025 (175 days elapsed, 188 remaining)</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Required CPD Hours</label>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="totalHours" value="18" min="0">
+                                            <small class="text-muted">Total Hours</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" id="ethicsHours" value="3" min="0">
+                                            <small class="text-muted">Ethics (minimum)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fit & Proper Review Frequency</label>
+                                    <div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="fpReview" id="fpReview1" value="annual" checked>
+                                            <label class="form-check-label" for="fpReview1">Annual Review</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="fpReview" id="fpReview2" value="biannual">
+                                            <label class="form-check-label" for="fpReview2">Biannual Review</label>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Next F&P Review Due: 1 June 2025</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">FICA Review Requirements</label>
+                                    <div class="row g-2">
+                                        <div class="col-4">
+                                            <input type="number" class="form-control" id="ficaIndividual" value="5" min="1">
+                                            <small class="text-muted">Individual (years)</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="number" class="form-control" id="ficaCorporate" value="3" min="1">
+                                            <small class="text-muted">Corporate (years)</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="number" class="form-control" id="ficaHighRisk" value="1" min="1">
+                                            <small class="text-muted">High-Risk (years)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn btn-secondary">Cancel</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: USER MANAGEMENT -->
+            <div class="tab-pane fade" id="users" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3>User Management</h3>
+                        <p class="text-muted mb-0">Manage users, roles, and access permissions</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" id="addUserBtn">
+                            <i class="fas fa-plus me-1"></i> Add New User
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="userSearch" placeholder="Search by name or email...">
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="roleFilter">
+                                    <option value="all">All Roles</option>
+                                    <option value="fsp-owner">FSP Owner/Principal</option>
+                                    <option value="key-individual">Key Individual</option>
+                                    <option value="compliance-officer">Compliance Officer</option>
+                                    <option value="representative">Representative</option>
+                                    <option value="admin">Admin Staff</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="statusFilter">
+                                    <option value="all">All Statuses</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" id="sortUsers">
+                                    <option value="name-asc">Name (A-Z)</option>
+                                    <option value="name-desc">Name (Z-A)</option>
+                                    <option value="date-asc">Newest First</option>
+                                    <option value="date-desc">Oldest First</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" id="applyUserFilters">
+                                    <i class="fas fa-filter me-1"></i> Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>User Name</th>
+                                        <th>Email Address</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Last Login</th>
+                                        <th>Created Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: FSP CONFIGURATION -->
+            <div class="tab-pane fade" id="fsp" role="tabpanel">
+                <div class="mb-4">
+                    <h3>FSP Configuration</h3>
+                    <p class="text-muted">Configure FSP-specific settings and compliance parameters</p>
+                </div>
+
+                <!-- License & Authorization -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">License & Authorization</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="licenseForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">License Number</label>
+                                    <input type="text" class="form-control" id="licenseNumber" value="FSP12345">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Issue Date</label>
+                                    <input type="date" class="form-control" id="issueDate" value="2015-03-15">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Categories of Advice Authorized</label>
+                                    <div class="row g-2">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="cat1" checked>
+                                                <label class="form-check-label" for="cat1">
+                                                    Category I - Long-term Insurance
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="cat2" checked>
+                                                <label class="form-check-label" for="cat2">
+                                                    Category II - Short-term Insurance
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="cat3" checked>
+                                                <label class="form-check-label" for="cat3">
+                                                    Category III - Retail Pension Benefits
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Key Individuals & Compliance Officer -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Key Individuals & Compliance Officer</h5>
+                    </div>
+                    <div class="card-body" id="keyIndividualsList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Compliance Thresholds & Alert Rules -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Compliance Thresholds & Alert Rules</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="thresholdsForm">
+                            <div class="mb-4">
+                                <h6>CPD Compliance Alerts</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Critical Alert Threshold</label>
+                                        <input type="number" class="form-control" id="cpdCritical" value="50" min="0" max="100">
+                                        <small class="text-muted">% completion</small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Warning Threshold</label>
+                                        <input type="number" class="form-control" id="cpdWarning" value="70" min="0" max="100">
+                                        <small class="text-muted">% completion</small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">First Alert (days before deadline)</label>
+                                        <input type="number" class="form-control" id="cpdFirstAlert" value="180" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <h6>Fit & Proper Alerts</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">First Notification</label>
+                                        <input type="number" class="form-control" id="fpFirst" value="90" min="0">
+                                        <small class="text-muted">days before expiry</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Follow-up</label>
+                                        <input type="number" class="form-control" id="fpFollowup" value="60" min="0">
+                                        <small class="text-muted">days before expiry</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Urgent</label>
+                                        <input type="number" class="form-control" id="fpUrgent" value="30" min="0">
+                                        <small class="text-muted">days before expiry</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Final</label>
+                                        <input type="number" class="form-control" id="fpFinal" value="7" min="0">
+                                        <small class="text-muted">days before expiry</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <button type="button" class="btn btn-outline-primary">Test Alert System</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: NOTIFICATIONS & ALERTS -->
+            <div class="tab-pane fade" id="notifications" role="tabpanel">
+                <div class="mb-4">
+                    <h3>Notifications & Alerts</h3>
+                    <p class="text-muted">Configure how and when users receive notifications</p>
+                </div>
+
+                <!-- Email Notification Settings -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Email Notification Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="emailSettingsForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">SMTP Server</label>
+                                    <input type="text" class="form-control" id="smtpServer" value="smtp.gmail.com">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Port</label>
+                                    <input type="number" class="form-control" id="smtpPort" value="587">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Encryption</label>
+                                    <select class="form-select" id="smtpEncryption">
+                                        <option value="TLS" selected>TLS</option>
+                                        <option value="SSL">SSL</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="smtpUsername" value="notifications@brightfuture.co.za">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Password</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="smtpPassword" value="••••••••••••">
+                                        <button class="btn btn-outline-secondary" type="button">Change</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">From Name</label>
+                                    <input type="text" class="form-control" id="fromName" value="Bright Future Compliance System">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">From Email</label>
+                                    <input type="email" class="form-control" id="fromEmail" value="compliance@brightfuture.co.za">
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-outline-primary" id="testEmailBtn">
+                                        <i class="fas fa-paper-plane me-1"></i> Send Test Email
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Alert Escalation Rules -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Alert Escalation Rules</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="escalationForm">
+                            <div class="mb-4">
+                                <h6>Escalation Level 1: Representative</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Timing</label>
+                                        <input type="text" class="form-control" value="Immediate" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Recipients</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="esc1Rep" checked>
+                                            <label class="form-check-label" for="esc1Rep">Representative</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <h6>Escalation Level 2: Key Individual</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Timing</label>
+                                        <input type="number" class="form-control" id="esc2Timing" value="7" min="0">
+                                        <small class="text-muted">days after Level 1 with no action</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Recipients</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="esc2Rep" checked>
+                                            <label class="form-check-label" for="esc2Rep">Representative</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="esc2KI" checked>
+                                            <label class="form-check-label" for="esc2KI">Key Individual (Supervisor)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Save Escalation Rules</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: SECURITY & ACCESS -->
+            <div class="tab-pane fade" id="security" role="tabpanel">
+                <div class="mb-4">
+                    <h3>Security & Access Control</h3>
+                    <p class="text-muted">Manage security settings and access controls</p>
+                </div>
+
+                <!-- Password Policy -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Password Policy</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="passwordPolicyForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Minimum Length</label>
+                                    <input type="number" class="form-control" id="minLength" value="8" min="4" max="32">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Maximum Length</label>
+                                    <input type="number" class="form-control" id="maxLength" value="32" min="8" max="128">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Complexity Requirements</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="reqUpper" checked>
+                                        <label class="form-check-label" for="reqUpper">Must contain uppercase letters (A-Z)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="reqLower" checked>
+                                        <label class="form-check-label" for="reqLower">Must contain lowercase letters (a-z)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="reqNumbers" checked>
+                                        <label class="form-check-label" for="reqNumbers">Must contain numbers (0-9)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="reqSpecial" checked>
+                                        <label class="form-check-label" for="reqSpecial">Must contain special characters (!@#$%^&*)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Password History</label>
+                                    <input type="number" class="form-control" id="passwordHistory" value="5" min="0" max="20">
+                                    <small class="text-muted">Prevent reuse of last N passwords</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Password Expiration</label>
+                                    <input type="number" class="form-control" id="passwordExpiry" value="90" min="0">
+                                    <small class="text-muted">days (0 = never expire)</small>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Save Policy</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Two-Factor Authentication -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Two-Factor Authentication (2FA)</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="twoFactorForm">
+                            <div class="mb-3">
+                                <label class="form-label">2FA Status</label>
+                                <div class="alert alert-success">
+                                    <strong>✅ Enabled</strong>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Enforcement Policy</label>
+                                <div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="twoFactorPolicy" id="twoFactor1" value="all" checked>
+                                        <label class="form-check-label" for="twoFactor1">Required for all users</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="twoFactorPolicy" id="twoFactor2" value="admin">
+                                        <label class="form-check-label" for="twoFactor2">Required for admin roles only</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="twoFactorPolicy" id="twoFactor3" value="optional">
+                                        <label class="form-check-label" for="twoFactor3">Optional (user choice)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">2FA Methods Allowed</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="methodApp" checked>
+                                    <label class="form-check-label" for="methodApp">Authenticator App (Google Authenticator, etc.)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="methodSMS" checked>
+                                    <label class="form-check-label" for="methodSMS">SMS to registered mobile number</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="methodEmail" checked>
+                                    <label class="form-check-label" for="methodEmail">Email verification code</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Session Management -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Session Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="sessionForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Idle Timeout</label>
+                                    <input type="number" class="form-control" id="idleTimeout" value="30" min="5" max="480">
+                                    <small class="text-muted">minutes of inactivity</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Absolute Timeout</label>
+                                    <input type="number" class="form-control" id="absoluteTimeout" value="8" min="1" max="24">
+                                    <small class="text-muted">hours (max session length)</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Maximum Concurrent Sessions</label>
+                                    <input type="number" class="form-control" id="maxSessions" value="3" min="1" max="10">
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="invalidateOnPasswordChange" checked>
+                                        <label class="form-check-label" for="invalidateOnPasswordChange">Invalidate sessions on password change</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="trackIP" checked>
+                                        <label class="form-check-label" for="trackIP">Track IP addresses and devices</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: INTEGRATIONS -->
+            <div class="tab-pane fade" id="integrations" role="tabpanel">
+                <div class="mb-4">
+                    <h3>Integrations</h3>
+                    <p class="text-muted">Connect with external services and platforms</p>
+                </div>
+
+                <div class="row g-3" id="integrationsList">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- TAB 7: SYSTEM MAINTENANCE -->
+            <div class="tab-pane fade" id="maintenance" role="tabpanel">
+                <div class="mb-4">
+                    <h3>System Maintenance</h3>
+                    <p class="text-muted">Manage system health, backups, and maintenance tasks</p>
+                </div>
+
+                <!-- System Health Dashboard -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="text-success">✅ HEALTHY</h5>
+                                <p class="mb-0">System Status</p>
+                                <small class="text-muted">Uptime: 99.98%</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="text-success">✅ HEALTHY</h5>
+                                <p class="mb-0">Database Status</p>
+                                <small class="text-muted">Connections: 24/100</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="text-warning">⚠️ 76% USED</h5>
+                                <p class="mb-0">Storage Usage</p>
+                                <small class="text-muted">8.4 GB / 11 GB</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="text-success">✅ GOOD</h5>
+                                <p class="mb-0">Performance</p>
+                                <small class="text-muted">Avg Load: 0.4</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup Management -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Backup Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="backupForm">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="autoBackup" checked>
+                                        <label class="form-check-label" for="autoBackup">Enable Automatic Backups</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Schedule</label>
+                                    <input type="time" class="form-control" id="backupTime" value="02:00">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <h6>Recent Backups</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Date/Time</th>
+                                                <th>Size</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="backupsTableBody">
+                                            <!-- Populated by JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-primary" id="backupNowBtn">
+                                    <i class="fas fa-database me-1"></i> Backup Now
+                                </button>
+                                <button type="submit" class="btn btn-secondary">Save Backup Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Data Retention Policy -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Data Retention Policy</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="retentionForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Compliance Documents</label>
+                                    <input type="number" class="form-control" id="retentionCompliance" value="5" min="1">
+                                    <small class="text-muted">years (FAIS Act requirement: 5 years)</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">CPD Records</label>
+                                    <input type="number" class="form-control" id="retentionCPD" value="5" min="1">
+                                    <small class="text-muted">years after CPD cycle ends</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">FICA Documentation</label>
+                                    <input type="number" class="form-control" id="retentionFICA" value="5" min="1">
+                                    <small class="text-muted">years after client relationship ends</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">System Logs</label>
+                                    <input type="number" class="form-control" id="retentionLogs" value="1" min="1">
+                                    <small class="text-muted">years</small>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Save Retention Policy</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 8: AUDIT LOGS -->
+            <div class="tab-pane fade" id="audit" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3>Audit Logs</h3>
+                        <p class="text-muted mb-0">Complete audit trail of system activities</p>
+                    </div>
+                    <button class="btn btn-outline-secondary" id="exportAuditLogsBtn">
+                        <i class="fas fa-download me-1"></i> Export Logs
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Date Range</label>
+                                <select class="form-select" id="auditDateRange">
+                                    <option value="30" selected>Last 30 days</option>
+                                    <option value="90">Last 90 days</option>
+                                    <option value="365">Last 12 months</option>
+                                    <option value="all">All time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">User</label>
+                                <select class="form-select" id="auditUser">
+                                    <option value="all">All Users</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Action Type</label>
+                                <select class="form-select" id="auditAction">
+                                    <option value="all">All Actions</option>
+                                    <option value="login">Login</option>
+                                    <option value="settings_update">Settings Update</option>
+                                    <option value="user_create">User Created</option>
+                                    <option value="data_export">Data Export</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Module</label>
+                                <select class="form-select" id="auditModule">
+                                    <option value="all">All Modules</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-primary" id="applyAuditFilters">
+                                <i class="fas fa-filter me-1"></i> Apply Filters
+                            </button>
+                            <button class="btn btn-outline-secondary" id="clearAuditFilters">
+                                <i class="fas fa-times me-1"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Log Table -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>User</th>
+                                        <th>Action</th>
+                                        <th>Module</th>
+                                        <th>Details</th>
+                                        <th>IP Address</th>
+                                        <th>Status</th>
+                                        <th>View</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="auditLogsTableBody">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="mb-3">
+                            <label class="form-label">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="userFirstName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="userLastName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="userEmail" required>
+                            <small class="text-muted">This will be the username</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mobile Number</label>
+                            <input type="tel" class="form-control" id="userMobile" placeholder="+27">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role <span class="text-danger">*</span></label>
+                            <select class="form-select" id="userRole" required>
+                                <option value="">Select Role...</option>
+                                <option value="fsp-owner">FSP Owner/Principal</option>
+                                <option value="key-individual">Key Individual</option>
+                                <option value="compliance-officer">Compliance Officer</option>
+                                <option value="representative">Representative</option>
+                                <option value="admin">Admin Staff</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="userStatus" id="userStatusActive" value="active" checked>
+                                    <label class="form-check-label" for="userStatusActive">
+                                        Active (Send welcome email with login details)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="userStatus" id="userStatusPending" value="pending">
+                                    <label class="form-check-label" for="userStatusPending">
+                                        Pending (Create account, user activates later)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="sendWelcomeEmail" checked>
+                                <label class="form-check-label" for="sendWelcomeEmail">
+                                    Yes, send account setup instructions
+                                </label>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Create User</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Log Detail Modal -->
+    <div class="modal fade" id="auditLogDetailModal" tabindex="-1" aria-labelledby="auditLogDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="auditLogDetailModalLabel">Audit Log Detail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="auditLogDetailContent">
+                    <!-- Content loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/settings-administration.js"></script>
+</body>
+</html>
+

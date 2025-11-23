@@ -598,15 +598,15 @@
             <li>
                 <a class="sidebar-menu-item" href="#" data-route="reports">
                     <i class="fas fa-chart-bar"></i>
-                    <span>Reports</span>
+                    <span>Reports & Analytics</span>
                                         </a>
                                     </li>
             <li>
                 <a class="sidebar-menu-item" href="#" data-route="settings">
                     <i class="fas fa-cog"></i>
-                    <span>Settings</span>
+                    <span>Settings & Administration</span>
                                         </a>
-                        </li>
+                                    </li>
                     </ul>
         <div class="p-3 border-top mt-auto">
             <div class="fw-bold small mb-2">QUICK ACTIONS</div>
@@ -1293,6 +1293,18 @@
                     console.log('Loading Internal Audits module...');
                     loadInternalAuditsModule(dashboardContent, breadcrumbNav);
                     break;
+                case 'reports':
+                case 'reports-analytics':
+                case 'analytics':
+                    console.log('Loading Reports & Analytics module...');
+                    loadReportsAnalyticsModule(dashboardContent, breadcrumbNav);
+                    break;
+                case 'settings':
+                case 'settings-administration':
+                case 'administration':
+                    console.log('Loading Settings & Administration module...');
+                    loadSettingsModule(dashboardContent, breadcrumbNav);
+                    break;
                 case 'dashboard':
                 case 'executive':
                 case 'executive-dashboard':
@@ -1608,6 +1620,72 @@
                 
                 // Update URL hash
                 window.location.hash = '#audits';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Reports & Analytics Module
+        function loadReportsAnalyticsModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Reports & Analytics</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Reports & Analytics module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/reports-analytics/html/reports_analytics.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Reports & Analytics"
+                            id="reportsAnalyticsModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#reports';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Settings & Administration Module
+        function loadSettingsModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Settings & Administration</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Settings & Administration module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/settings-administration/html/settings_administration.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Settings & Administration"
+                            id="settingsModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#settings';
             } else {
                 console.error('Dashboard content area not found');
             }
