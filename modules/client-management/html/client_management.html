@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Client Management - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/client-management-styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="client-management-container">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="clientTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                    <i class="fas fa-tachometer-alt me-2"></i>Client Dashboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="directory-tab" data-bs-toggle="tab" data-bs-target="#directory" type="button" role="tab">
+                    <i class="fas fa-users me-2"></i>Client Directory
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="add-client-tab" data-bs-toggle="tab" data-bs-target="#add-client" type="button" role="tab">
+                    <i class="fas fa-user-plus me-2"></i>Add New Client
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fica-status-tab" data-bs-toggle="tab" data-bs-target="#fica-status" type="button" role="tab">
+                    <i class="fas fa-shield-check me-2"></i>FICA Status Overview
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="assignments-tab" data-bs-toggle="tab" data-bs-target="#assignments" type="button" role="tab">
+                    <i class="fas fa-user-tie me-2"></i>Representative Assignments
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="transfers-tab" data-bs-toggle="tab" data-bs-target="#transfers" type="button" role="tab">
+                    <i class="fas fa-exchange-alt me-2"></i>Client Transfers
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">
+                    <i class="fas fa-chart-bar me-2"></i>Reports
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="clientTabContent">
+            <!-- TAB 1: CLIENT DASHBOARD -->
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                <div class="dashboard-header mb-4">
+                    <h2>Client Dashboard</h2>
+                    <p class="text-muted">Overview of client portfolio and compliance status</p>
+                </div>
+
+                <!-- Hero Section: Client Statistics -->
+                <div class="row g-3 mb-4">
+                    <!-- Card 1: Total Clients -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card success">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">487</div>
+                                <div class="stat-label">Total Clients</div>
+                                <div class="stat-breakdown">
+                                    <small>Active: 462 | Dormant: 18 | Closed: 7</small>
+                                </div>
+                                <a href="#" class="stat-link">View All</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: FICA Compliance -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card success">
+                            <div class="stat-icon">
+                                <i class="fas fa-shield-check"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">95%</div>
+                                <div class="stat-label">FICA Compliant</div>
+                                <div class="stat-breakdown">
+                                    <small>463 of 487 verified</small>
+                                </div>
+                                <a href="#" class="stat-link">View Non-Compliant</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: New Clients -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card info">
+                            <div class="stat-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">12</div>
+                                <div class="stat-label">New Clients</div>
+                                <div class="stat-breakdown">
+                                    <small>December 2024</small>
+                                    <span class="text-success">↑ +20% vs last month</span>
+                                </div>
+                                <a href="#" class="stat-link">View Recent</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Pending FICA -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card warning">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">18</div>
+                                <div class="stat-label">Pending Verification</div>
+                                <div class="stat-breakdown">
+                                    <small>&lt;30 days: 12 | &gt;30 days: 6</small>
+                                </div>
+                                <a href="#" class="stat-link">Review Pending</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Compliance Status -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">FICA Compliance Overview</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="compliance-status">
+                                    <div class="status-badge-large success">
+                                        <i class="fas fa-check-circle"></i> COMPLIANT
+                                    </div>
+                                    <div class="compliance-stats mt-3">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-value">487</div>
+                                                    <div class="stat-label">Total Clients</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-value text-success">463</div>
+                                                    <div class="stat-label">FICA Verified (95%)</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-value text-warning">18</div>
+                                                    <div class="stat-label">Pending (4%)</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-value text-danger">6</div>
+                                                    <div class="stat-label">Non-Compliant (1%)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <small class="text-muted">High-Risk Clients: 3 (flagged for review)</small><br>
+                                            <small class="text-muted">Last Audit: 30/11/2024</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">POPIA Compliance Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="popia-status">
+                                    <div class="popia-item">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Consent Forms</span>
+                                            <span class="text-success">485/487 (99.6%)</span>
+                                        </div>
+                                        <div class="progress mt-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 99.6%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="popia-item mt-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Privacy Notices Sent</span>
+                                            <span class="text-success">487/487 (100%)</span>
+                                        </div>
+                                        <div class="progress mt-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="popia-item mt-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Data Retention</span>
+                                            <span class="text-success">All compliant</span>
+                                        </div>
+                                    </div>
+                                    <div class="popia-item mt-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Access Requests</span>
+                                            <span>3 (all resolved)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clients by Status -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="status-card success">
+                            <div class="status-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="status-number">462</div>
+                            <div class="status-label">Active Clients</div>
+                            <div class="status-desc">Currently serviced clients</div>
+                            <a href="#" class="btn btn-sm btn-outline-light mt-2">View Active</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="status-card warning">
+                            <div class="status-icon"><i class="fas fa-pause-circle"></i></div>
+                            <div class="status-number">18</div>
+                            <div class="status-label">Dormant Clients</div>
+                            <div class="status-desc">No activity >12 months</div>
+                            <a href="#" class="btn btn-sm btn-outline-light mt-2">Review Dormant</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="status-card info">
+                            <div class="status-icon"><i class="fas fa-times-circle"></i></div>
+                            <div class="status-number">7</div>
+                            <div class="status-label">Closed Clients</div>
+                            <div class="status-desc">Relationship terminated</div>
+                            <a href="#" class="btn btn-sm btn-outline-light mt-2">View Closed</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clients by Representative -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Clients by Representative</h5>
+                        <div>
+                            <a href="#" class="btn btn-sm btn-outline-primary">View Full Distribution</a>
+                            <a href="#" class="btn btn-sm btn-primary">Rebalance Portfolios</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Representative</th>
+                                        <th>Active Clients</th>
+                                        <th>Pending FICA</th>
+                                        <th>Avg Portfolio Value</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="repDistributionTable">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Client Activity -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recent Client Activity</h5>
+                        <div>
+                            <a href="#" class="btn btn-sm btn-outline-primary">View All Activity</a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">Export Log</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Client</th>
+                                        <th>Action</th>
+                                        <th>Representative</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentActivityTable">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: CLIENT DIRECTORY -->
+            <div class="tab-pane fade" id="directory" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>Client Directory</h3>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" id="toggleViewBtn">
+                            <i class="fas fa-th me-1"></i> Card View
+                        </button>
+                        <button class="btn btn-primary" id="addClientFromDirectoryBtn">
+                            <i class="fas fa-user-plus me-1"></i> Add New Client
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search & Filter Panel -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Search -->
+                            <div class="col-md-12 col-lg-4">
+                                <label class="form-label">Search Clients</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control" id="clientSearch" placeholder="Search by name, ID number, policy number, or representative...">
+                                    <button class="btn btn-outline-secondary" type="button" id="clearClientSearch" style="display: none;">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Status Filter -->
+                            <div class="col-md-6 col-lg-2">
+                                <label class="form-label">Status</label>
+                                <select class="form-select form-select-sm" id="statusFilter">
+                                    <option value="all">All (487)</option>
+                                    <option value="active">Active (462)</option>
+                                    <option value="dormant">Dormant (18)</option>
+                                    <option value="closed">Closed (7)</option>
+                                </select>
+                            </div>
+
+                            <!-- FICA Status Filter -->
+                            <div class="col-md-6 col-lg-2">
+                                <label class="form-label">FICA Status</label>
+                                <select class="form-select form-select-sm" id="ficaStatusFilter">
+                                    <option value="all">All</option>
+                                    <option value="verified">Verified (463)</option>
+                                    <option value="pending">Pending (18)</option>
+                                    <option value="non-compliant">Non-compliant (6)</option>
+                                </select>
+                            </div>
+
+                            <!-- Representative Filter -->
+                            <div class="col-md-6 col-lg-2">
+                                <label class="form-label">Representative</label>
+                                <select class="form-select form-select-sm" id="representativeFilter">
+                                    <option value="all">All Representatives</option>
+                                    <option value="thandiwe">Thandiwe Mkhize</option>
+                                    <option value="johan">Johan van Zyl</option>
+                                    <option value="linda">Linda Zwane</option>
+                                    <option value="peter">Peter Williams</option>
+                                    <option value="sarah">Sarah Naidoo</option>
+                                    <option value="michael">Michael Chen</option>
+                                    <option value="amanda">Amanda Botha</option>
+                                    <option value="sipho">Sipho Dlamini</option>
+                                </select>
+                            </div>
+
+                            <!-- Risk Category -->
+                            <div class="col-md-6 col-lg-2">
+                                <label class="form-label">Risk Category</label>
+                                <select class="form-select form-select-sm" id="riskFilter">
+                                    <option value="all">All</option>
+                                    <option value="low">Low Risk (410)</option>
+                                    <option value="medium">Medium Risk (65)</option>
+                                    <option value="high">High Risk (12)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-secondary" id="applyFiltersBtn">
+                                        <i class="fas fa-filter me-1"></i> Apply Filters
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="clearFiltersBtn">
+                                        <i class="fas fa-times me-1"></i> Clear Filters
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="savePresetBtn">
+                                        <i class="fas fa-save me-1"></i> Save Filter Preset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client List (Table View) -->
+                <div class="card" id="clientTableView">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="clientDirectoryTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 40px;">
+                                            <input type="checkbox" class="form-check-input" id="selectAllClients">
+                                        </th>
+                                        <th>Client Name</th>
+                                        <th>ID Number</th>
+                                        <th>FICA Status</th>
+                                        <th>Representative</th>
+                                        <th>Risk</th>
+                                        <th>Policies</th>
+                                        <th>Last Activity</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clientDirectoryTableBody">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                            <div>
+                                <small class="text-muted">Showing 1-8 of 487 clients</small>
+                            </div>
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0">
+                                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                                </ul>
+                            </nav>
+                            <div>
+                                <select class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                                    <option>8 per page</option>
+                                    <option>25 per page</option>
+                                    <option>50 per page</option>
+                                    <option>100 per page</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Cards (Card View) -->
+                <div class="row g-3" id="clientCardView" style="display: none;">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- TAB 3: ADD NEW CLIENT -->
+            <div class="tab-pane fade" id="add-client" role="tabpanel">
+                <div class="mb-4">
+                    <h3>Add New Client</h3>
+                    <p class="text-muted">Complete the multi-step form to onboard a new client</p>
+                </div>
+
+                <!-- Multi-Step Form -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Progress Bar -->
+                        <div class="wizard-progress mb-4">
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar" style="width: 14.3%" id="wizardProgress"></div>
+                            </div>
+                            <div class="wizard-steps d-flex justify-content-between mt-2">
+                                <div class="wizard-step active" data-step="1">
+                                    <div class="step-number">1</div>
+                                    <div class="step-label">Personal Info</div>
+                                </div>
+                                <div class="wizard-step" data-step="2">
+                                    <div class="step-number">2</div>
+                                    <div class="step-label">Contact</div>
+                                </div>
+                                <div class="wizard-step" data-step="3">
+                                    <div class="step-number">3</div>
+                                    <div class="step-label">Employment</div>
+                                </div>
+                                <div class="wizard-step" data-step="4">
+                                    <div class="step-number">4</div>
+                                    <div class="step-label">Banking</div>
+                                </div>
+                                <div class="wizard-step" data-step="5">
+                                    <div class="step-number">5</div>
+                                    <div class="step-label">Assignment</div>
+                                </div>
+                                <div class="wizard-step" data-step="6">
+                                    <div class="step-number">6</div>
+                                    <div class="step-label">POPIA</div>
+                                </div>
+                                <div class="wizard-step" data-step="7">
+                                    <div class="step-number">7</div>
+                                    <div class="step-label">Review</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 1: Personal Information -->
+                        <div class="wizard-step-content" id="step1">
+                            <h5 class="mb-4">Step 1: Personal Information</h5>
+                            <form id="personalInfoForm">
+                                <div class="row g-3">
+                                    <div class="col-md-2">
+                                        <label class="form-label">Title <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="title" required>
+                                            <option value="">Select...</option>
+                                            <option value="Mr">Mr</option>
+                                            <option value="Mrs">Mrs</option>
+                                            <option value="Ms">Ms</option>
+                                            <option value="Dr">Dr</option>
+                                            <option value="Prof">Prof</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="firstName" required>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label">Surname <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="surname" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Middle Name(s)</label>
+                                        <input type="text" class="form-control" id="middleName">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Preferred Name</label>
+                                        <input type="text" class="form-control" id="preferredName">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="dateOfBirth" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">SA ID Number <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="idNumber" maxlength="13" required>
+                                        <small class="text-muted" id="idValidationMsg"></small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Gender</label>
+                                        <select class="form-select" id="gender">
+                                            <option value="">Select...</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                            <option value="Prefer not to say">Prefer not to say</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nationality <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="nationality" required>
+                                            <option value="">Select...</option>
+                                            <option value="South African" selected>South African</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Marital Status</label>
+                                        <select class="form-select" id="maritalStatus">
+                                            <option value="">Select...</option>
+                                            <option value="Single">Single</option>
+                                            <option value="Married in community">Married in community</option>
+                                            <option value="Married out of community">Married out of community</option>
+                                            <option value="Divorced">Divorced</option>
+                                            <option value="Widowed">Widowed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mt-4 d-flex justify-content-end gap-2">
+                                    <button type="button" class="btn btn-secondary" id="saveDraftBtn">Save Draft</button>
+                                    <button type="button" class="btn btn-primary" id="nextToStep2">Next: Contact Details</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Step 2-7 will be shown/hidden dynamically -->
+                        <div class="wizard-step-content" id="step2" style="display: none;">
+                            <h5 class="mb-4">Step 2: Contact Information</h5>
+                            <p class="text-muted">Contact information form would be implemented here</p>
+                            <div class="mt-4 d-flex justify-content-between">
+                                <button type="button" class="btn btn-secondary" id="backToStep1">Previous</button>
+                                <button type="button" class="btn btn-primary" id="nextToStep3">Next: Employment & Financial</button>
+                            </div>
+                        </div>
+
+                        <!-- Additional steps would follow similar pattern -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: FICA STATUS OVERVIEW -->
+            <div class="tab-pane fade" id="fica-status" role="tabpanel">
+                <div class="mb-4">
+                    <h3>FICA Status Overview</h3>
+                    <p class="text-muted">FSP-wide FICA compliance dashboard</p>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card success">
+                            <div class="stat-number">463</div>
+                            <div class="stat-label">Verified Clients</div>
+                            <div class="stat-percentage">95%</div>
+                            <small class="text-success">↑ +2% vs last month</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card warning">
+                            <div class="stat-number">18</div>
+                            <div class="stat-label">Pending Verification</div>
+                            <small>&lt;30 days: 12 | &gt;30 days: 6</small>
+                            <a href="#" class="stat-link">Review Pending</a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card danger">
+                            <div class="stat-number">6</div>
+                            <div class="stat-label">Non-Compliant</div>
+                            <small class="text-danger">Action required</small>
+                            <a href="#" class="stat-link">View Non-Compliant</a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card info">
+                            <div class="stat-number">34</div>
+                            <div class="stat-label">Due for Review</div>
+                            <small>Annual reviews due within 90 days</small>
+                            <a href="#" class="stat-link">Schedule Reviews</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FICA Status by Representative -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">FICA Status by Representative</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Representative</th>
+                                        <th>Total Clients</th>
+                                        <th>Verified</th>
+                                        <th>Pending</th>
+                                        <th>Non-Compliant</th>
+                                        <th>Compliance %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ficaRepTable">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Verifications -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Pending Verifications (18)</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="text-danger">High Priority (>30 days overdue - 6 clients)</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Client Name</th>
+                                        <th>ID Number</th>
+                                        <th>Representative</th>
+                                        <th>Days Pending</th>
+                                        <th>Risk</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pendingVerificationsTable">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Non-Compliant Clients -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Non-Compliant Clients (6)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Client Name</th>
+                                        <th>ID Number</th>
+                                        <th>Representative</th>
+                                        <th>Issue</th>
+                                        <th>Days Open</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nonCompliantTable">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: REPRESENTATIVE ASSIGNMENTS -->
+            <div class="tab-pane fade" id="assignments" role="tabpanel">
+                <div class="mb-4">
+                    <h3>Representative Assignments</h3>
+                    <p class="text-muted">Manage client assignments and portfolio distribution</p>
+                </div>
+
+                <!-- Assignment Overview -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-value">462</div>
+                                    <div class="stat-label">Total Active Clients</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-value">8</div>
+                                    <div class="stat-label">Total Representatives</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-value">58</div>
+                                    <div class="stat-label">Average Clients per Rep</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-value">75</div>
+                                    <div class="stat-label">Recommended Max</div>
+                                    <span class="badge bg-success">✅ Balanced</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Representative Portfolio View -->
+                <div class="row g-3" id="repPortfolioCards">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- TAB 6: CLIENT TRANSFERS -->
+            <div class="tab-pane fade" id="transfers" role="tabpanel">
+                <div class="mb-4">
+                    <h3>Client Transfers</h3>
+                    <p class="text-muted">Manage client transfers between representatives</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Initiate Client Transfer</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="transferForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Select Client <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="transferClient" required>
+                                        <option value="">Search and select client...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Transfer To <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="transferTo" required>
+                                        <option value="">Select representative...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Transfer Type <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="transferType" required>
+                                        <option value="permanent">Permanent</option>
+                                        <option value="temporary">Temporary</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Reason for Transfer <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="transferReason" required>
+                                        <option value="">Select reason...</option>
+                                        <option value="client-request">Client request</option>
+                                        <option value="portfolio-rebalancing">Portfolio rebalancing</option>
+                                        <option value="representative-leaving">Representative leaving</option>
+                                        <option value="branch-transfer">Branch transfer</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Additional Notes</label>
+                                    <textarea class="form-control" id="transferNotes" rows="3"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Transfer Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="transferDate" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mt-4">
+                                        <input class="form-check-input" type="checkbox" id="notifyClient" checked>
+                                        <label class="form-check-label" for="notifyClient">
+                                            Notify client of transfer (Email/SMS)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-secondary">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Submit Transfer Request</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: REPORTS -->
+            <div class="tab-pane fade" id="reports" role="tabpanel">
+                <div class="mb-4">
+                    <h3>Client Management Reports</h3>
+                    <p class="text-muted">Generate comprehensive client reports</p>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>Client Portfolio Summary</h5>
+                                <p class="text-muted">Complete client portfolio overview</p>
+                                <button class="btn btn-primary">Generate</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>FICA Compliance Report</h5>
+                                <p class="text-muted">FICA verification status and compliance metrics</p>
+                                <button class="btn btn-primary">Generate</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>Representative Performance Report</h5>
+                                <p class="text-muted">Client management performance by representative</p>
+                                <button class="btn btn-primary">Generate</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>New Client Onboarding Report</h5>
+                                <p class="text-muted">New clients added in date range</p>
+                                <button class="btn btn-primary">Generate</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Profile Modal -->
+    <div class="modal fade" id="clientProfileModal" tabindex="-1" aria-labelledby="clientProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clientProfileModalLabel">Client Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="clientProfileContent">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/client-management.js"></script>
+</body>
+</html>
+

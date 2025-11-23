@@ -589,6 +589,13 @@
                                         </a>
                                     </li>
             <li>
+                <a class="sidebar-menu-item" href="#" data-route="audits">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Internal Audits</span>
+                    <span class="menu-badge">1</span>
+                                        </a>
+                                    </li>
+            <li>
                 <a class="sidebar-menu-item" href="#" data-route="reports">
                     <i class="fas fa-chart-bar"></i>
                     <span>Reports</span>
@@ -1281,6 +1288,11 @@
                     console.log('Loading Alerts & Notifications module...');
                     loadAlertsModule(dashboardContent, breadcrumbNav);
                     break;
+                case 'audits':
+                case 'internal-audits':
+                    console.log('Loading Internal Audits module...');
+                    loadInternalAuditsModule(dashboardContent, breadcrumbNav);
+                    break;
                 case 'dashboard':
                 case 'executive':
                 case 'executive-dashboard':
@@ -1563,6 +1575,39 @@
                 
                 // Update URL hash
                 window.location.hash = '#alerts';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Internal Audits Module
+        function loadInternalAuditsModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Internal Audits</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Internal Audits module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/internal-audits/html/internal_audits.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Internal Audits"
+                            id="internalAuditsModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#audits';
             } else {
                 console.error('Dashboard content area not found');
             }

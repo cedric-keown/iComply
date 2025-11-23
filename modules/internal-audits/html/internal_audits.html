@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Internal Audits - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/internal-audits-styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="audits-container">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="auditsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                    <i class="fas fa-tachometer-alt me-2"></i>Audit Dashboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab">
+                    <i class="fas fa-calendar-check me-2"></i>Audit Schedule
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab">
+                    <i class="fas fa-tasks me-2"></i>Active Audits <span class="badge bg-info ms-1" id="activeAuditsCount">1</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="findings-tab" data-bs-toggle="tab" data-bs-target="#findings" type="button" role="tab">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Findings & Actions <span class="badge bg-warning ms-1">3</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fsca-tab" data-bs-toggle="tab" data-bs-target="#fsca" type="button" role="tab">
+                    <i class="fas fa-shield-alt me-2"></i>FSCA Inspections
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                    <i class="fas fa-history me-2"></i>Audit History
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">
+                    <i class="fas fa-chart-bar me-2"></i>Reports
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="auditsTabContent">
+            <!-- TAB 1: AUDIT DASHBOARD -->
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                <div class="dashboard-header mb-4">
+                    <h2>Audit Dashboard</h2>
+                    <p class="text-muted">Overview of audit status and compliance readiness</p>
+                </div>
+
+                <!-- Audit Status Banner -->
+                <div class="card mb-4 audit-status-banner">
+                    <div class="card-body text-center">
+                        <h3 class="mb-3">FSP AUDIT STATUS: <span class="badge bg-success">✅ INSPECTION READY</span></h3>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-label">Last Internal Audit</div>
+                                    <div class="stat-value">30/11/2024</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-label">Next Scheduled Audit</div>
+                                    <div class="stat-value">28/02/2025</div>
+                                    <small class="text-muted">(75 days)</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-label">Last FSCA Inspection</div>
+                                    <div class="stat-value">15/08/2023</div>
+                                    <small class="text-muted">(488 days ago)</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-item">
+                                    <div class="stat-label">Overall Compliance Score</div>
+                                    <div class="stat-value-large text-success">94/100</div>
+                                    <span class="badge bg-success">✅ Excellent</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Cards -->
+                <div class="row g-3 mb-4">
+                    <!-- Card 1: Scheduled Audits -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card info">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">4</div>
+                                <div class="stat-label">Upcoming Audits</div>
+                                <div class="stat-breakdown">
+                                    <small>Next 90 days</small><br>
+                                    <small>Next: 28/02/2025 (75 days)</small>
+                                </div>
+                                <a href="#" class="stat-link">View Schedule</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Active Audits -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card info">
+                            <div class="stat-icon">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">1</div>
+                                <div class="stat-label">In Progress</div>
+                                <div class="stat-breakdown">
+                                    <small>CPD Compliance Audit</small><br>
+                                    <small>Started: 10/12/2024 (5 days ago)</small>
+                                </div>
+                                <a href="#" class="stat-link">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Open Findings -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card warning">
+                            <div class="stat-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">3</div>
+                                <div class="stat-label">Open Findings</div>
+                                <div class="stat-breakdown">
+                                    <small>Critical: 0 | High: 1 | Medium: 2 | Low: 0</small>
+                                </div>
+                                <a href="#" class="stat-link">Review Findings</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Corrective Actions -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card info">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-square"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">2</div>
+                                <div class="stat-label">Pending Actions</div>
+                                <div class="stat-breakdown">
+                                    <small>Overdue: 0 | This week: 1 | This month: 1</small>
+                                </div>
+                                <a href="#" class="stat-link">View Actions</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compliance Score Breakdown -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Compliance Score Breakdown</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="compliance-scores" id="complianceScores">
+                                    <!-- Populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Trends Chart -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Compliance Score Trend (Last 12 Months)</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="complianceTrendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">FSCA Inspection Readiness</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="readiness-score">
+                                    <div class="score-value-large text-success">92/100</div>
+                                    <div class="readiness-categories mt-3">
+                                        <div class="readiness-item">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Documentation</span>
+                                                <span class="text-success">95/100</span>
+                                            </div>
+                                            <div class="progress mt-1" style="height: 6px;">
+                                                <div class="progress-bar bg-success" style="width: 95%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="readiness-item mt-2">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Compliance Evidence</span>
+                                                <span class="text-success">94/100</span>
+                                            </div>
+                                            <div class="progress mt-1" style="height: 6px;">
+                                                <div class="progress-bar bg-success" style="width: 94%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="readiness-item mt-2">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Systems & Processes</span>
+                                                <span class="text-success">90/100</span>
+                                            </div>
+                                            <div class="progress mt-1" style="height: 6px;">
+                                                <div class="progress-bar bg-success" style="width: 90%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="readiness-item mt-2">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Staff Preparedness</span>
+                                                <span class="text-success">88/100</span>
+                                            </div>
+                                            <div class="progress mt-1" style="height: 6px;">
+                                                <div class="progress-bar bg-success" style="width: 88%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button class="btn btn-sm btn-primary w-100">Generate Inspection Report</button>
+                                        <button class="btn btn-sm btn-outline-primary w-100 mt-2">Schedule Mock Inspection</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Audit Activity -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recent Audit Activity</h5>
+                        <div>
+                            <a href="#" class="btn btn-sm btn-outline-primary">View Full Activity Log</a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">Export Log</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Activity</th>
+                                        <th>Type</th>
+                                        <th>Auditor</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentActivityTable">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: AUDIT SCHEDULE -->
+            <div class="tab-pane fade" id="schedule" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3>Audit Schedule</h3>
+                        <p class="text-muted mb-0">Manage scheduled audits and annual calendar</p>
+                    </div>
+                    <button class="btn btn-primary" id="scheduleNewAuditBtn">
+                        <i class="fas fa-plus me-1"></i> Schedule New Audit
+                    </button>
+                </div>
+
+                <!-- Annual Audit Calendar -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">2024/2025 Audit Schedule</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>Quarterly Compliance Audits</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Quarter</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Score</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Q1 2024</td>
+                                        <td>31/03/2024</td>
+                                        <td><span class="badge bg-success">✅ Completed</span></td>
+                                        <td>91/100</td>
+                                        <td><a href="#" class="btn btn-sm btn-outline-primary">View</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Q2 2024</td>
+                                        <td>30/06/2024</td>
+                                        <td><span class="badge bg-success">✅ Completed</span></td>
+                                        <td>93/100</td>
+                                        <td><a href="#" class="btn btn-sm btn-outline-primary">View</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Q3 2024</td>
+                                        <td>30/09/2024</td>
+                                        <td><span class="badge bg-success">✅ Completed</span></td>
+                                        <td>95/100</td>
+                                        <td><a href="#" class="btn btn-sm btn-outline-primary">View</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Q4 2024</td>
+                                        <td>30/11/2024</td>
+                                        <td><span class="badge bg-success">✅ Completed</span></td>
+                                        <td>94/100</td>
+                                        <td><a href="#" class="btn btn-sm btn-outline-primary">View</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Q1 2025</td>
+                                        <td>31/03/2025</td>
+                                        <td><span class="badge bg-info">📋 Scheduled</span></td>
+                                        <td>-</td>
+                                        <td><a href="#" class="btn btn-sm btn-outline-primary">Edit</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h6 class="mt-4">Specialized Audits</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Audit Type</th>
+                                        <th>Frequency</th>
+                                        <th>Last Completed</th>
+                                        <th>Next Scheduled</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="specializedAuditsTable">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar View -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Calendar View - Next 6 Months</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="auditCalendar">
+                            <!-- Calendar will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: ACTIVE AUDITS -->
+            <div class="tab-pane fade" id="active" role="tabpanel">
+                <div class="mb-4">
+                    <h3>Active Audits</h3>
+                    <p class="text-muted">Currently in-progress audits</p>
+                </div>
+
+                <!-- Current Active Audit -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">CPD Compliance Audit</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="audit-header-info mb-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <strong>Audit ID:</strong> AUD-2024-012
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Status:</strong> <span class="badge bg-info">⏳ IN PROGRESS</span> (40% Complete)
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Started:</strong> 10/12/2024
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Target Completion:</strong> 20/12/2024 (5 days remaining)
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <strong>Lead Auditor:</strong> Thandiwe Mkhize (Compliance Officer)
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Audit Team:</strong> Compliance Officer, 1 Staff Member
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Objective:</strong> Verify CPD compliance across all representatives for 2024/2025 cycle
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Audit Progress -->
+                        <div class="audit-progress mb-4">
+                            <h6>Audit Progress</h6>
+                            <div class="progress mb-3" style="height: 25px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 40%">40% Complete</div>
+                            </div>
+                            <div class="audit-phases" id="auditPhases">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Audit Findings -->
+                        <div class="audit-findings mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6>Audit Findings (Preliminary)</h6>
+                                <button class="btn btn-sm btn-primary" id="addFindingBtn">
+                                    <i class="fas fa-plus me-1"></i> Add New Finding
+                                </button>
+                            </div>
+                            <div id="auditFindingsList">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Audit Documents -->
+                        <div class="audit-documents mb-4">
+                            <h6>Audit Documents</h6>
+                            <div class="list-group" id="auditDocumentsList">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary mt-2">
+                                <i class="fas fa-upload me-1"></i> Upload Document
+                            </button>
+                        </div>
+
+                        <!-- Audit Notes -->
+                        <div class="audit-notes">
+                            <h6>Auditor Notes</h6>
+                            <div class="notes-timeline" id="auditNotesTimeline">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                            <button class="btn btn-sm btn-primary mt-2" id="addNoteBtn">
+                                <i class="fas fa-plus me-1"></i> Add Note
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: FINDINGS & ACTIONS -->
+            <div class="tab-pane fade" id="findings" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3>Findings & Actions</h3>
+                        <p class="text-muted mb-0">Manage audit findings and corrective actions</p>
+                    </div>
+                    <button class="btn btn-primary" id="addCorrectiveActionBtn">
+                        <i class="fas fa-plus me-1"></i> Add Corrective Action
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Severity</label>
+                                <select class="form-select form-select-sm" id="severityFilter">
+                                    <option value="all">All</option>
+                                    <option value="critical">Critical</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                    <option value="observation">Observation</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select form-select-sm" id="findingStatusFilter">
+                                    <option value="all">All</option>
+                                    <option value="open">Open</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="resolved">Resolved</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Category</label>
+                                <select class="form-select form-select-sm" id="categoryFilter">
+                                    <option value="all">All Categories</option>
+                                    <option value="cpd">CPD</option>
+                                    <option value="fp">Fit & Proper</option>
+                                    <option value="fica">FICA</option>
+                                    <option value="documents">Documents</option>
+                                    <option value="representatives">Representatives</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Date Range</label>
+                                <select class="form-select form-select-sm" id="dateRangeFilter">
+                                    <option value="30">Last 30 days</option>
+                                    <option value="90">Last 90 days</option>
+                                    <option value="365">Last 12 months</option>
+                                    <option value="all">All time</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-secondary" id="applyFindingsFiltersBtn">
+                                <i class="fas fa-filter me-1"></i> Apply Filters
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" id="clearFindingsFiltersBtn">
+                                <i class="fas fa-times me-1"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Open Findings -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Open Findings (3)</h5>
+                    </div>
+                    <div class="card-body" id="findingsList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Corrective Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Active Corrective Actions (2)</h5>
+                    </div>
+                    <div class="card-body" id="correctiveActionsList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: FSCA INSPECTIONS -->
+            <div class="tab-pane fade" id="fsca" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3>FSCA Inspections</h3>
+                        <p class="text-muted mb-0">FSCA inspection history and preparedness</p>
+                    </div>
+                    <button class="btn btn-primary" id="scheduleMockInspectionBtn">
+                        <i class="fas fa-calendar-plus me-1"></i> Schedule Mock Inspection
+                    </button>
+                </div>
+
+                <!-- Last FSCA Inspection -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Last FSCA Inspection</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="fsca-inspection-details">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <strong>Date:</strong> 15/08/2023
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Duration:</strong> 3 days
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Inspection Type:</strong> Routine compliance inspection
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Reference:</strong> FSCA-2023-INS-0847
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-item">
+                                        <strong>Outcome:</strong> <span class="badge bg-success">✅ NO MAJOR FINDINGS</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Overall Assessment:</strong> Satisfactory
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Findings:</strong> 0 Critical, 0 High, 2 Minor (both resolved)
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Status:</strong> <span class="badge bg-success">CLOSED</span> (No follow-up required)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-primary">
+                                    <i class="fas fa-download me-1"></i> Download Final Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inspection History -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">FSCA Inspection History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Duration</th>
+                                        <th>Outcome</th>
+                                        <th>Findings</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fscaHistoryTable">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inspection Preparedness Checklist -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">FSCA Inspection Readiness Assessment</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="readiness-checklist" id="readinessChecklist">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                        <div class="mt-3">
+                            <div class="alert alert-success">
+                                <strong>Overall Readiness: 99% (Excellent)</strong>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-file-pdf me-1"></i> Generate Full Checklist
+                                </button>
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-calendar me-1"></i> Schedule Mock Inspection
+                                </button>
+                                <button class="btn btn-outline-secondary">
+                                    <i class="fas fa-download me-1"></i> Export Readiness Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: AUDIT HISTORY -->
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3>Audit History</h3>
+                        <p class="text-muted mb-0">Historical audit records and reports</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" id="historyFilter" style="width: auto;">
+                            <option value="6">Last 6 months</option>
+                            <option value="12" selected>Last 12 months</option>
+                            <option value="36">Last 3 years</option>
+                            <option value="all">All time</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-download me-1"></i> Export History
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Completed Audits -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Completed Audits</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Audit Name</th>
+                                        <th>Type</th>
+                                        <th>Lead Auditor</th>
+                                        <th>Compliance Score</th>
+                                        <th>Findings</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="auditHistoryTable">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: REPORTS -->
+            <div class="tab-pane fade" id="reports" role="tabpanel">
+                <div class="mb-4">
+                    <h3>Audit Reports</h3>
+                    <p class="text-muted">Generate comprehensive audit reports</p>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>Comprehensive Audit Summary</h5>
+                                <p class="text-muted">Complete audit overview for management</p>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary">Generate Now</button>
+                                    <button class="btn btn-outline-secondary">Schedule</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>FSCA Inspection Readiness Report</h5>
+                                <p class="text-muted">Detailed inspection preparedness assessment</p>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary">Generate Now</button>
+                                    <button class="btn btn-outline-secondary">Schedule</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>Findings & Corrective Actions Report</h5>
+                                <p class="text-muted">All findings and action status</p>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary">Generate Now</button>
+                                    <button class="btn btn-outline-secondary">Schedule</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>Compliance Trend Analysis</h5>
+                                <p class="text-muted">Historical compliance score trends</p>
+                                <button class="btn btn-primary">Generate Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Audit Modal -->
+    <div class="modal fade" id="scheduleAuditModal" tabindex="-1" aria-labelledby="scheduleAuditModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="scheduleAuditModalLabel">Schedule New Audit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleAuditForm">
+                        <div class="mb-3">
+                            <label class="form-label">Audit Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="auditType" required>
+                                <option value="">Select audit type...</option>
+                                <option value="compliance">Compliance</option>
+                                <option value="fica">FICA</option>
+                                <option value="cpd">CPD</option>
+                                <option value="fp">Fit & Proper</option>
+                                <option value="documents">Documents</option>
+                                <option value="risk">Risk</option>
+                                <option value="representatives">Representative Files</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Audit Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="auditName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Scheduled Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="auditDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Estimated Duration</label>
+                            <select class="form-select" id="auditDuration">
+                                <option value="1">1 day</option>
+                                <option value="2-3">2-3 days</option>
+                                <option value="1 week">1 week</option>
+                                <option value="2 weeks">2 weeks</option>
+                                <option value="1 month">1 month</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Audit Scope</label>
+                            <textarea class="form-control" id="auditScope" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Lead Auditor <span class="text-danger">*</span></label>
+                            <select class="form-select" id="leadAuditor" required>
+                                <option value="">Select auditor...</option>
+                                <option value="thandiwe">Thandiwe Mkhize (Compliance Officer)</option>
+                                <option value="linda">Linda Zwane (FICA Officer)</option>
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Schedule Audit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Finding Detail Modal -->
+    <div class="modal fade" id="findingDetailModal" tabindex="-1" aria-labelledby="findingDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="findingDetailModalLabel">Finding Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="findingDetailContent">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/internal-audits.js"></script>
+</body>
+</html>
+
