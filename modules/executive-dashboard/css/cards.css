@@ -1,0 +1,15 @@
+/* Card Component Styles */
+
+.compliance-area-card .card-body {
+    padding: 20px;
+}
+
+.compliance-area-card ul {
+    margin-top: 10px;
+}
+
+.compliance-area-card li {
+    padding: 3px 0;
+    font-size: 0.9rem;
+}
+

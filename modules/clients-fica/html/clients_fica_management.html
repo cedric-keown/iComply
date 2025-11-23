@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Clients & FICA Management - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/clients-fica-styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Tabs -->
+    <div class="clients-fica-tabs-container">
+        <ul class="nav nav-tabs clients-fica-tabs" id="clientsFicaTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                    <i class="fas fa-tachometer-alt me-2"></i>Client Dashboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="portfolio-tab" data-bs-toggle="tab" data-bs-target="#portfolio" type="button" role="tab">
+                    <i class="fas fa-users me-2"></i>Client Portfolio
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="add-client-tab" data-bs-toggle="tab" data-bs-target="#add-client" type="button" role="tab">
+                    <i class="fas fa-user-plus me-2"></i>Add New Client
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fica-verification-tab" data-bs-toggle="tab" data-bs-target="#fica-verification" type="button" role="tab">
+                    <i class="fas fa-shield-check me-2"></i>FICA Verification <span class="badge bg-warning">13</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="risk-assessment-tab" data-bs-toggle="tab" data-bs-target="#risk-assessment" type="button" role="tab">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Risk Assessment
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+                    <i class="fas fa-calendar-check me-2"></i>Reviews & Monitoring
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">
+                    <i class="fas fa-chart-line me-2"></i>Reports & Analytics
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content clients-fica-content" id="clientsFicaTabContent">
+        
+        <!-- 1. CLIENT DASHBOARD -->
+        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+            <div class="container-fluid py-4">
+                <!-- Hero Metrics -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-primary">
+                                <i class="fas fa-users fa-3x"></i>
+                            </div>
+                            <div class="stat-value text-primary">248</div>
+                            <div class="stat-label">Total Clients</div>
+                            <div class="stat-sublabel">+12 this month (↑ 5%)</div>
+                            <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchClientsFicaTab('portfolio-tab')">View All</a>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-success">
+                                <i class="fas fa-shield-check fa-3x"></i>
+                            </div>
+                            <div class="stat-value text-success">95%</div>
+                            <div class="stat-label">FICA Compliance</div>
+                            <div class="stat-sublabel">235 / 248 verified</div>
+                            <div class="progress mt-3" style="height: 8px;">
+                                <div class="progress-bar bg-success" style="width: 95%"></div>
+                            </div>
+                            <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchClientsFicaTab('fica-verification-tab')">View Pending</a>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-warning">
+                                <i class="fas fa-exclamation-triangle fa-3x"></i>
+                            </div>
+                            <div class="stat-value text-warning">8</div>
+                            <div class="stat-label">High-Risk Clients</div>
+                            <div class="stat-sublabel">3% of portfolio (EDD)</div>
+                            <a href="#" class="btn btn-sm btn-warning mt-2" onclick="switchClientsFicaTab('risk-assessment-tab')">View Details</a>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-danger">
+                                <i class="fas fa-calendar-clock fa-3x"></i>
+                            </div>
+                            <div class="stat-value text-danger">12</div>
+                            <div class="stat-label">Reviews Due</div>
+                            <div class="stat-sublabel">7 this month, 5 overdue</div>
+                            <a href="#" class="btn btn-sm btn-danger mt-2" onclick="switchClientsFicaTab('reviews-tab')">Review Schedule</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Breakdown Charts -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Clients by Representative</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="clientsByRepChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Clients by Risk Level</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="clientsByRiskChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Clients by Product Type</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="clientsByProductChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">FICA Compliance Overview</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="compliance-status-box">
+                                    <div class="text-center mb-3">
+                                        <span class="badge bg-success fs-6">✅ COMPLIANT</span>
+                                    </div>
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <div class="h4 mb-0">95%</div>
+                                            <small class="text-muted">Verification Rate</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="h4 mb-0">2.5 days</div>
+                                            <small class="text-muted">Avg Verification Time</small>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="regulatory-deadlines">
+                                        <h6>Regulatory Deadlines:</h6>
+                                        <ul class="list-unstyled small">
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Initial Verification: Within 30 days</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Low Risk Review: 5 years</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Standard Risk Review: 1 year</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>High Risk Review: Quarterly</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Client Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon bg-success">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6 class="mb-1">New client onboarded</h6>
+                                    <p class="mb-1 small text-muted">Nomsa Khumalo - FICA verification complete</p>
+                                    <small class="text-muted">Representative: Sarah Naidoo • 2 hours ago</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">View Profile</button>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon bg-info">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6 class="mb-1">FICA review completed</h6>
+                                    <p class="mb-1 small text-muted">Johan van Zyl - Annual review passed</p>
+                                    <small class="text-muted">Representative: Thabo Mokoena • 5 hours ago</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">View Review</button>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon bg-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6 class="mb-1">Risk level upgraded</h6>
+                                    <p class="mb-1 small text-muted">Mary Johnson - Standard to High Risk (EDD required)</p>
+                                    <small class="text-muted">System: Automated Risk Assessment • 1 day ago</small>
+                                </div>
+                                <button class="btn btn-sm btn-warning">Review Risk</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Critical Alerts -->
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>Critical Alerts</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger mb-3">
+                            <h6><i class="fas fa-exclamation-circle me-2"></i>5 FICA Reviews Overdue</h6>
+                            <p class="mb-2">Immediate action required to maintain compliance</p>
+                            <small class="text-muted">Clients: M. van der Merwe (30 days), P. Botha (15 days)...</small>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-danger me-2">View All Overdue</button>
+                                <button class="btn btn-sm btn-outline-danger">Send Reminders</button>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning mb-3">
+                            <h6><i class="fas fa-clock me-2"></i>7 Reviews Due This Month</h6>
+                            <p class="mb-2">Schedule reviews before month end</p>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-warning me-2">View Schedule</button>
+                                <button class="btn btn-sm btn-outline-warning">Assign Reviews</button>
+                            </div>
+                        </div>
+                        <div class="alert alert-info mb-0">
+                            <h6><i class="fas fa-shield-check me-2"></i>PEP Screening Update Available</h6>
+                            <p class="mb-2">New PEP list released - run screening recommended</p>
+                            <small class="text-muted">Last screening: 5 days ago</small>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-info me-2">Run Bulk Screening</button>
+                                <button class="btn btn-sm btn-outline-info">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CLIENT PORTFOLIO -->
+        <div class="tab-pane fade" id="portfolio" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Client Portfolio</h2>
+                
+                <!-- Portfolio Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-value text-primary">248</div>
+                            <div class="stat-label">Total Clients</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-value text-success">235</div>
+                            <div class="stat-label">Active</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-value text-info">12</div>
+                            <div class="stat-label">New This Month</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-value">R2.4M</div>
+                            <div class="stat-label">Avg Portfolio Value</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Search</label>
+                                <input type="text" class="form-control" placeholder="Name, ID, phone, policy number...">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Status</label>
+                                <select class="form-select">
+                                    <option>All</option>
+                                    <option>Active</option>
+                                    <option>Pending</option>
+                                    <option>Inactive</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">FICA Status</label>
+                                <select class="form-select">
+                                    <option>All</option>
+                                    <option>Verified</option>
+                                    <option>Pending</option>
+                                    <option>Incomplete</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Risk Level</label>
+                                <select class="form-select">
+                                    <option>All</option>
+                                    <option>Low (SDD)</option>
+                                    <option>Standard (CDD)</option>
+                                    <option>High (EDD)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Representative</label>
+                                <select class="form-select">
+                                    <option>All</option>
+                                    <option>Sarah Naidoo</option>
+                                    <option>Thabo Mokoena</option>
+                                    <option>Pieter Vermeulen</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary me-2">Apply Filters</button>
+                                <button class="btn btn-outline-secondary">Clear All</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View Toggle -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary active" onclick="setPortfolioView('list')">
+                            <i class="fas fa-list me-1"></i>List
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="setPortfolioView('grid')">
+                            <i class="fas fa-th me-1"></i>Grid
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="setPortfolioView('table')">
+                            <i class="fas fa-table me-1"></i>Table
+                        </button>
+                    </div>
+                    <div>
+                        <span class="text-muted me-2">Showing 1-50 of 248</span>
+                        <select class="form-select form-select-sm d-inline-block" style="width: auto;">
+                            <option>50 per page</option>
+                            <option>25 per page</option>
+                            <option>100 per page</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Client List View -->
+                <div id="portfolio-list-view">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start">
+                                <div class="avatar-lg me-3">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h5 class="mb-1">Thabo Johannes Mokoena <span class="badge bg-success">✓ FICA</span></h5>
+                                            <p class="mb-1 text-muted">ID: 850615****083 • <i class="fas fa-phone me-1"></i>+27 82 555 1234</p>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-info">Medium (CDD)</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <small class="text-muted">Representative: Sarah Naidoo</small><br>
+                                            <small class="text-muted">Products: LT Insurance, Investments</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <small class="text-muted">Portfolio Value: R1.2M</small><br>
+                                            <small class="text-muted">Next Review: 15/11/2025</small>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button class="btn btn-sm btn-outline-primary me-2">View Profile</button>
+                                        <button class="btn btn-sm btn-outline-secondary me-2">FICA Review</button>
+                                        <button class="btn btn-sm btn-outline-secondary">Documents</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3 border-warning">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start">
+                                <div class="avatar-lg me-3">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h5 class="mb-1">Lerato Dlamini <span class="badge bg-warning">⚠️ EDD</span> <span class="badge bg-danger">🚩 PEP</span></h5>
+                                            <p class="mb-1 text-muted">ID: 920508****012 • <i class="fas fa-phone me-1"></i>+27 83 555 5678</p>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-danger">High (EDD)</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <small class="text-muted">Representative: Thabo Mokoena</small><br>
+                                            <small class="text-muted">Products: LT Insurance</small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <small class="text-muted">Portfolio Value: R4.5M</small><br>
+                                            <small class="text-muted">Next Review: 01/02/2025 ⚠️</small>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button class="btn btn-sm btn-outline-primary me-2">View Profile</button>
+                                        <button class="btn btn-sm btn-warning me-2">EDD Review</button>
+                                        <button class="btn btn-sm btn-outline-danger">Screening</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ADD NEW CLIENT (Wizard) -->
+        <div class="tab-pane fade" id="add-client" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Add New Client</h2>
+                
+                <!-- Client Type Selection -->
+                <div id="client-type-selection" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 client-type-card" onclick="selectClientType('individual')">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-user fa-4x text-primary mb-3"></i>
+                                    <h5>Individual Client</h5>
+                                    <p class="text-muted">South African citizen or resident with ID document</p>
+                                    <button class="btn btn-primary">Select</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 client-type-card" onclick="selectClientType('foreign')">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-globe fa-4x text-info mb-3"></i>
+                                    <h5>Foreign Individual</h5>
+                                    <p class="text-muted">Individual client without SA ID (passport required)</p>
+                                    <button class="btn btn-info">Select</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 client-type-card" onclick="selectClientType('corporate')">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-building fa-4x text-success mb-3"></i>
+                                    <h5>Corporate Client</h5>
+                                    <p class="text-muted">Company, close corporation, trust, or partnership</p>
+                                    <button class="btn btn-success">Select</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wizard Steps (Hidden initially) -->
+                <div id="client-wizard" style="display: none;">
+                    <!-- Progress Indicator -->
+                    <div class="wizard-progress mb-4">
+                        <div class="progress" style="height: 30px;">
+                            <div class="progress-bar" role="progressbar" style="width: 14%;" id="wizard-progress">Step 1 of 7</div>
+                        </div>
+                        <div class="wizard-steps d-flex justify-content-between mt-2">
+                            <span class="step active" data-step="1">Basic Details</span>
+                            <span class="step" data-step="2">Contact Info</span>
+                            <span class="step" data-step="3">Identity</span>
+                            <span class="step" data-step="4">Address</span>
+                            <span class="step" data-step="5">Financial</span>
+                            <span class="step" data-step="6">Risk Assessment</span>
+                            <span class="step" data-step="7">Review</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Basic Details -->
+                    <div class="wizard-step" id="step-1">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Step 1: Basic Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-2 mb-3">
+                                        <label class="form-label">Title <span class="text-danger">*</span></label>
+                                        <select class="form-select" required>
+                                            <option value="">Select...</option>
+                                            <option>Mr</option>
+                                            <option>Mrs</option>
+                                            <option>Ms</option>
+                                            <option>Miss</option>
+                                            <option>Dr</option>
+                                            <option>Prof</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5 mb-3">
+                                        <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-5 mb-3">
+                                        <label class="form-label">Surname <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Gender</label>
+                                        <select class="form-select">
+                                            <option>Male</option>
+                                            <option>Female</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Nationality <span class="text-danger">*</span></label>
+                                        <select class="form-select" required>
+                                            <option>South African</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Marital Status</label>
+                                        <select class="form-select">
+                                            <option>Single</option>
+                                            <option>Married</option>
+                                            <option>Divorced</option>
+                                            <option>Widowed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Employment Status <span class="text-danger">*</span></label>
+                                        <select class="form-select" required>
+                                            <option>Employed</option>
+                                            <option>Self-Employed</option>
+                                            <option>Business Owner</option>
+                                            <option>Retired</option>
+                                            <option>Unemployed</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Occupation <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Tax Number <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" placeholder="10 digits" maxlength="10" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Country of Tax Residence</label>
+                                        <select class="form-select">
+                                            <option>South Africa</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button class="btn btn-secondary" onclick="previousStep()">Cancel</button>
+                                    <button class="btn btn-primary" onclick="nextStep(2)">Next: Contact Information</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional steps would be here - truncated for space -->
+                    <!-- Step 2-7 would follow similar pattern -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. FICA VERIFICATION -->
+        <div class="tab-pane fade" id="fica-verification" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">FICA Verification Queue</h2>
+                
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-warning">13</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-info">4</div>
+                            <div class="stat-label">In Progress</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-success">7</div>
+                            <div class="stat-label">Completed Today</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-danger">2</div>
+                            <div class="stat-label">Overdue</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification Queue -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Verification Queue</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="verification-item mb-3 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6>CLT-2024-00245 | Johan van Zyl <span class="badge bg-warning">HIGH PRIORITY</span></h6>
+                                    <p class="mb-1 text-muted">ID: 780312****901</p>
+                                    <p class="mb-1"><span class="badge bg-success">Ready for Review</span> • Risk: Medium (CDD)</p>
+                                    <small class="text-muted">Progress: 100% • Documents: All received ✓ • Days in Queue: 3</small>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-primary me-2">Review Now</button>
+                                    <button class="btn btn-sm btn-outline-secondary">View Documents</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. RISK ASSESSMENT -->
+        <div class="tab-pane fade" id="risk-assessment" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Risk Assessment Dashboard</h2>
+                
+                <!-- Risk Distribution -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Clients by Risk Level</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="riskDistributionChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Risk Metrics</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-6 mb-3">
+                                        <div class="h4 mb-0">28.5</div>
+                                        <small class="text-muted">Avg Risk Score</small>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <div class="h4 mb-0">8</div>
+                                        <small class="text-muted">EDD Clients</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- High-Risk Clients Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">High-Risk (EDD) Clients</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Client Name</th>
+                                        <th>Risk Score</th>
+                                        <th>PEP Status</th>
+                                        <th>Risk Factors</th>
+                                        <th>EDD Status</th>
+                                        <th>Last Review</th>
+                                        <th>Next Review</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Lerato Dlamini</td>
+                                        <td>82/100</td>
+                                        <td><span class="badge bg-danger">🚩 Yes - PEP</span></td>
+                                        <td>PEP, High transactions, Foreign ties</td>
+                                        <td><span class="badge bg-success">✓ Complete</span></td>
+                                        <td>01/11/2024</td>
+                                        <td>01/02/2025</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. REVIEWS & MONITORING -->
+        <div class="tab-pane fade" id="reviews" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Reviews & Monitoring</h2>
+                
+                <!-- Review Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-info">12</div>
+                            <div class="stat-label">This Month</div>
+                            <div class="stat-sublabel">5 completed (42%)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-danger">5</div>
+                            <div class="stat-label">Overdue</div>
+                            <div class="stat-sublabel">Avg delay: 18 days</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value">45</div>
+                            <div class="stat-label">Next 90 Days</div>
+                            <div class="stat-sublabel">Scheduled reviews</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-success">95%</div>
+                            <div class="stat-label">Compliance Rate</div>
+                            <div class="stat-sublabel">On-time reviews</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Calendar -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Review Calendar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="review-calendar">
+                            <!-- Calendar would be rendered here -->
+                            <p class="text-muted">Calendar view coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Reviews -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Upcoming Reviews (Next 7 Days)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="review-item mb-3 p-3 border rounded">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6>19/12/2024 - Johan Smit</h6>
+                                    <p class="mb-1 text-muted">Type: Annual CDD Review • Risk: Standard</p>
+                                    <small class="text-muted">Assigned: Sarah Naidoo</small>
+                                </div>
+                                <button class="btn btn-sm btn-primary">Start Review</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. REPORTS & ANALYTICS -->
+        <div class="tab-pane fade" id="reports" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Reports & Analytics</h2>
+                
+                <!-- Report Categories -->
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 report-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                                <h5>Client Reports</h5>
+                                <p class="text-muted">Portfolio summaries and individual client reports</p>
+                                <button class="btn btn-primary">View Reports</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 report-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-shield-check fa-3x text-success mb-3"></i>
+                                <h5>FICA Compliance</h5>
+                                <p class="text-muted">FICA compliance summaries and certificates</p>
+                                <button class="btn btn-success">View Reports</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 report-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                                <h5>Risk Reports</h5>
+                                <p class="text-muted">Risk assessment and EDD client reports</p>
+                                <button class="btn btn-warning">View Reports</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report History -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Reports</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Report Name</th>
+                                        <th>Type</th>
+                                        <th>Generated By</th>
+                                        <th>Date/Time</th>
+                                        <th>Format</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>FICA Compliance Summary Dec 2024</td>
+                                        <td>Compliance Summary</td>
+                                        <td>Sarah Naidoo</td>
+                                        <td>15/12/2024 15:30</td>
+                                        <td>PDF</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                            <button class="btn btn-sm btn-outline-secondary">Download</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/client-dashboard.js"></script>
+    <script src="../js/client-portfolio.js"></script>
+    <script src="../js/add-client-wizard.js"></script>
+    <script src="../js/fica-verification.js"></script>
+    <script src="../js/risk-assessment.js"></script>
+    <script src="../js/reviews-monitoring.js"></script>
+    <script src="../js/reports.js"></script>
+    <script src="../js/id-validator.js"></script>
+    <script src="../js/risk-calculator.js"></script>
+    <script src="../js/charts.js"></script>
+</body>
+</html>
+

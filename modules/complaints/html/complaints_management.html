@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Complaints Management - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/complaints-styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Tabs -->
+    <div class="complaints-tabs-container">
+        <ul class="nav nav-tabs complaints-tabs" id="complaintsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                    <i class="fas fa-chart-pie me-2"></i>Complaints Dashboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="log-tab" data-bs-toggle="tab" data-bs-target="#log" type="button" role="tab">
+                    <i class="fas fa-plus-circle me-2"></i>Log New Complaint
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab">
+                    <i class="fas fa-list me-2"></i>Active Complaints <span class="badge bg-info">2</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar" type="button" role="tab">
+                    <i class="fas fa-calendar me-2"></i>Complaints Calendar
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analysis-tab" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab">
+                    <i class="fas fa-chart-line me-2"></i>Analysis & Trends
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="ombudsman-tab" data-bs-toggle="tab" data-bs-target="#ombudsman" type="button" role="tab">
+                    <i class="fas fa-balance-scale me-2"></i>Ombudsman Cases
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">
+                    <i class="fas fa-file-alt me-2"></i>Reports
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content complaints-content" id="complaintsTabContent">
+        <!-- 1. COMPLAINTS DASHBOARD -->
+        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+            <div class="container-fluid py-4">
+                <!-- Compliance Status Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-primary">
+                                <i class="fas fa-bullhorn fa-3x"></i>
+                            </div>
+                            <div class="stat-value">34</div>
+                            <div class="stat-label">Total Complaints</div>
+                            <div class="stat-sublabel">All time</div>
+                            <small class="text-muted d-block mt-2">This year: 8 complaints</small>
+                            <small class="text-success">↓ 20% vs last year</small>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-info">
+                                <i class="fas fa-clock fa-3x"></i>
+                            </div>
+                            <div class="stat-value text-info">2</div>
+                            <div class="stat-label">Active Cases</div>
+                            <div class="stat-sublabel">In progress</div>
+                            <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchComplaintsTab('active-tab')">View Active</a>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-warning">
+                                <i class="fas fa-exclamation-triangle fa-3x"></i>
+                            </div>
+                            <div class="stat-value text-warning">1</div>
+                            <div class="stat-label">Approaching Deadline</div>
+                            <div class="stat-sublabel">6-week deadline</div>
+                            <div class="alert alert-warning mb-0 mt-2">
+                                <small><strong>5 days remaining</strong></small>
+                            </div>
+                            <a href="#" class="btn btn-sm btn-warning mt-2">Review Now</a>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-success">
+                                <i class="fas fa-balance-scale fa-3x"></i>
+                            </div>
+                            <div class="stat-value text-success">0</div>
+                            <div class="stat-label">Ombudsman Cases</div>
+                            <div class="stat-sublabel">Escalated</div>
+                            <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchComplaintsTab('ombudsman-tab')">View History</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Regulatory Compliance Card -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>FAIS Act Compliance</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <div class="h4 mb-0"><span class="badge bg-success fs-6">✅ COMPLIANT</span></div>
+                                <small class="text-muted">Overall Status</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="h4 mb-0">100%</div>
+                                <small class="text-muted">6-Week Resolution (8/8)</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="h4 mb-0">100%</div>
+                                <small class="text-muted">6-Month Closure (8/8)</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="h4 mb-0">18 days</div>
+                                <small class="text-muted">Average Resolution Time</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Regulatory Requirements:</h6>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-clock text-info me-2"></i>Initial Response: Within 48 hours (Required)</li>
+                                    <li><i class="fas fa-calendar text-warning me-2"></i>First Resolution Attempt: Within 6 weeks (Section 26)</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Final Resolution: Within 6 months (Required)</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-chart-bar text-primary me-2"></i>Ombudsman Notification: When escalated</li>
+                                    <li><i class="fas fa-file-alt text-secondary me-2"></i>Record Retention: 5 years</li>
+                                    <li><i class="fas fa-calendar-check text-info me-2"></i>Last FSCA Report: 30/11/2024</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Timeline -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Complaints by Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="status-timeline">
+                            <div class="timeline-step">
+                                <div class="timeline-marker bg-info">0</div>
+                                <div class="timeline-label">Received</div>
+                            </div>
+                            <div class="timeline-connector"></div>
+                            <div class="timeline-step">
+                                <div class="timeline-marker bg-info">0</div>
+                                <div class="timeline-label">Acknowledged</div>
+                            </div>
+                            <div class="timeline-connector"></div>
+                            <div class="timeline-step">
+                                <div class="timeline-marker bg-warning">2</div>
+                                <div class="timeline-label">Investigating</div>
+                            </div>
+                            <div class="timeline-connector"></div>
+                            <div class="timeline-step">
+                                <div class="timeline-marker bg-success">0</div>
+                                <div class="timeline-label">Resolved</div>
+                            </div>
+                            <div class="timeline-connector"></div>
+                            <div class="timeline-step">
+                                <div class="timeline-marker bg-secondary">32</div>
+                                <div class="timeline-label">Closed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity & Quick Actions -->
+                <div class="row mb-4">
+                    <div class="col-md-8 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Recent Activity</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-list">
+                                    <div class="activity-item">
+                                        <div class="activity-icon bg-success">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <h6 class="mb-1">Complaint CMP-2024-008 resolved</h6>
+                                            <p class="mb-1 small text-muted">Client accepted resolution - product replacement</p>
+                                            <small class="text-muted">Mary Johnson • Sarah Naidoo • 3 days ago</small>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon bg-info">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <h6 class="mb-1">Weekly update sent</h6>
+                                            <p class="mb-1 small text-muted">CMP-2024-007 - Investigation ongoing</p>
+                                            <small class="text-muted">Johan van Zyl • System • 5 days ago</small>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon bg-warning">
+                                            <i class="fas fa-file-alt"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <h6 class="mb-1">New complaint logged</h6>
+                                            <p class="mb-1 small text-muted">CMP-2024-009 - Claim processing delay</p>
+                                            <small class="text-muted">Thabo Mokoena • 7 days ago</small>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary">Review</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="switchComplaintsTab('log-tab')">
+                                        <i class="fas fa-plus me-2"></i>Log New Complaint
+                                    </button>
+                                    <button class="btn btn-outline-primary" onclick="switchComplaintsTab('active-tab')">
+                                        <i class="fas fa-list me-2"></i>View Active Cases
+                                    </button>
+                                    <button class="btn btn-outline-primary" onclick="switchComplaintsTab('reports-tab')">
+                                        <i class="fas fa-file-pdf me-2"></i>Generate Report
+                                    </button>
+                                    <a href="#" class="btn btn-link text-start" onclick="switchComplaintsTab('calendar-tab')">
+                                        View Calendar
+                                    </a>
+                                    <a href="#" class="btn btn-link text-start">
+                                        Compliance Summary
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts & Statistics -->
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Alerts & Warnings</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-warning d-flex align-items-center">
+                                    <i class="fas fa-clock fa-2x me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Deadline Approaching</h6>
+                                        <p class="mb-1">CMP-2024-007 must be resolved within 5 days (6-week deadline)</p>
+                                        <small>Client: Johan van Zyl</small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-warning me-2">Review Case</button>
+                                        <button class="btn btn-sm btn-outline-secondary">Send Update</button>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info d-flex align-items-center">
+                                    <i class="fas fa-info-circle fa-2x me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Pending Client Response</h6>
+                                        <p class="mb-0">CMP-2024-007 - Awaiting documents from client</p>
+                                        <small>Requested: 7 days ago</small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-info me-2">Follow Up</button>
+                                        <button class="btn-close" aria-label="Close"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Complaints by Category</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="categoryChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. LOG NEW COMPLAINT TAB -->
+        <div class="tab-pane fade" id="log" role="tabpanel">
+            <div class="container-fluid py-4">
+                <!-- Complaint Type Selection -->
+                <div id="complaintTypeSelection" class="text-center">
+                    <h2 class="mb-4">Select Complaint Type</h2>
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="complaint-type-card active" data-type="client">
+                                <i class="fas fa-user-exclamation fa-4x text-primary mb-3"></i>
+                                <h4>Client Complaint</h4>
+                                <p class="text-muted">Complaint from existing client</p>
+                                <button class="btn btn-primary" onclick="startComplaintLogging('client')">Select</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="complaint-type-card" data-type="third-party">
+                                <i class="fas fa-users fa-4x text-info mb-3"></i>
+                                <h4>Third Party Complaint</h4>
+                                <p class="text-muted">Complaint from non-client (e.g., beneficiary)</p>
+                                <button class="btn btn-outline-primary" onclick="startComplaintLogging('third-party')">Select</button>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="complaint-type-card" data-type="internal">
+                                <i class="fas fa-building fa-4x text-success mb-3"></i>
+                                <h4>Internal Complaint</h4>
+                                <p class="text-muted">Internal issue or staff complaint</p>
+                                <button class="btn btn-outline-primary" onclick="startComplaintLogging('internal')">Select</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complaint Logging Wizard -->
+                <div id="complaintWizard" style="display: none;">
+                    <!-- Progress Indicator -->
+                    <div class="wizard-progress mb-4">
+                        <div class="progress-steps">
+                            <div class="step active" data-step="1">
+                                <div class="step-number">1</div>
+                                <div class="step-label">Complaint Details</div>
+                            </div>
+                            <div class="step" data-step="2">
+                                <div class="step-number">2</div>
+                                <div class="step-label">Client Information</div>
+                            </div>
+                            <div class="step" data-step="3">
+                                <div class="step-number">3</div>
+                                <div class="step-label">Issue Description</div>
+                            </div>
+                            <div class="step" data-step="4">
+                                <div class="step-number">4</div>
+                                <div class="step-label">Representative</div>
+                            </div>
+                            <div class="step" data-step="5">
+                                <div class="step-number">5</div>
+                                <div class="step-label">Review & Submit</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Complaint Details -->
+                    <div class="wizard-step" id="step1" data-step="1">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Step 1: Complaint Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="complaintDetailsForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Complaint Reference</label>
+                                        <input type="text" class="form-control" value="Will be assigned on save" disabled>
+                                        <small class="text-muted">Format: CMP-YYYY-NNN</small>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Date Received *</label>
+                                            <input type="date" class="form-control" id="dateReceived" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Time Received</label>
+                                            <input type="time" class="form-control" id="timeReceived">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">How Received *</label>
+                                            <select class="form-select" required>
+                                                <option value="">Select...</option>
+                                                <option>Email</option>
+                                                <option>Phone Call</option>
+                                                <option>In Person</option>
+                                                <option>Letter/Post</option>
+                                                <option>WhatsApp</option>
+                                                <option>Online Form</option>
+                                                <option>Social Media</option>
+                                                <option>Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Urgency Level *</label>
+                                            <div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="urgency" id="urgencyStandard" value="standard" checked>
+                                                    <label class="form-check-label" for="urgencyStandard">Standard (6-week deadline)</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="urgency" id="urgencyHigh" value="high">
+                                                    <label class="form-check-label" for="urgencyHigh">High Priority (Vulnerable client, significant financial loss)</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="urgency" id="urgencyCritical" value="critical">
+                                                    <label class="form-check-label" for="urgencyCritical">Critical (Regulatory risk, reputational damage)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Primary Category *</label>
+                                            <select class="form-select" id="primaryCategory" required>
+                                                <option value="">Select...</option>
+                                                <option>Claims Issues</option>
+                                                <option>Service Quality</option>
+                                                <option>Product Issues</option>
+                                                <option>Financial Concerns</option>
+                                                <option>Administrative</option>
+                                                <option>Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Sub-category *</label>
+                                            <select class="form-select" id="subCategory" required>
+                                                <option value="">Select primary category first</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label">Complaint Summary *</label>
+                                            <input type="text" class="form-control" maxlength="200" required>
+                                            <small class="text-muted">Brief one-line summary (max 200 characters)</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 mt-4">
+                                        <button type="button" class="btn btn-primary" onclick="nextComplaintStep(2)">Next: Client Information</button>
+                                        <button type="button" class="btn btn-outline-secondary">Save as Draft</button>
+                                        <button type="button" class="btn btn-link" onclick="cancelComplaintLogging()">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Client Information -->
+                    <div class="wizard-step" id="step2" data-step="2" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Step 2: Client Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <label class="form-label">Search Existing Client</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Search by name, ID, policy number, phone...">
+                                        <button class="btn btn-outline-secondary" type="button">Search</button>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">
+                                    <strong>OR</strong> Client not in system? <a href="#" onclick="showNewClientForm()">Enter manually</a>
+                                </div>
+                                <div id="newClientForm" style="display: none;">
+                                    <h6 class="mb-3">New Client Details</h6>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Full Name *</label>
+                                            <input type="text" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">ID/Passport Number</label>
+                                            <input type="text" class="form-control">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Email *</label>
+                                            <input type="email" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Mobile *</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">+27</span>
+                                                <input type="tel" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 mt-4">
+                                    <button type="button" class="btn btn-primary" onclick="nextComplaintStep(3)">Next: Issue Description</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="previousComplaintStep(1)">Back</button>
+                                    <button type="button" class="btn btn-outline-secondary">Save as Draft</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Issue Description -->
+                    <div class="wizard-step" id="step3" data-step="3" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Step 3: Issue Description</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Detailed Description *</label>
+                                    <textarea class="form-control" rows="8" required placeholder="Please provide a detailed description of the complaint, including dates, amounts, and specific concerns..."></textarea>
+                                    <small class="text-muted">Minimum 50 characters</small>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Date of Incident/Issue</label>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Financial Impact (ZAR)</label>
+                                        <input type="number" class="form-control" placeholder="0.00">
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label">Client's Expected Resolution *</label>
+                                        <textarea class="form-control" rows="3" required placeholder="What does the client want? What would satisfy the complaint?"></textarea>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Supporting Documents</label>
+                                    <div class="upload-zone">
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                            <p class="mb-2"><strong>Drag & drop documents here</strong></p>
+                                            <button type="button" class="btn btn-sm btn-primary">Browse</button>
+                                            <p class="mt-2 small text-muted">PDF, JPG, PNG, Word, Excel - Max 10MB per file</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 mt-4">
+                                    <button type="button" class="btn btn-primary" onclick="nextComplaintStep(4)">Next: Representative</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="previousComplaintStep(2)">Back</button>
+                                    <button type="button" class="btn btn-outline-secondary">Save as Draft</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Representative Involved -->
+                    <div class="wizard-step" id="step4" data-step="4" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Step 4: Representative Involved</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Is complaint about a representative? *</label>
+                                    <div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="repInvolved" id="repYes" value="yes">
+                                            <label class="form-check-label" for="repYes">Yes - complaint involves representative conduct</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="repInvolved" id="repNo" value="no" checked>
+                                            <label class="form-check-label" for="repNo">No - systemic/process/product issue</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="representativeSection" style="display: none;">
+                                    <div class="mb-3">
+                                        <label class="form-label">Select Representative(s)</label>
+                                        <select class="form-select" multiple>
+                                            <option>Sarah Naidoo</option>
+                                            <option>Thabo Mokoena</option>
+                                            <option>Pieter Botha</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 mt-4">
+                                    <button type="button" class="btn btn-primary" onclick="nextComplaintStep(5)">Next: Review & Submit</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="previousComplaintStep(3)">Back</button>
+                                    <button type="button" class="btn btn-outline-secondary">Save as Draft</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Review & Submit -->
+                    <div class="wizard-step" id="step5" data-step="5" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Step 5: Review & Submit</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-success mb-4">
+                                    <h6>Complaint Status: READY TO SUBMIT</h6>
+                                    <p class="mb-0">All required information has been captured.</p>
+                                </div>
+                                <div class="mb-4">
+                                    <h6>Complaint Summary</h6>
+                                    <p><strong>Reference:</strong> CMP-2024-010 (draft)</p>
+                                    <p><strong>Date Received:</strong> 15/12/2024 14:30</p>
+                                    <p><strong>Category:</strong> Claims Issues - Claim Rejected</p>
+                                    <p><strong>Urgency:</strong> Standard</p>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Assign Handler *</label>
+                                    <select class="form-select" required>
+                                        <option>Sarah Naidoo (Compliance Officer) - Recommended</option>
+                                        <option>Johan Smit (Key Individual)</option>
+                                        <option>FSP Owner</option>
+                                    </select>
+                                </div>
+                                <div class="alert alert-info">
+                                    <strong>Deadlines:</strong><br>
+                                    6-week deadline: 26/01/2025<br>
+                                    6-month deadline: 15/06/2025
+                                </div>
+                                <div class="d-flex gap-2 mt-4">
+                                    <button type="button" class="btn btn-primary btn-lg" onclick="submitComplaint()">Submit Complaint</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="previousComplaintStep(4)">Back to Edit</button>
+                                    <button type="button" class="btn btn-outline-secondary">Save as Draft</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ACTIVE COMPLAINTS TAB -->
+        <div class="tab-pane fade" id="active" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Active Complaints</h2>
+                
+                <!-- Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-info">2</div>
+                            <div class="stat-label">Total Active</div>
+                            <div class="stat-sublabel">In progress</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-warning">1</div>
+                            <div class="stat-label">Due This Week</div>
+                            <div class="stat-sublabel">6-week deadline</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Pending Info</div>
+                            <div class="stat-sublabel">Awaiting client</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-success">14 days</div>
+                            <div class="stat-label">Average Age</div>
+                            <div class="stat-sublabel">Current cases</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select">
+                                    <option>All</option>
+                                    <option>Received</option>
+                                    <option>Acknowledged</option>
+                                    <option>In Progress</option>
+                                    <option>Pending Info</option>
+                                    <option>Resolved</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Priority</label>
+                                <select class="form-select">
+                                    <option>All</option>
+                                    <option>Standard</option>
+                                    <option>High</option>
+                                    <option>Critical</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Category</label>
+                                <select class="form-select">
+                                    <option>All</option>
+                                    <option>Claims</option>
+                                    <option>Service</option>
+                                    <option>Product</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Search</label>
+                                <input type="text" class="form-control" placeholder="Reference, client, keywords...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complaints List -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="complaint-card mb-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5>CMP-2024-007</h5>
+                                    <span class="badge bg-info me-2">🔄 IN PROGRESS</span>
+                                    <span class="badge bg-warning">⚠️ HIGH</span>
+                                    <span class="badge bg-secondary">38 days active</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-primary">View Full Details</button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Client:</strong> Johan van Zyl</p>
+                                    <p><strong>Category:</strong> Claims Issues - Claim Delayed</p>
+                                    <p><strong>Summary:</strong> Life insurance claim pending for 6 weeks - urgent financial need</p>
+                                    <p><strong>Financial Impact:</strong> R150,000.00</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Handler:</strong> Sarah Naidoo (Compliance Officer)</p>
+                                    <p><strong>6-Week Deadline:</strong> 17/12/2024 <span class="badge bg-warning">5 days ⚠️</span></p>
+                                    <p><strong>6-Month Deadline:</strong> 05/05/2025 (142 days)</p>
+                                </div>
+                            </div>
+                            <div class="progress mt-3" style="height: 8px;">
+                                <div class="progress-bar bg-warning" style="width: 90%"></div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-sm btn-outline-primary me-2">Add Update</button>
+                                <button class="btn btn-sm btn-outline-primary me-2">Send Communication</button>
+                                <button class="btn btn-sm btn-outline-success">Resolve</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. COMPLAINTS CALENDAR TAB -->
+        <div class="tab-pane fade" id="calendar" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Complaints Calendar</h2>
+                <p>Calendar view with deadlines and scheduled activities</p>
+            </div>
+        </div>
+
+        <!-- 5. ANALYSIS & TRENDS TAB -->
+        <div class="tab-pane fade" id="analysis" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Analysis & Trends</h2>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Complaints by Category</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="analysisCategoryChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Resolution Time Trend</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="resolutionTrendChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. OMBUDSMAN CASES TAB -->
+        <div class="tab-pane fade" id="ombudsman" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Ombudsman Cases</h2>
+                
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-balance-scale fa-5x text-success mb-4"></i>
+                        <h4>No complaints have been escalated to Ombudsman</h4>
+                        <p class="text-muted">This indicates effective internal resolution processes</p>
+                        <span class="badge bg-success fs-6">✅ Excellent compliance performance</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. REPORTS TAB -->
+        <div class="tab-pane fade" id="reports" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Complaints Reports</h2>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-bar fa-3x text-primary mb-3"></i>
+                                <h5>Complaints Summary</h5>
+                                <p class="text-muted">Comprehensive overview of all complaints</p>
+                                <button class="btn btn-primary">Generate</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-award fa-3x text-success mb-3"></i>
+                                <h5>Compliance Certificate</h5>
+                                <p class="text-muted">FAIS Act Section 26 compliance certificate</p>
+                                <button class="btn btn-success">Generate</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-file-text fa-3x text-info mb-3"></i>
+                                <h5>Individual Complaint Report</h5>
+                                <p class="text-muted">Detailed report for specific complaint</p>
+                                <button class="btn btn-info">Generate</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/complaints-dashboard.js"></script>
+    <script src="../js/log-complaint.js"></script>
+    <script src="../js/active-complaints.js"></script>
+</body>
+</html>
+

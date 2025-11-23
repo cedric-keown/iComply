@@ -1,0 +1,1774 @@
+CURSOR PROMPT: NAVIGATION SYSTEM & LANDING PAGE DASHBOARDS
+===========================================================
+
+Create a fully functional, realistic HTML mockup for the complete Navigation System and Role-Based Landing Page Dashboards for a South African FAIS broker compliance portal. This includes the main navigation structure, sidebar menus, top bar, and customized dashboards for each of the 5 user roles.
+
+## BRAND & DESIGN REQUIREMENTS
+
+**Brand Colors:**
+- Primary (Teal/Turquoise): #5CBDB4
+- Text (Charcoal Grey): #4A4A4A
+- Background: #FFFFFF
+- Light Grey: #F8F9FA
+- Success: #28A745
+- Warning: #FFC107
+- Danger: #DC3545
+- Info: #17A2B8
+
+**Framework & Theme:**
+- Use Bootstrap 5+ with Phoenix v1.23.0 theme: https://prium.github.io/phoenix/v1.23.0/index.html
+- Fully responsive design (mobile-first)
+- Vanilla JavaScript only (no frameworks)
+- South African locale (ZAR currency, DD/MM/YYYY dates)
+
+## OVERALL LAYOUT STRUCTURE
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  TOP NAVIGATION BAR (fixed)                             │
+│  [Logo] [Search] [Alerts] [Help] [User Menu]           │
+├─────────────────────────────────────────────────────────┤
+│ ┌───────────┐                                           │
+│ │  SIDEBAR  │  MAIN CONTENT AREA                        │
+│ │           │                                           │
+│ │  Menu     │  Dashboard Content                        │
+│ │  Items    │  (Role-specific)                          │
+│ │           │                                           │
+│ │  Pinned   │                                           │
+│ │  Items    │                                           │
+│ └───────────┘                                           │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## PART 1: GLOBAL NAVIGATION COMPONENTS
+
+### TOP NAVIGATION BAR (Fixed Header)
+
+**Structure:**
+```html
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
+  <div class="container-fluid">
+    <!-- Left side -->
+    <button class="sidebar-toggle">☰</button>
+    <a class="navbar-brand">
+      <img src="logo.svg" alt="CustomApp">
+      <span>Broker Portal</span>
+    </a>
+    
+    <!-- Center - Global Search -->
+    <div class="global-search">
+      <input type="search" placeholder="Search... (Ctrl+K)">
+    </div>
+    
+    <!-- Right side -->
+    <div class="navbar-actions">
+      <button class="alerts-button">
+        <i class="bi bi-bell"></i>
+        <span class="badge">12</span>
+      </button>
+      <button class="help-button">
+        <i class="bi bi-question-circle"></i>
+      </button>
+      <div class="user-menu-dropdown">
+        <img src="avatar.jpg" class="avatar">
+        <span class="user-name">Thabo M.</span>
+        <i class="bi bi-chevron-down"></i>
+      </div>
+    </div>
+  </div>
+</nav>
+```
+
+**Top Bar Components:**
+
+**1. Logo Section**
+- CustomApp logo (SVG or PNG)
+- Brand name: "Broker Portal"
+- Clickable - returns to dashboard home
+- Responsive: Logo only on mobile
+
+**2. Sidebar Toggle Button (Mobile)**
+- Hamburger icon (☰)
+- Fixed position on mobile
+- Smooth animation when opening/closing
+- Shows on screens < 992px
+
+**3. Global Search Bar**
+- Keyboard shortcut: Ctrl/Cmd + K
+- Search icon on left
+- Placeholder: "Search representatives, clients, documents..."
+- Autocomplete dropdown with sections:
+  - Representatives (with avatars)
+  - Clients (with ID numbers)
+  - Documents (with file types)
+  - Pages (navigation items)
+- Recent searches
+- Quick filters
+
+**Search Dropdown Example:**
+```
+┌─────────────────────────────────┐
+│ 🔍 Search Results               │
+├─────────────────────────────────┤
+│ REPRESENTATIVES                 │
+│ 👤 Thabo Mokoena (FSP-001)     │
+│ 👤 Sarah Naidoo (FSP-002)      │
+├─────────────────────────────────┤
+│ CLIENTS                         │
+│ 👥 John Smith (8501015...)     │
+│ 👥 Mary Johnson (Passport)     │
+├─────────────────────────────────┤
+│ DOCUMENTS                       │
+│ 📄 FICA_Verification.pdf       │
+│ 📄 CPD_Certificate_2024.pdf    │
+├─────────────────────────────────┤
+│ PAGES                           │
+│ 📋 CPD Management              │
+│ 📋 FICA Verification           │
+└─────────────────────────────────┘
+```
+
+**4. Alerts/Notifications Button**
+- Bell icon with badge count
+- Red badge for critical (1+)
+- Amber badge for warnings
+- Blue badge for info
+- Click opens dropdown panel
+
+**Alerts Dropdown:**
+```
+┌─────────────────────────────────────┐
+│ Alerts & Notifications   [Mark All] │
+├─────────────────────────────────────┤
+│ 🔴 CRITICAL (1)                     │
+│ • Mike Johnson's RE5 expired 2 days │
+│   ago - Action required             │
+│   [View Representative]  2h ago     │
+├─────────────────────────────────────┤
+│ 🟠 HIGH PRIORITY (3)                │
+│ • 45 FICA reviews overdue           │
+│   [View Reviews]         3h ago     │
+│ • Sarah Miller's RE5 expires in 30  │
+│   days [View Details]    5h ago     │
+│ • Insurance policy renewal due      │
+│   [View Policy]          1d ago     │
+├─────────────────────────────────────┤
+│ 🟡 MEDIUM (5)                       │
+│ [Show 5 more...]                    │
+├─────────────────────────────────────┤
+│ [View All Alerts]                   │
+└─────────────────────────────────────┘
+```
+
+**5. Help Button**
+- Question mark icon
+- Opens help dropdown or sidebar
+- Context-sensitive help based on current page
+- Links to:
+  - Documentation
+  - Video tutorials
+  - Contact support
+  - Keyboard shortcuts
+  - What's new
+
+**Help Dropdown:**
+```
+┌─────────────────────────────────┐
+│ Help & Support                  │
+├─────────────────────────────────┤
+│ 📚 Documentation                │
+│ 🎥 Video Tutorials              │
+│ ⌨️  Keyboard Shortcuts          │
+│ 📞 Contact Support              │
+│    021 555 1234                 │
+│    support@customapp.co.za      │
+│ 🆕 What's New                   │
+│ 💡 Tips & Tricks                │
+└─────────────────────────────────┘
+```
+
+**6. User Menu Dropdown**
+- User avatar (circular)
+- User name (truncated on small screens)
+- Chevron down icon
+- Shows current role below name (small text)
+- Current FSP name below role
+
+**User Menu Dropdown:**
+```
+┌─────────────────────────────────┐
+│ 👤 Thabo Mokoena                │
+│    Senior Financial Advisor     │
+│    CustomApp Financial (FSP123) │
+├─────────────────────────────────┤
+│ 👤 My Profile                   │
+│ 🔒 Change Password              │
+│ 🔐 Enable MFA                   │
+│ ⚙️  Preferences                 │
+│ 🔔 Notification Settings        │
+├─────────────────────────────────┤
+│ 🌙 Dark Mode          [Toggle]  │
+│ 🌍 Language           English ▼ │
+├─────────────────────────────────┤
+│ 📚 Help & Documentation         │
+│ 📞 Support (021 555 1234)       │
+│ 💬 Send Feedback                │
+│ 🐛 Report a Bug                 │
+├─────────────────────────────────┤
+│ ℹ️  About                       │
+│    Version 2.1.3                │
+│    © 2024 CustomApp             │
+├─────────────────────────────────┤
+│ 🚪 Logout                       │
+└─────────────────────────────────┘
+```
+
+---
+
+### SIDEBAR NAVIGATION
+
+**Sidebar Structure:**
+- Fixed left sidebar (desktop)
+- Off-canvas sidebar (mobile)
+- Width: 260px (expanded), 70px (collapsed)
+- Collapsible with toggle button
+- Smooth transitions
+- Sticky sections
+
+**Sidebar Components:**
+
+**1. Sidebar Header**
+- Current date/time (live update)
+- FSP license status indicator
+- Collapse/expand button
+
+**2. Main Menu Items**
+- Role-adaptive (different for each role)
+- Icons + labels
+- Badge indicators
+- Hover effects
+- Active state highlighting
+- Expandable submenus
+
+**3. Pinned/Favorite Items**
+- User can pin frequently used pages
+- Drag to reorder
+- Quick access section at top or bottom
+
+**4. Quick Actions**
+- Role-specific quick action buttons
+- Float above main menu or at bottom
+
+**Sidebar Styles:**
+
+**Expanded State (Default Desktop):**
+```
+┌──────────────────┐
+│ 🏠 Dashboard     │ ← Active (highlighted)
+│ 👥 Representatives│
+│ 📚 CPD           │ ← Has badge (5)
+│ 🏢 Clients       │
+│ 📁 Documents     │ ← Has submenu (▼)
+│    • Upload      │
+│    • Search      │
+│    • Retention   │
+│ 🚨 Compliance    │
+│ 📝 Complaints    │
+│ 📊 Reports       │
+│ ⚙️  Settings     │
+├──────────────────┤
+│ QUICK ACTIONS    │
+│ [+ New Client]   │
+│ [📤 Upload Doc]  │
+└──────────────────┘
+```
+
+**Collapsed State:**
+```
+┌───┐
+│ 🏠│
+│ 👥│
+│ 📚│ ← Badge: 5
+│ 🏢│
+│ 📁│
+│ 🚨│
+│ 📝│
+│ 📊│
+│ ⚙️│
+├───┤
+│ + │
+│ 📤│
+└───┘
+```
+
+**Mobile Off-Canvas:**
+- Slides in from left
+- Overlay backdrop
+- Swipe to close
+- Full height
+- Scrollable
+
+---
+
+### BREADCRUMB NAVIGATION
+
+**Location:** Below top navbar, above main content
+
+**Structure:**
+```html
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li><a href="#"><i class="bi bi-house"></i> Home</a></li>
+    <li><a href="#">Representatives</a></li>
+    <li class="active">Thabo Mokoena</li>
+  </ol>
+</nav>
+```
+
+**Features:**
+- Clickable path segments
+- Home icon at start
+- Auto-generate from route
+- Max depth: 4 levels
+- Truncate on mobile
+- Show current page in bold
+
+**Examples:**
+- Home > Dashboard
+- Home > Representatives > John Doe > Edit
+- Home > CPD Management > Verify Certificates > Certificate Details
+- Home > Clients > Jane Smith > FICA Review
+
+---
+
+### MOBILE NAVIGATION
+
+**Bottom Navigation Bar (Mobile < 768px):**
+```
+┌─────────────────────────────────┐
+│ 🏠    👥    📚    📁    ⋮       │
+│Home  Reps   CPD   Docs  More    │
+└─────────────────────────────────┘
+```
+
+**Bottom Nav Features:**
+- Fixed at bottom
+- 5 most important items
+- "More" opens full menu
+- Badge indicators
+- Active state
+- Haptic feedback (if supported)
+
+**Mobile Menu Overlay (More → Full Menu):**
+```
+┌─────────────────────────────────┐
+│ ✕ Close                    Menu │
+├─────────────────────────────────┤
+│ 🏠 Dashboard                    │
+│ 👥 Representatives         (15) │
+│ 📚 CPD Management          (5)  │
+│ 🏢 Clients                 (235)│
+│ 📁 Documents              (1847)│
+│ 🚨 Compliance              (12) │
+│ 📝 Complaints              (2)  │
+│ 📊 Reports                      │
+│ ⚙️  Settings                    │
+├─────────────────────────────────┤
+│ QUICK ACTIONS                   │
+│ [+ Add Client]                  │
+│ [📤 Upload Document]            │
+│ [📋 Log CPD]                    │
+├─────────────────────────────────┤
+│ 👤 My Profile                   │
+│ 🔔 Alerts (12)                  │
+│ 🚪 Logout                       │
+└─────────────────────────────────┘
+```
+
+---
+
+## PART 2: ROLE-BASED LANDING PAGE DASHBOARDS
+
+### Common Dashboard Components
+
+**Dashboard Grid System:**
+- Responsive grid layout
+- 12-column Bootstrap grid
+- Drag & drop to rearrange (future enhancement)
+- Widgets can be minimized/maximized
+- Print-friendly view
+
+**Common Widget Types:**
+
+1. **Stat Cards** - Key metrics with icons
+2. **Progress Cards** - Visual progress indicators
+3. **Charts** - Bar, line, donut, pie charts
+4. **Tables** - Sortable data tables
+5. **Lists** - Recent activity, tasks, alerts
+6. **Quick Actions** - Button groups
+7. **Calendars** - Upcoming events, deadlines
+8. **Timeline** - Activity feed
+
+---
+
+## DASHBOARD 1: FSP OWNER/PRINCIPAL
+
+**Purpose:** Executive oversight, strategic decisions, high-level compliance monitoring
+
+**Layout:**
+
+### Hero Section - License Status Card (Full Width)
+```
+┌──────────────────────────────────────────────────────────┐
+│ ✅ FSP LICENSE ACTIVE                                    │
+│ CustomApp Financial Services (Pty) Ltd | FSP 12345      │
+│                                                          │
+│ License Valid Until: 31/12/2025 (377 days)              │
+│ Next Renewal: October 2025                              │
+│ Professional Indemnity: ✅ Valid | Fidelity: ✅ Valid   │
+│                                                          │
+│ [View License] [View Insurance] [Renewal Checklist]     │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Row 1: Key Performance Indicators (4 Cards)
+
+**Card 1: Overall Compliance**
+```
+┌───────────────────────┐
+│  Compliance Health    │
+│                       │
+│      87%             │
+│   ━━━━━━━━━━━        │
+│                       │
+│ ✅ 12/15 Reps         │
+│ ⚠️  3 Action Required │
+│                       │
+│ [View Details]        │
+└───────────────────────┘
+```
+
+**Card 2: Revenue**
+```
+┌───────────────────────┐
+│  Monthly Revenue      │
+│                       │
+│    R 456,890          │
+│    ↑ 12% vs last month│
+│                       │
+│ YTD: R 4.2M           │
+│ Target: R 5.5M        │
+│                       │
+│ [View Reports]        │
+└───────────────────────┘
+```
+
+**Card 3: Active Clients**
+```
+┌───────────────────────┐
+│  Active Clients       │
+│                       │
+│       248             │
+│    ↑ 8 new this month │
+│                       │
+│ 235 FICA Compliant    │
+│ 13 Pending            │
+│                       │
+│ [View Clients]        │
+└───────────────────────┘
+```
+
+**Card 4: Team Performance**
+```
+┌───────────────────────┐
+│  Team Performance     │
+│                       │
+│    4.2/5.0           │
+│    ⭐⭐⭐⭐☆          │
+│                       │
+│ Top: Sarah N. (4.8)   │
+│ CPD: 89% Complete     │
+│                       │
+│ [View Team]           │
+└───────────────────────┘
+```
+
+### Row 2: Team Compliance Matrix (Full Width)
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ TEAM COMPLIANCE MATRIX                   [Export] [Print]│
+├──────────────────────────────────────────────────────────┤
+│ Representative    F&P   CPD    FICA  Docs  Status        │
+│ ─────────────────────────────────────────────────────────│
+│ Sarah Naidoo      ✅    18/18  ✅    ✅    ✅ Compliant   │
+│ Thabo Mokoena     ✅    14/18  ✅    ✅    ⚠️  In Progress│
+│ Mike Khumalo      ✅    3/18   ⚠️    ✅    ❌ Non-Compliant│
+│ Johan van Zyl     ⚠️    16/18  ✅    ✅    ⚠️  Action Req │
+│ + 11 more...                                             │
+│                                                          │
+│ [View Full Matrix] [Send Reminders] [Export Report]     │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Row 3: Critical Alerts & Upcoming Deadlines (2 Columns)
+
+**Left Column: Critical Alerts**
+```
+┌─────────────────────────────────┐
+│ 🚨 CRITICAL ALERTS          (5) │
+├─────────────────────────────────┤
+│ 🔴 Mike Khumalo               │
+│    RE5 expired 2 days ago      │
+│    [View Rep] [Send Alert]     │
+│                                │
+│ 🟠 Sarah Miller                │
+│    RE5 expires in 30 days      │
+│    [View Rep] [Schedule Exam]  │
+│                                │
+│ 🟠 FICA Reviews               │
+│    45 reviews overdue          │
+│    [View Reviews] [Assign]     │
+│                                │
+│ 🟡 PI Insurance               │
+│    Renewal due in 60 days      │
+│    [View Policy] [Contact]     │
+│                                │
+│ [View All Alerts (12)]         │
+└─────────────────────────────────┘
+```
+
+**Right Column: Upcoming Deadlines**
+```
+┌─────────────────────────────────┐
+│ 📅 UPCOMING DEADLINES           │
+├─────────────────────────────────┤
+│ CPD Deadline                    │
+│ 31 May 2025 (166 days)         │
+│ Progress: 89% complete          │
+│ [View Team CPD]                 │
+│                                │
+│ FICA Reviews                    │
+│ 15 reviews next 30 days        │
+│ [View Schedule]                 │
+│                                │
+│ Insurance Renewals              │
+│ PI: 31 Mar 2025 (107 days)     │
+│ Fidelity: 30 Apr 2025          │
+│ [View Policies]                 │
+│                                │
+│ FSCA Submission                 │
+│ Annual Return: 31 Jan 2025     │
+│ [Start Preparation]             │
+└─────────────────────────────────┘
+```
+
+### Row 4: Charts (2 Columns)
+
+**Left: Revenue Trend (Line Chart)**
+```
+┌─────────────────────────────────┐
+│ REVENUE TREND - 12 MONTHS       │
+├─────────────────────────────────┤
+│ R600k│                      ╱╲  │
+│      │                    ╱    ╲│
+│ R400k│         ╱╲       ╱       │
+│      │       ╱    ╲   ╱         │
+│ R200k│    ╱        ╲╱           │
+│      │  ╱                       │
+│   0k └─────────────────────────│
+│      J F M A M J J A S O N D   │
+└─────────────────────────────────┘
+```
+
+**Right: Client Acquisition (Bar Chart)**
+```
+┌─────────────────────────────────┐
+│ NEW CLIENTS BY MONTH            │
+├─────────────────────────────────┤
+│   │                             │
+│ 40│     ██                      │
+│   │     ██    ██                │
+│ 30│  ██ ██    ██    ██          │
+│   │  ██ ██ ██ ██    ██    ██   │
+│ 20│  ██ ██ ██ ██ ██ ██ ██ ██   │
+│   │  ██ ██ ██ ██ ██ ██ ██ ██   │
+│ 10│  ██ ██ ██ ██ ██ ██ ██ ██   │
+│   └─────────────────────────────│
+│     S  O  N  D  J  F  M  A      │
+└─────────────────────────────────┘
+```
+
+### Row 5: Recent Activity & Quick Actions (2 Columns)
+
+**Left: Recent Activity**
+```
+┌─────────────────────────────────┐
+│ RECENT ACTIVITY                 │
+├─────────────────────────────────┤
+│ 2h ago                          │
+│ ✅ Sarah Naidoo verified client│
+│    FICA: Thabo Mokoena          │
+│                                │
+│ 3h ago                          │
+│ 📤 Mike Khumalo uploaded CPD   │
+│    2 hours ethics training      │
+│                                │
+│ 5h ago                          │
+│ ⚠️  System alert sent           │
+│    RE5 expiry reminder (3 reps)│
+│                                │
+│ 1d ago                          │
+│ 📝 New complaint logged         │
+│    Client: John Smith (#2024-08)│
+│                                │
+│ [View All Activity]             │
+└─────────────────────────────────┘
+```
+
+**Right: Quick Actions**
+```
+┌─────────────────────────────────┐
+│ QUICK ACTIONS                   │
+├─────────────────────────────────┤
+│ [➕ Add Representative]         │
+│                                │
+│ [👥 Add Client]                 │
+│                                │
+│ [📤 Upload Documents]           │
+│                                │
+│ [📊 Generate Report]            │
+│                                │
+│ [📧 Send Team Message]          │
+│                                │
+│ [📅 Schedule Audit]             │
+│                                │
+│ [💰 View Financials]            │
+│                                │
+│ [⚙️  System Settings]           │
+└─────────────────────────────────┘
+```
+
+---
+
+## DASHBOARD 2: KEY INDIVIDUAL
+
+**Purpose:** Manage supervised representatives, team oversight, operational management
+
+**Layout:**
+
+### Hero Section - Supervision Overview
+```
+┌──────────────────────────────────────────────────────────┐
+│ 👤 KEY INDIVIDUAL DASHBOARD                              │
+│ Thabo Mokoena | Supervising 8 Representatives           │
+│                                                          │
+│ Team Compliance: 85%  │  CPD Progress: 12/8 Complete    │
+│ Pending Reviews: 3    │  Alerts: 5                      │
+│                                                          │
+│ [View Team] [Send Message] [Schedule Meeting]           │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Row 1: Supervised Team Stats (4 Cards)
+
+**Card 1: Team Size**
+```
+┌───────────────────────┐
+│  Supervised Team      │
+│                       │
+│         8             │
+│   Representatives     │
+│                       │
+│ ✅ 6 Compliant        │
+│ ⚠️  2 Action Required │
+│                       │
+│ [View Team]           │
+└───────────────────────┘
+```
+
+**Card 2: Team CPD**
+```
+┌───────────────────────┐
+│  Team CPD Progress    │
+│                       │
+│       75%             │
+│   ━━━━━━━━━━━━        │
+│                       │
+│ 6/8 On Track          │
+│ 2 Behind Schedule     │
+│                       │
+│ [Monitor CPD]         │
+└───────────────────────┘
+```
+
+**Card 3: Client Portfolio**
+```
+┌───────────────────────┐
+│  Team Clients         │
+│                       │
+│        96             │
+│   Active Clients      │
+│                       │
+│ 18 FICA Reviews Due   │
+│ 5 New This Month      │
+│                       │
+│ [View Clients]        │
+└───────────────────────┘
+```
+
+**Card 4: Supervision Tasks**
+```
+┌───────────────────────┐
+│  Pending Tasks        │
+│                       │
+│         5             │
+│   Require Attention   │
+│                       │
+│ 2 Approvals Needed    │
+│ 3 Reviews Scheduled   │
+│                       │
+│ [View Tasks]          │
+└───────────────────────┘
+```
+
+### Row 2: Supervised Representatives Table
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ MY SUPERVISED REPRESENTATIVES            [Export] [Message]│
+├──────────────────────────────────────────────────────────┤
+│ Name              F&P  CPD   Clients  FICA  Status       │
+│ ─────────────────────────────────────────────────────────│
+│ Sarah Naidoo      ✅   18/18  23     ✅    ✅ Compliant   │
+│ Mike Khumalo      ✅   14/18  18     ✅    ⚠️  In Progress│
+│ Johan van Zyl     ⚠️   16/18  15     ✅    ⚠️  Action Req │
+│ Pieter Botha      ✅   18/18  12     ✅    ✅ Compliant   │
+│ Lisa Smith        ✅   12/18  8      ⚠️    ⚠️  In Progress│
+│ James Brown       ✅   15/18  10     ✅    ✅ Compliant   │
+│ Anita Naidoo      ✅   18/18  7      ✅    ✅ Compliant   │
+│ David Lee         ⚠️   8/18   3      ✅    ❌ Non-Compliant│
+│                                                          │
+│ [View Individual Dashboard] [Schedule 1-on-1]            │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Row 3: Charts & Alerts (2 Columns)
+
+**Left: Team Performance Trend**
+```
+┌─────────────────────────────────┐
+│ TEAM COMPLIANCE TREND           │
+├─────────────────────────────────┤
+│100%│           ╱──────────╲      │
+│    │         ╱            ╲     │
+│ 80%│       ╱                ╲   │
+│    │     ╱                    ╲ │
+│ 60%│   ╱                        │
+│    └─────────────────────────────│
+│     J  F  M  A  M  J  J  A  S   │
+│                                  │
+│ Target: 95%                      │
+│ Current: 85%                     │
+└─────────────────────────────────┘
+```
+
+**Right: Team Alerts**
+```
+┌─────────────────────────────────┐
+│ 🚨 TEAM ALERTS             (5)  │
+├─────────────────────────────────┤
+│ 🔴 David Lee                   │
+│    Multiple compliance issues   │
+│    [Review] [Schedule Meeting]  │
+│                                │
+│ 🟠 Lisa Smith                  │
+│    3 FICA reviews overdue      │
+│    [Assign] [Send Reminder]    │
+│                                │
+│ 🟡 Mike Khumalo                │
+│    CPD progress behind         │
+│    [Monitor] [Provide Support] │
+│                                │
+│ [View All Team Alerts]         │
+└─────────────────────────────────┘
+```
+
+### Row 4: Calendar & Actions
+
+**Left: Upcoming Reviews & Meetings**
+```
+┌─────────────────────────────────┐
+│ 📅 SCHEDULE                     │
+├─────────────────────────────────┤
+│ TODAY                           │
+│ • 10:00 - 1-on-1 with David Lee│
+│   Discuss compliance issues     │
+│                                │
+│ TOMORROW                        │
+│ • 14:00 - Team meeting         │
+│   CPD progress review          │
+│                                │
+│ THIS WEEK                       │
+│ • Review Lisa's FICA queue     │
+│ • Approve Mike's new client    │
+│ • Sign off Sarah's reports     │
+│                                │
+│ [View Full Calendar]            │
+└─────────────────────────────────┘
+```
+
+**Right: Quick Supervision Actions**
+```
+┌─────────────────────────────────┐
+│ SUPERVISION TOOLS               │
+├─────────────────────────────────┤
+│ [👥 View All Supervised Reps]   │
+│                                │
+│ [📧 Send Team Message]          │
+│                                │
+│ [📅 Schedule Team Meeting]      │
+│                                │
+│ [✅ Approve Pending Items (2)]  │
+│                                │
+│ [📊 Generate Team Report]       │
+│                                │
+│ [🎯 Set Team Goals]             │
+│                                │
+│ [📝 Conduct Performance Review] │
+└─────────────────────────────────┘
+```
+
+---
+
+## DASHBOARD 3: COMPLIANCE OFFICER
+
+**Purpose:** Monitor compliance, verify documents, conduct audits, manage risks
+
+**Layout:**
+
+### Hero Section - Compliance Status
+```
+┌──────────────────────────────────────────────────────────┐
+│ 🛡️ COMPLIANCE OFFICER DASHBOARD                         │
+│ Sarah Naidoo | Compliance Officer                       │
+│                                                          │
+│ Overall Compliance: 87%  │  Verifications Pending: 8    │
+│ Critical Alerts: 1       │  Audits This Month: 2        │
+│                                                          │
+│ [Verification Queue] [Conduct Audit] [Generate Report]  │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Row 1: Compliance Metrics (4 Cards)
+
+**Card 1: Overall Health**
+```
+┌───────────────────────┐
+│  Compliance Health    │
+│                       │
+│      87%             │
+│   ━━━━━━━━━━━        │
+│                       │
+│ ✅ Strong             │
+│ Target: 95%           │
+│                       │
+│ [View Details]        │
+└───────────────────────┘
+```
+
+**Card 2: Pending Verifications**
+```
+┌───────────────────────┐
+│  Verification Queue   │
+│                       │
+│         8             │
+│   Awaiting Review     │
+│                       │
+│ 3 CPD Certificates    │
+│ 5 FICA Verifications  │
+│                       │
+│ [Review Queue]        │
+└───────────────────────┘
+```
+
+**Card 3: Risk Level**
+```
+┌───────────────────────┐
+│  Current Risk Level   │
+│                       │
+│       LOW            │
+│     🟢 ━━━━━         │
+│                       │
+│ 1 Critical Issue      │
+│ 3 High Priority       │
+│                       │
+│ [View Risk Matrix]    │
+└───────────────────────┘
+```
+
+**Card 4: Audits**
+```
+┌───────────────────────┐
+│  Internal Audits      │
+│                       │
+│         2             │
+│   Scheduled/Month     │
+│                       │
+│ Next: 20 Dec 2024     │
+│ Last: 85% Pass        │
+│                       │
+│ [Schedule Audit]      │
+└───────────────────────┘
+```
+
+### Row 2: Compliance Categories (Full Width)
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ COMPLIANCE BY CATEGORY                   [View] [Export]  │
+├──────────────────────────────────────────────────────────┤
+│ Category           Status      Issues    Last Check       │
+│ ─────────────────────────────────────────────────────────│
+│ Fit & Proper       ✅ 92%      1         15/12/2024       │
+│ CPD Management     ⚠️  78%      5         15/12/2024       │
+│ FICA Compliance    ✅ 95%      2         14/12/2024       │
+│ Documentation      ⚠️  85%      8         13/12/2024       │
+│ Complaints         ✅ 100%     0         15/12/2024       │
+│ TCF Monitoring     ✅ 90%      1         12/12/2024       │
+│ Insurance          ✅ 100%     0         10/12/2024       │
+│                                                          │
+│ [Drill Down] [Generate Category Report]                  │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Row 3: Verification Queue & Critical Alerts (2 Columns)
+
+**Left: Pending Verifications**
+```
+┌─────────────────────────────────┐
+│ 📋 VERIFICATION QUEUE      (8)  │
+├─────────────────────────────────┤
+│ CPD CERTIFICATES (3)            │
+│ • Mike K. - Ethics Workshop    │
+│   Submitted 2h ago              │
+│   [Verify] [Reject] [Query]    │
+│                                │
+│ • Johan vZ - Investment Course │
+│   Submitted 1d ago              │
+│   [Verify] [Reject]            │
+│                                │
+│ FICA VERIFICATIONS (5)          │
+│ • Client: Thabo Mokoena        │
+│   High Risk - EDD Required     │
+│   [Review] [Approve] [Request] │
+│                                │
+│ [View Full Queue (8)]           │
+└─────────────────────────────────┘
+```
+
+**Right: Critical Issues**
+```
+┌─────────────────────────────────┐
+│ 🚨 CRITICAL ISSUES         (4)  │
+├─────────────────────────────────┤
+│ 🔴 URGENT                      │
+│ Mike Johnson - RE5 Expired     │
+│ Representative cannot operate   │
+│ [View] [Suspend] [Escalate]   │
+│                                │
+│ 🟠 HIGH PRIORITY               │
+│ 45 FICA Reviews Overdue        │
+│ Compliance breach risk         │
+│ [Assign] [Generate List]      │
+│                                │
+│ 🟠 HIGH PRIORITY               │
+│ Missing PI Insurance Docs      │
+│ Required for audit             │
+│ [Request] [Follow Up]         │
+│                                │
+│ [View All Issues (12)]         │
+└─────────────────────────────────┘
+```
+
+### Row 4: Audit Schedule & Recent Activity
+
+**Left: Upcoming Audits**
+```
+┌─────────────────────────────────┐
+│ 📅 AUDIT SCHEDULE               │
+├─────────────────────────────────┤
+│ SCHEDULED                       │
+│ 20 Dec 2024                     │
+│ • Internal CPD Audit           │
+│   Scope: All representatives    │
+│   [Prepare] [View Checklist]   │
+│                                │
+│ 15 Jan 2025                     │
+│ • FICA Compliance Review       │
+│   High-risk clients focus       │
+│   [Prepare] [Assign Team]      │
+│                                │
+│ COMPLETED                       │
+│ 01 Dec 2024                     │
+│ • Document Retention Audit     │
+│   Result: 85% Pass ✅          │
+│   [View Report]                 │
+└─────────────────────────────────┘
+```
+
+**Right: Compliance Activities**
+```
+┌─────────────────────────────────┐
+│ RECENT ACTIVITIES               │
+├─────────────────────────────────┤
+│ 1h ago                          │
+│ ✅ Verified CPD certificate    │
+│    Sarah Naidoo - 3 hours       │
+│                                │
+│ 2h ago                          │
+│ ⚠️  Flagged FICA review         │
+│    Client: High risk            │
+│                                │
+│ 3h ago                          │
+│ 📧 Sent compliance reminder    │
+│    To: 3 representatives        │
+│                                │
+│ 5h ago                          │
+│ 📊 Generated monthly report    │
+│    CPD Compliance Status        │
+│                                │
+│ [View Activity Log]             │
+└─────────────────────────────────┘
+```
+
+---
+
+## DASHBOARD 4: REPRESENTATIVE/BROKER
+
+**Purpose:** Personal compliance management, own clients, self-service
+
+**Layout:**
+
+### Hero Section - Personal Compliance Status
+```
+┌──────────────────────────────────────────────────────────┐
+│ 👤 MY COMPLIANCE DASHBOARD                               │
+│ Welcome back, Thabo Mokoena                             │
+│                                                          │
+│ Your Compliance Status: ⚠️  IN PROGRESS (78%)            │
+│                                                          │
+│ ✅ Fit & Proper: Complete  │  ⚠️  CPD: 14/18 hours      │
+│ ✅ FICA: Up to date        │  ⚠️  Documents: 2 expiring │
+│                                                          │
+│ [View My Profile] [Update Information] [Upload Documents]│
+└──────────────────────────────────────────────────────────┘
+```
+
+### Row 1: My Compliance Cards (4 Cards)
+
+**Card 1: Overall Status**
+```
+┌───────────────────────┐
+│  My Compliance        │
+│                       │
+│      78%             │
+│   ━━━━━━━━━━━━        │
+│                       │
+│ ⚠️  Action Needed     │
+│ 4 hours CPD           │
+│                       │
+│ [View Details]        │
+└───────────────────────┘
+```
+
+**Card 2: CPD Progress**
+```
+┌───────────────────────┐
+│  My CPD 2024/2025     │
+│                       │
+│      14/18            │
+│    Hours Complete     │
+│                       │
+│ ✅ Ethics: 3/3        │
+│ ⚠️  Remaining: 4      │
+│                       │
+│ [Log CPD]             │
+└───────────────────────┘
+```
+
+**Card 3: My Clients**
+```
+┌───────────────────────┐
+│  My Clients           │
+│                       │
+│        32             │
+│   Active Clients      │
+│                       │
+│ 5 FICA Reviews Due    │
+│ 2 New This Month      │
+│                       │
+│ [View Clients]        │
+└───────────────────────┘
+```
+
+**Card 4: Alerts**
+```
+┌───────────────────────┐
+│  My Alerts            │
+│                       │
+│         3             │
+│   Require Attention   │
+│                       │
+│ 1 Document Expiring   │
+│ 2 Tasks Pending       │
+│                       │
+│ [View Alerts]         │
+└───────────────────────┘
+```
+
+### Row 2: My Tasks & Actions (Full Width)
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ ⚡ MY ACTION ITEMS                        [Mark Complete] │
+├──────────────────────────────────────────────────────────┤
+│ Priority  Task                          Due Date  Action  │
+│ ─────────────────────────────────────────────────────────│
+│ 🔴 HIGH   Upload CPD certificate       Today     [Upload]│
+│           Ethics workshop (2 hours)                      │
+│                                                          │
+│ 🟠 MEDIUM Complete FICA review         20 Dec    [Start] │
+│           Client: John Smith                             │
+│                                                          │
+│ 🟠 MEDIUM Renew criminal clearance     30 Dec    [Apply] │
+│           Current expires 31 Jan                         │
+│                                                          │
+│ 🟡 LOW    Update client information    31 Dec    [Update]│
+│           Annual review - Mary Johnson                   │
+│                                                          │
+│ [View All Tasks (8)]                                     │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Row 3: CPD Progress & FICA Reviews (2 Columns)
+
+**Left: CPD Progress Detail**
+```
+┌─────────────────────────────────┐
+│ 📚 MY CPD PROGRESS              │
+├─────────────────────────────────┤
+│ Current Cycle: 1 Jun - 31 May  │
+│ Days Remaining: 166             │
+│                                │
+│ COMPLETED (14 hours)            │
+│ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━│
+│ ✅ Ethics: 3 hours             │
+│ ✅ Technical: 11 hours         │
+│                                │
+│ REQUIRED (4 hours)              │
+│ ▯▯▯▯▯▯▯▯                       │
+│ • 2 hours Technical            │
+│ • 2 hours Any category         │
+│                                │
+│ [Upload CPD] [View History]    │
+└─────────────────────────────────┘
+```
+
+**Right: My FICA Review Queue**
+```
+┌─────────────────────────────────┐
+│ 🏢 MY FICA REVIEWS         (5)  │
+├─────────────────────────────────┤
+│ OVERDUE (2)                     │
+│ • John Smith                   │
+│   Last review: 350 days ago    │
+│   [Start Review] [Request Docs]│
+│                                │
+│ • Mary Johnson                 │
+│   Last review: 380 days ago    │
+│   [Start Review]               │
+│                                │
+│ DUE SOON (3)                    │
+│ • Peter Brown - 15 days        │
+│ • Lisa White - 22 days         │
+│ • David Green - 28 days        │
+│                                │
+│ [View Full Schedule]            │
+└─────────────────────────────────┘
+```
+
+### Row 4: My Documents & Recent Clients
+
+**Left: My Documents**
+```
+┌─────────────────────────────────┐
+│ 📁 MY DOCUMENTS                 │
+├─────────────────────────────────┤
+│ EXPIRING SOON (2)               │
+│ ⚠️  Criminal Clearance          │
+│    Expires: 31 Jan 2025 (47d)  │
+│    [Renew Now]                  │
+│                                │
+│ ⚠️  COB Training - Cat B1       │
+│    Expires: 15 Feb 2025 (62d)  │
+│    [Book Training]              │
+│                                │
+│ UP TO DATE                      │
+│ ✅ RE1 Certificate             │
+│ ✅ RE5 Certificate             │
+│ ✅ Qualifications (3)          │
+│ ✅ CPD Certificates (8)        │
+│                                │
+│ [Upload Document] [View All]    │
+└─────────────────────────────────┘
+```
+
+**Right: Recent Clients**
+```
+┌─────────────────────────────────┐
+│ 👥 RECENT CLIENT ACTIVITY       │
+├─────────────────────────────────┤
+│ TODAY                           │
+│ • New client onboarded         │
+│   Sipho Nkosi - FICA complete  │
+│   [View Client]                │
+│                                │
+│ YESTERDAY                       │
+│ • FICA review completed        │
+│   John Smith - Standard CDD    │
+│   [View Review]                │
+│                                │
+│ THIS WEEK                       │
+│ • 3 new policies issued        │
+│ • 2 claims processed           │
+│ • 1 complaint resolved         │
+│                                │
+│ [View All Clients (32)]         │
+└─────────────────────────────────┘
+```
+
+### Row 5: Quick Actions (Full Width)
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ QUICK ACTIONS                                            │
+├──────────────────────────────────────────────────────────┤
+│ [👥 Add Client]  [📤 Upload Document]  [📚 Log CPD]      │
+│                                                          │
+│ [🔍 Start FICA Review]  [✏️  Update My Info]  [📊 Reports]│
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+## DASHBOARD 5: ADMIN STAFF
+
+**Purpose:** Data entry, document management, operational support
+
+**Layout:**
+
+### Hero Section - Operations Dashboard
+```
+┌──────────────────────────────────────────────────────────┐
+│ 📋 ADMIN OPERATIONS DASHBOARD                            │
+│ Welcome, Lisa Mbatha | Admin Support                    │
+│                                                          │
+│ Today's Tasks: 12   │  Documents Uploaded: 8/15         │
+│ Data Entry Queue: 5 │  Support Requests: 2              │
+│                                                          │
+│ [Task List] [Upload Documents] [Data Entry]              │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Row 1: Work Queue Stats (4 Cards)
+
+**Card 1: Today's Tasks**
+```
+┌───────────────────────┐
+│  Tasks Today          │
+│                       │
+│        12             │
+│   To Complete         │
+│                       │
+│ ✅ 8 Complete         │
+│ ⏳ 4 In Progress      │
+│                       │
+│ [View Tasks]          │
+└───────────────────────┘
+```
+
+**Card 2: Documents**
+```
+┌───────────────────────┐
+│  Document Queue       │
+│                       │
+│        15             │
+│   To Upload Today     │
+│                       │
+│ ✅ 8 Uploaded         │
+│ ⏳ 7 Remaining        │
+│                       │
+│ [Upload]              │
+└───────────────────────┘
+```
+
+**Card 3: Data Entry**
+```
+┌───────────────────────┐
+│  Data Entry Queue     │
+│                       │
+│         5             │
+│   Forms Pending       │
+│                       │
+│ 3 Client Details      │
+│ 2 CPD Records         │
+│                       │
+│ [Start Entry]         │
+└───────────────────────┘
+```
+
+**Card 4: Support Requests**
+```
+┌───────────────────────┐
+│  Support Requests     │
+│                       │
+│         2             │
+│   Pending             │
+│                       │
+│ 1 Password Reset      │
+│ 1 Document Request    │
+│                       │
+│ [View Requests]       │
+└───────────────────────┘
+```
+
+### Row 2: Today's Task List (Full Width)
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ 📋 TODAY'S TASK LIST                      [Add Task]      │
+├──────────────────────────────────────────────────────────┤
+│ □  Upload CPD certificates for Sarah Naidoo (3 files)   │
+│    Priority: High | Deadline: Today 5pm                  │
+│    [Start] [View Files]                                  │
+│                                                          │
+│ □  Enter new client details - Thabo Mokoena             │
+│    Priority: Medium | Deadline: Today                    │
+│    [Start Entry Form]                                    │
+│                                                          │
+│ ✅ Update representative contact information (5 reps)    │
+│    Completed at 11:30am                                  │
+│                                                          │
+│ □  Organize FICA documents in folders                   │
+│    Priority: Low | Deadline: Tomorrow                    │
+│    [Start]                                               │
+│                                                          │
+│ [View All Tasks (12)]                                    │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Row 3: Quick Upload & Data Entry (2 Columns)
+
+**Left: Document Upload Queue**
+```
+┌─────────────────────────────────┐
+│ 📤 DOCUMENT UPLOAD QUEUE   (7)  │
+├─────────────────────────────────┤
+│ FOR SARAH NAIDOO                │
+│ • CPD Certificate - Ethics.pdf │
+│ • CPD Certificate - Tech.pdf   │
+│ • CPD Certificate - Invest.pdf │
+│ [Upload All (3)]               │
+│                                │
+│ FOR MIKE KHUMALO                │
+│ • ID Document - Client A.pdf   │
+│ • Proof Address - Client A.pdf │
+│ [Upload All (2)]               │
+│                                │
+│ FOR COMPLIANCE                  │
+│ • Insurance Policy - PI.pdf    │
+│ • Insurance Policy - Fid.pdf   │
+│ [Upload All (2)]               │
+└─────────────────────────────────┘
+```
+
+**Right: Data Entry Forms**
+```
+┌─────────────────────────────────┐
+│ ✏️  DATA ENTRY QUEUE       (5)  │
+├─────────────────────────────────┤
+│ NEW CLIENT FORMS (3)            │
+│ • Thabo Mokoena               │
+│   [Enter Details]              │
+│ • Sarah Brown                  │
+│   [Enter Details]              │
+│ • John Williams                │
+│   [Enter Details]              │
+│                                │
+│ CPD RECORDS (2)                 │
+│ • Sarah Naidoo - Webinar      │
+│   [Enter Record]               │
+│ • Mike K. - Conference         │
+│   [Enter Record]               │
+│                                │
+│ [View All Forms]                │
+└─────────────────────────────────┘
+```
+
+### Row 4: Recent Activity & Tools
+
+**Left: Recent Activities**
+```
+┌─────────────────────────────────┐
+│ RECENT ACTIVITIES               │
+├─────────────────────────────────┤
+│ 11:30am                         │
+│ ✅ Updated contact info         │
+│    5 representatives            │
+│                                │
+│ 10:45am                         │
+│ 📤 Uploaded 12 documents        │
+│    FICA verifications           │
+│                                │
+│ 09:30am                         │
+│ ✏️  Entered client details      │
+│    3 new clients                │
+│                                │
+│ Yesterday                       │
+│ 📧 Sent password reset         │
+│    Mike Khumalo                 │
+│                                │
+│ [View Activity Log]             │
+└─────────────────────────────────┘
+```
+
+**Right: Admin Tools**
+```
+┌─────────────────────────────────┐
+│ ADMIN TOOLS                     │
+├─────────────────────────────────┤
+│ [📤 Bulk Document Upload]       │
+│                                │
+│ [✏️  Quick Data Entry]          │
+│                                │
+│ [🔍 Search Representatives]     │
+│                                │
+│ [👥 Search Clients]             │
+│                                │
+│ [📁 Organize Documents]         │
+│                                │
+│ [📧 Send Notifications]         │
+│                                │
+│ [📊 View Upload Statistics]     │
+│                                │
+│ [❓ Request Support]            │
+└─────────────────────────────────┘
+```
+
+---
+
+## TECHNICAL IMPLEMENTATION
+
+### Navigation State Management
+
+```javascript
+// Navigation state
+const navigationState = {
+    currentUser: {
+        id: 'USR-001',
+        name: 'Thabo Mokoena',
+        role: 'FSP_OWNER', // or KEY_INDIVIDUAL, COMPLIANCE_OFFICER, REPRESENTATIVE, ADMIN_STAFF
+        fsp: 'CustomApp Financial Services',
+        fspNumber: 'FSP12345',
+        avatar: 'avatar.jpg'
+    },
+    sidebarCollapsed: false,
+    activeMenuItem: 'dashboard',
+    breadcrumbs: ['Home', 'Dashboard'],
+    alerts: {
+        critical: 1,
+        high: 3,
+        medium: 5,
+        low: 3,
+        total: 12
+    },
+    recentSearches: [],
+    pinnedItems: []
+};
+
+// Menu configuration by role
+const menuConfig = {
+    FSP_OWNER: [
+        { id: 'dashboard', label: 'Dashboard', icon: 'bi-grid-3x3-gap', path: '/dashboard' },
+        { 
+            id: 'representatives', 
+            label: 'Representatives', 
+            icon: 'bi-people', 
+            path: '/representatives',
+            badge: 15,
+            submenu: [
+                { id: 'all-reps', label: 'All Representatives', path: '/representatives/all' },
+                { id: 'add-rep', label: 'Add New', path: '/representatives/add' },
+                { id: 'onboarding', label: 'Onboarding Queue', path: '/representatives/onboarding', badge: 2 }
+            ]
+        },
+        { id: 'cpd', label: 'CPD Management', icon: 'bi-mortarboard', path: '/cpd', badge: 5 },
+        { id: 'clients', label: 'Clients & FICA', icon: 'bi-building', path: '/clients', badge: 13 },
+        { id: 'documents', label: 'Documents', icon: 'bi-folder2-open', path: '/documents', badge: 12 },
+        { id: 'compliance', label: 'Compliance', icon: 'bi-shield-check', path: '/compliance', badge: 4 },
+        { id: 'complaints', label: 'Complaints', icon: 'bi-megaphone', path: '/complaints', badge: 2 },
+        { id: 'reports', label: 'Reports', icon: 'bi-bar-chart', path: '/reports' },
+        { id: 'settings', label: 'Settings', icon: 'bi-gear', path: '/settings' }
+    ],
+    KEY_INDIVIDUAL: [
+        // Similar but filtered for supervised reps
+    ],
+    COMPLIANCE_OFFICER: [
+        // Compliance-focused menu
+    ],
+    REPRESENTATIVE: [
+        { id: 'my-dashboard', label: 'My Dashboard', icon: 'bi-grid-3x3-gap', path: '/my-dashboard' },
+        { id: 'my-profile', label: 'My Profile', icon: 'bi-person', path: '/my-profile' },
+        { id: 'my-cpd', label: 'My CPD', icon: 'bi-mortarboard', path: '/my-cpd', badge: '14/18' },
+        { id: 'my-clients', label: 'My Clients', icon: 'bi-people', path: '/my-clients', badge: 32 },
+        { id: 'my-documents', label: 'My Documents', icon: 'bi-folder2', path: '/my-documents' },
+        { id: 'my-alerts', label: 'Alerts', icon: 'bi-bell', path: '/my-alerts', badge: 3 }
+    ],
+    ADMIN_STAFF: [
+        // Admin-focused menu
+    ]
+};
+
+// Get menu for current user role
+function getMenuForRole(role) {
+    return menuConfig[role] || [];
+}
+
+// Toggle sidebar
+function toggleSidebar() {
+    navigationState.sidebarCollapsed = !navigationState.sidebarCollapsed;
+    document.body.classList.toggle('sidebar-collapsed');
+    localStorage.setItem('sidebarCollapsed', navigationState.sidebarCollapsed);
+}
+
+// Set active menu item
+function setActiveMenuItem(itemId) {
+    navigationState.activeMenuItem = itemId;
+    // Update UI
+    document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.querySelector(`[data-menu-id="${itemId}"]`)?.classList.add('active');
+}
+
+// Update breadcrumbs
+function updateBreadcrumbs(path) {
+    navigationState.breadcrumbs = path;
+    // Render breadcrumbs
+}
+
+// Global search
+function performGlobalSearch(query) {
+    // Search across all data types
+    const results = {
+        representatives: searchRepresentatives(query),
+        clients: searchClients(query),
+        documents: searchDocuments(query),
+        pages: searchPages(query)
+    };
+    return results;
+}
+
+// Fetch alerts
+async function fetchAlerts() {
+    // Fetch from API
+    const alerts = await api.getAlerts();
+    navigationState.alerts = alerts;
+    updateAlertBadge(alerts.total);
+    return alerts;
+}
+
+// Update alert badge
+function updateAlertBadge(count) {
+    const badge = document.querySelector('.alerts-button .badge');
+    if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'inline' : 'none';
+    }
+}
+```
+
+### Responsive Behavior
+
+```javascript
+// Responsive navigation
+const breakpoints = {
+    mobile: 576,
+    tablet: 768,
+    desktop: 992,
+    wide: 1200
+};
+
+function handleResize() {
+    const width = window.innerWidth;
+    
+    if (width < breakpoints.desktop) {
+        // Mobile/tablet
+        navigationState.sidebarCollapsed = true;
+        showBottomNav();
+        hideSidebar();
+    } else {
+        // Desktop
+        hideBottomNav();
+        showSidebar();
+        // Restore user preference
+        navigationState.sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    }
+}
+
+window.addEventListener('resize', debounce(handleResize, 250));
+```
+
+### Keyboard Shortcuts
+
+```javascript
+// Keyboard shortcuts
+const shortcuts = {
+    'ctrl+k': () => openGlobalSearch(),
+    'ctrl+/': () => showShortcutsHelp(),
+    'ctrl+h': () => goToDashboard(),
+    'g d': () => goToDashboard(),
+    'g r': () => goToRepresentatives(),
+    'g c': () => goToCPD(),
+    'esc': () => closeModalsAndDropdowns()
+};
+
+// Keyboard handler
+document.addEventListener('keydown', (e) => {
+    const key = (e.ctrlKey ? 'ctrl+' : '') + e.key.toLowerCase();
+    if (shortcuts[key]) {
+        e.preventDefault();
+        shortcuts[key]();
+    }
+});
+```
+
+### Notification System
+
+```javascript
+// Toast notifications
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <div class="toast-icon">${getIconForType(type)}</div>
+        <div class="toast-message">${message}</div>
+        <button class="toast-close">&times;</button>
+    `;
+    document.getElementById('toast-container').appendChild(toast);
+    
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+}
+```
+
+---
+
+## SAMPLE DATA
+
+**Current User:**
+- Name: Thabo Mokoena
+- Role: FSP Owner
+- FSP: CustomApp Financial Services (Pty) Ltd
+- FSP Number: 12345
+- Email: thabo@customapp.co.za
+- Phone: +27 82 123 4567
+
+**Current Date/Time:** 15 December 2024, 14:30 SAST
+
+**Dashboard Statistics:**
+- Overall Compliance: 87%
+- Active Representatives: 15
+- Compliant Representatives: 12
+- Non-compliant: 3
+- Active Clients: 248
+- FICA Compliant: 235 (95%)
+- Total Documents: 1,847
+- Storage Used: 2.4 GB / 10 GB
+- Critical Alerts: 1
+- High Priority: 3
+- Medium Priority: 5
+- Low Priority: 3
+
+**FSP Details:**
+- License Valid Until: 31/12/2025
+- PI Insurance: Valid until 31/03/2025
+- Fidelity Insurance: Valid until 30/04/2025
+- Last FSCA Audit: 15/06/2024 (Pass)
+- Next Scheduled Audit: Q2 2025
+
+---
+
+## FILE STRUCTURE
+
+```
+navigation-dashboards/
+├── index.html
+├── css/
+│   ├── navigation.css
+│   ├── dashboards.css
+│   ├── responsive.css
+│   └── mobile.css
+├── js/
+│   ├── navigation.js
+│   ├── sidebar.js
+│   ├── topbar.js
+│   ├── search.js
+│   ├── alerts.js
+│   ├── user-menu.js
+│   ├── breadcrumbs.js
+│   ├── dashboard-owner.js
+│   ├── dashboard-ki.js
+│   ├── dashboard-co.js
+│   ├── dashboard-rep.js
+│   ├── dashboard-admin.js
+│   ├── keyboard-shortcuts.js
+│   ├── mobile-nav.js
+│   └── data.js
+└── assets/
+    ├── icons/
+    └── avatars/
+```
+
+---
+
+## ACCESSIBILITY REQUIREMENTS
+
+- ARIA labels on all navigation elements
+- Keyboard navigation support
+- Screen reader announcements for route changes
+- Focus management
+- Skip to main content link
+- High contrast mode support
+- Reduced motion support
+
+---
+
+## MOBILE-SPECIFIC FEATURES
+
+- Swipe gestures (swipe left/right for sidebar)
+- Pull to refresh
+- Touch-friendly targets (minimum 44x44px)
+- Bottom sheet for alerts/notifications
+- Progressive web app (PWA) manifest
+- Offline mode indicators
+
+---
+
+Generate a complete, production-ready navigation system and role-based dashboards that work seamlessly together. The navigation should be intuitive, responsive, and provide quick access to all features while the dashboards should present role-appropriate information with actionable insights. Include all interactive features, animations, and state management described above.

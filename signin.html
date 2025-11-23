@@ -230,6 +230,14 @@
         async function handleEmailSignIn(e) {
             e.preventDefault();
 
+            // Check if env=DEV is present in URL - if so, skip authentication and go directly to index.html
+            const urlParams = new URLSearchParams(window.location.search);
+            const envParam = urlParams.get('env');
+            if (envParam === 'DEV') {
+                window.location.href = 'index.html';
+                return;
+            }
+
             const clientGUID = getClientGUID();
 
             const email = document.getElementById('email').value;

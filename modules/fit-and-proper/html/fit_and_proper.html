@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fit & Proper Management - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/fit-and-proper.css" rel="stylesheet">
+</head>
+<body>
+    <div class="fit-proper-container">
+        <!-- Left Sidebar Navigation -->
+        <aside class="fit-proper-sidebar" id="fitProperSidebar">
+            <div class="sidebar-header">
+                <h5 class="mb-0">Fit & Proper</h5>
+                <button class="btn btn-sm btn-link d-md-none" id="closeSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-section="dashboard">
+                            <i class="fas fa-th-large me-2"></i>Overview Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-section="qualifications">
+                            <i class="fas fa-graduation-cap me-2"></i>Qualifications & Credentials
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-section="exams">
+                            <i class="fas fa-file-alt me-2"></i>Regulatory Examinations
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-section="cob">
+                            <i class="fas fa-book me-2"></i>Class of Business Training
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-section="experience">
+                            <i class="fas fa-briefcase me-2"></i>Experience & Employment
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-section="good-standing">
+                            <i class="fas fa-shield-check me-2"></i>Good Standing
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="fit-proper-content">
+            <!-- 1. OVERVIEW DASHBOARD -->
+            <section class="content-section active" id="dashboard">
+                <div class="section-header">
+                    <div>
+                        <h2>Overview Dashboard</h2>
+                        <p class="text-muted mb-0">Last updated: 15/12/2024</p>
+                    </div>
+                    <div>
+                        <span class="badge bg-success fs-6">✅ COMPLIANT</span>
+                    </div>
+                </div>
+
+                <!-- Status Summary Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h6 class="text-uppercase text-muted mb-0">Overall Fit & Proper Status</h6>
+                            </div>
+                            <div class="stat-body text-center">
+                                <div class="status-indicator-large mb-3">
+                                    <i class="fas fa-check-circle fa-4x text-success"></i>
+                                </div>
+                                <div class="stat-value">90/100</div>
+                                <div class="stat-label">Score</div>
+                                <div class="progress mt-3" style="height: 10px;">
+                                    <div class="progress-bar bg-success" style="width: 90%"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <small class="text-muted d-block">Last assessment: 15/12/2024</small>
+                                    <small class="text-muted d-block">Next review: 15/06/2025</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h6 class="text-uppercase text-muted mb-0">Outstanding Requirements</h6>
+                            </div>
+                            <div class="stat-body">
+                                <div class="stat-value text-warning">2</div>
+                                <div class="stat-label">Items Requiring Attention</div>
+                                <ul class="list-unstyled mt-3">
+                                    <li class="mb-2">
+                                        <i class="fas fa-exclamation-circle text-warning me-2"></i>
+                                        COB Training: Long-term Insurance Cat A
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-exclamation-circle text-warning me-2"></i>
+                                        Reference Letter: Management experience
+                                    </li>
+                                </ul>
+                                <button class="btn btn-sm btn-outline-primary mt-2">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h6 class="text-uppercase text-muted mb-0">Expiring Soon</h6>
+                            </div>
+                            <div class="stat-body">
+                                <div class="stat-value text-warning">1</div>
+                                <div class="stat-label">Items Expiring in Next 90 Days</div>
+                                <div class="mt-3">
+                                    <div class="alert alert-warning mb-0">
+                                        <strong>Criminal Clearance</strong><br>
+                                        Expires: 15/03/2025<br>
+                                        <small>76 days remaining</small>
+                                    </div>
+                                </div>
+                                <button class="btn btn-sm btn-warning mt-2">Renew Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requirements Checklist -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Requirements Checklist</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Requirement</th>
+                                        <th>Status</th>
+                                        <th>Last Updated</th>
+                                        <th>Expiry Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="clickable-row" data-section="qualifications">
+                                        <td><strong>Qualifications</strong></td>
+                                        <td><span class="badge bg-success">✅ Compliant</span></td>
+                                        <td>12/11/2024</td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">View Details</button></td>
+                                    </tr>
+                                    <tr class="clickable-row" data-section="exams">
+                                        <td><strong>RE1 Certificate</strong></td>
+                                        <td><span class="badge bg-success">✅ Compliant</span></td>
+                                        <td>15/08/2023</td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Download</button></td>
+                                    </tr>
+                                    <tr class="clickable-row" data-section="exams">
+                                        <td><strong>RE5 Certificate</strong></td>
+                                        <td><span class="badge bg-success">✅ Compliant</span></td>
+                                        <td>20/08/2023</td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Download</button></td>
+                                    </tr>
+                                    <tr class="clickable-row" data-section="cob">
+                                        <td><strong>COB Training</strong></td>
+                                        <td><span class="badge bg-warning">⚠️ Incomplete</span></td>
+                                        <td>05/12/2024</td>
+                                        <td>Various</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">View Details</button></td>
+                                    </tr>
+                                    <tr class="clickable-row" data-section="experience">
+                                        <td><strong>Management Experience</strong></td>
+                                        <td><span class="badge bg-info">⏳ Pending</span></td>
+                                        <td>10/12/2024</td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Upload Document</button></td>
+                                    </tr>
+                                    <tr class="clickable-row" data-section="good-standing">
+                                        <td><strong>Criminal Clearance</strong></td>
+                                        <td><span class="badge bg-success">✅ Valid</span></td>
+                                        <td>15/03/2023</td>
+                                        <td>15/03/2025</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                                    </tr>
+                                    <tr class="clickable-row" data-section="good-standing">
+                                        <td><strong>Credit Check</strong></td>
+                                        <td><span class="badge bg-success">✅ Clear</span></td>
+                                        <td>01/11/2024</td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Refresh</button></td>
+                                    </tr>
+                                    <tr class="clickable-row" data-section="good-standing">
+                                        <td><strong>Debarment Check</strong></td>
+                                        <td><span class="badge bg-success">✅ Clear</span></td>
+                                        <td>01/12/2024</td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Refresh</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2 d-md-flex">
+                            <button class="btn btn-primary" onclick="switchSection('qualifications')">
+                                <i class="fas fa-upload me-2"></i>Upload Qualification
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="switchSection('exams')">
+                                <i class="fas fa-file-upload me-2"></i>Upload RE Certificate
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="switchSection('cob')">
+                                <i class="fas fa-plus me-2"></i>Add COB Training
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="switchSection('experience')">
+                                <i class="fas fa-edit me-2"></i>Update Experience
+                            </button>
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-file-pdf me-2"></i>Request Status Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. QUALIFICATIONS & CREDENTIALS -->
+            <section class="content-section" id="qualifications" style="display: none;">
+                <div class="section-header">
+                    <div>
+                        <h2>Qualifications & Credentials</h2>
+                        <p class="text-muted mb-0">Last verified: 12/11/2024</p>
+                    </div>
+                    <div>
+                        <span class="badge bg-success fs-6">✅ Compliant</span>
+                        <button class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#uploadQualificationModal">
+                            <i class="fas fa-plus me-2"></i>Upload New Qualification
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Current Qualifications -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Current Qualifications</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="qualificationsAccordion">
+                            <div class="accordion-item mb-3">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#qual1">
+                                        <div class="w-100">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>Bachelor of Commerce (Finance)</strong>
+                                                    <span class="badge bg-success ms-2">✅ FSCA Approved</span>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">University of Cape Town | 2018</small>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="qual1" class="accordion-collapse collapse show" data-bs-parent="#qualificationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><strong>SAQA Verification:</strong> <span class="badge bg-success">✅ Verified</span> (15/11/2024)</p>
+                                                <p><strong>Status:</strong> Active</p>
+                                                <p><strong>Qualification ID:</strong> Q-12345-UCT</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>Documents:</h6>
+                                                <ul class="list-unstyled">
+                                                    <li class="mb-2">
+                                                        <i class="fas fa-file-pdf text-danger me-2"></i>
+                                                        Certificate.pdf (2.1 MB)
+                                                        <a href="#" class="ms-2">Download</a> | <a href="#">View</a>
+                                                    </li>
+                                                    <li>
+                                                        <i class="fas fa-file-pdf text-danger me-2"></i>
+                                                        SAQA Verification.pdf (450 KB)
+                                                        <a href="#" class="ms-2">Download</a> | <a href="#">View</a>
+                                                    </li>
+                                                </ul>
+                                                <div class="mt-3">
+                                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">Archive</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#qual2">
+                                        <div class="w-100">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>Certificate in Financial Planning</strong>
+                                                    <span class="badge bg-success ms-2">✅ FSCA Approved</span>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">FPI (Financial Planning Institute) | 2019</small>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="qual2" class="accordion-collapse collapse" data-bs-parent="#qualificationsAccordion">
+                                    <div class="accordion-body">
+                                        <p><strong>SAQA Verification:</strong> <span class="badge bg-success">✅ Verified</span> (20/11/2024)</p>
+                                        <p><strong>Status:</strong> Active</p>
+                                        <p><strong>Qualification ID:</strong> Q-67890-FPI</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. REGULATORY EXAMINATIONS -->
+            <section class="content-section" id="exams" style="display: none;">
+                <div class="section-header">
+                    <div>
+                        <h2>Regulatory Examinations</h2>
+                        <p class="text-muted mb-0">RE1 & RE5 Certifications</p>
+                    </div>
+                    <div>
+                        <span class="badge bg-success fs-6">✅ Both Complete</span>
+                        <button class="btn btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#scheduleExamModal">
+                            Schedule Exam
+                        </button>
+                        <button class="btn btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#uploadExamModal">
+                            Upload Results
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Exam Status Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">RE1 - FAIS Act & Legislation</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <span class="badge bg-success fs-6 mb-2">✅ PASSED</span>
+                                    <div class="h4 mb-0">72%</div>
+                                    <small class="text-muted">Pass mark: 65%</small>
+                                </div>
+                                <hr>
+                                <p><strong>Exam Date:</strong> 15/08/2023</p>
+                                <p><strong>Certificate Number:</strong> RE1-2023-45678</p>
+                                <p><strong>Exam Provider:</strong> Moonstone Business School of Excellence</p>
+                                <p><strong>Validity:</strong> Lifetime</p>
+                                <div class="mt-3">
+                                    <a href="#" class="btn btn-sm btn-outline-primary me-2">Download Certificate</a>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">RE5 - FICA & Anti-Money Laundering</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <span class="badge bg-success fs-6 mb-2">✅ PASSED</span>
+                                    <div class="h4 mb-0">78%</div>
+                                    <small class="text-muted">Pass mark: 65%</small>
+                                </div>
+                                <hr>
+                                <p><strong>Exam Date:</strong> 20/08/2023</p>
+                                <p><strong>Certificate Number:</strong> RE5-2023-45679</p>
+                                <p><strong>Exam Provider:</strong> Moonstone Business School of Excellence</p>
+                                <p><strong>Validity:</strong> Lifetime</p>
+                                <div class="mt-3">
+                                    <a href="#" class="btn btn-sm btn-outline-primary me-2">Download Certificate</a>
+                                    <a href="#" class="btn btn-sm btn-outline-secondary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exam Information -->
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="examInfoTabs" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#aboutRE1">About RE1</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aboutRE5">About RE5</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#studyResources">Study Resources</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="aboutRE1">
+                                <h6>Purpose</h6>
+                                <p>Tests knowledge of FAIS Act and related legislation</p>
+                                <h6>Topics Covered</h6>
+                                <ul>
+                                    <li>FAIS Act 37 of 2002</li>
+                                    <li>General Code of Conduct</li>
+                                    <li>Fit and Proper Requirements</li>
+                                    <li>FSCA regulations</li>
+                                </ul>
+                                <p><strong>Duration:</strong> 2 hours | <strong>Pass mark:</strong> 65% | <strong>Cost:</strong> R1,226.00</p>
+                            </div>
+                            <div class="tab-pane fade" id="aboutRE5">
+                                <h6>Purpose</h6>
+                                <p>Tests knowledge of FICA and AML/CFT</p>
+                                <h6>Topics Covered</h6>
+                                <ul>
+                                    <li>FICA 38 of 2001</li>
+                                    <li>Money laundering prevention</li>
+                                    <li>Terrorist financing</li>
+                                    <li>Customer due diligence</li>
+                                </ul>
+                                <p><strong>Duration:</strong> 2 hours | <strong>Pass mark:</strong> 65% | <strong>Cost:</strong> R1,226.00</p>
+                            </div>
+                            <div class="tab-pane fade" id="studyResources">
+                                <h6>Study Resources</h6>
+                                <ul>
+                                    <li><a href="#">Official Study Guides</a></li>
+                                    <li><a href="#">Practice Exams</a></li>
+                                    <li><a href="#">Video Tutorials</a></li>
+                                    <li><a href="#">FAQs</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. CLASS OF BUSINESS TRAINING -->
+            <section class="content-section" id="cob" style="display: none;">
+                <div class="section-header">
+                    <div>
+                        <h2>Class of Business Training</h2>
+                        <p class="text-muted mb-0">Last updated: 05/12/2024</p>
+                    </div>
+                    <div>
+                        <span class="badge bg-warning fs-6">⚠️ 2 Categories Pending</span>
+                        <button class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#uploadCOBModal">
+                            <i class="fas fa-plus me-2"></i>Add Training Certificate
+                        </button>
+                    </div>
+                </div>
+
+                <!-- COB Training Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Authorised Categories</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Sub-category</th>
+                                        <th>Status</th>
+                                        <th>Training Date</th>
+                                        <th>Certificate</th>
+                                        <th>Expiry</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td rowspan="4"><strong>Long-term Insurance</strong></td>
+                                        <td>Cat A</td>
+                                        <td><span class="badge bg-success">✅ Complete</span></td>
+                                        <td>15/09/2023</td>
+                                        <td><a href="#">View Cert</a></td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Refresh</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cat B1</td>
+                                        <td><span class="badge bg-warning">⚠️ Pending</span></td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td><button class="btn btn-sm btn-primary">Upload</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cat B2</td>
+                                        <td><span class="badge bg-success">✅ Complete</span></td>
+                                        <td>20/09/2023</td>
+                                        <td><a href="#">View Cert</a></td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Refresh</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cat C</td>
+                                        <td><span class="badge bg-success">✅ Complete</span></td>
+                                        <td>25/09/2023</td>
+                                        <td><a href="#">View Cert</a></td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Refresh</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="2"><strong>Short-term Insurance</strong></td>
+                                        <td>Personal Lines</td>
+                                        <td><span class="badge bg-success">✅ Complete</span></td>
+                                        <td>10/08/2023</td>
+                                        <td><a href="#">View Cert</a></td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Refresh</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Commercial Lines</td>
+                                        <td><span class="badge bg-secondary">Not Authorised</span></td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td><button class="btn btn-sm btn-outline-secondary">Apply</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="3"><strong>Investment Products</strong></td>
+                                        <td>Securities & Instruments</td>
+                                        <td><span class="badge bg-success">✅ Complete</span></td>
+                                        <td>05/11/2023</td>
+                                        <td><a href="#">View Cert</a></td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Refresh</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Participatory Interests</td>
+                                        <td><span class="badge bg-success">✅ Complete</span></td>
+                                        <td>10/11/2023</td>
+                                        <td><a href="#">View Cert</a></td>
+                                        <td>N/A</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Refresh</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pension Funds</td>
+                                        <td><span class="badge bg-warning">⚠️ Pending</span></td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td><button class="btn btn-sm btn-primary">Upload</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. EXPERIENCE & EMPLOYMENT -->
+            <section class="content-section" id="experience" style="display: none;">
+                <div class="section-header">
+                    <div>
+                        <h2>Experience & Employment History</h2>
+                        <p class="text-muted mb-0">Last updated: 10/12/2024</p>
+                    </div>
+                    <div>
+                        <span class="badge bg-info fs-6">⏳ 1 Item Pending Verification</span>
+                        <button class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addEmploymentModal">
+                            <i class="fas fa-plus me-2"></i>Add Employment Record
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Key Individual Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-crown me-2"></i>Key Individual Role</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Appointment Date:</strong> 01/03/2020</p>
+                                <p><strong>FSP:</strong> CustomApp Financial Services (Pty) Ltd</p>
+                                <p><strong>FSP Number:</strong> 12345</p>
+                                <p><strong>Categories Authorised:</strong> Long-term Insurance, Investments</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Responsibilities:</h6>
+                                <ul>
+                                    <li>Oversee compliance</li>
+                                    <li>Manage representatives</li>
+                                    <li>Client oversight</li>
+                                </ul>
+                                <div class="mt-3">
+                                    <a href="#" class="btn btn-sm btn-outline-primary me-2">Download KI Letter</a>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">View Role Description</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Management Experience Summary -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Management Experience Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="h3 mb-0">8 years, 3 months</div>
+                                <small class="text-muted">Total Management Experience</small>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="h3 mb-0">5 years, 2 months</div>
+                                <small class="text-muted">FSP Management</small>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="h3 mb-0 text-success">✅</div>
+                                <small class="text-muted">Meets minimum (3 years)</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employment History Timeline -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Employment History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-primary"></div>
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6>Senior Financial Advisor & Key Individual</h6>
+                                            <p class="mb-1"><strong>CustomApp Financial Services (Pty) Ltd</strong> | FSP 12345</p>
+                                            <p class="text-muted mb-1">Cape Town, Western Cape</p>
+                                            <p class="text-muted"><small>01/03/2020 - Present (4 years, 10 months)</small></p>
+                                        </div>
+                                        <span class="badge bg-success">✅ Verified</span>
+                                    </div>
+                                    <p><strong>Management Role:</strong> Yes</p>
+                                    <p><strong>Responsibilities:</strong></p>
+                                    <ul>
+                                        <li>Lead team of 12 representatives</li>
+                                        <li>Compliance oversight</li>
+                                        <li>Client portfolio management</li>
+                                        <li>Training and mentorship</li>
+                                    </ul>
+                                    <div class="mt-3">
+                                        <a href="#" class="btn btn-sm btn-outline-primary me-2">View Details</a>
+                                        <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. GOOD STANDING -->
+            <section class="content-section" id="good-standing" style="display: none;">
+                <div class="section-header">
+                    <div>
+                        <h2>Good Standing Requirements</h2>
+                        <p class="text-muted mb-0">Last checked: 01/12/2024</p>
+                    </div>
+                    <div>
+                        <span class="badge bg-success fs-6">✅ All Clear</span>
+                        <button class="btn btn-primary ms-2">
+                            <i class="fas fa-sync me-2"></i>Run All Checks
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Good Standing Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">Criminal Clearance</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <span class="badge bg-success fs-6">✅ Valid</span>
+                                </div>
+                                <p><strong>Certificate Number:</strong> CC-2023-12345</p>
+                                <p><strong>Issue Date:</strong> 15/03/2023</p>
+                                <p><strong>Expiry Date:</strong> 15/03/2025</p>
+                                <div class="alert alert-warning mb-3">
+                                    <small>76 days remaining</small>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-sm btn-warning">Request Renewal</button>
+                                    <button class="btn btn-sm btn-outline-primary">View Certificate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">Credit Check</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <span class="badge bg-success fs-6">✅ Clear</span>
+                                </div>
+                                <p><strong>Last Checked:</strong> 01/11/2024</p>
+                                <p><strong>Next Check:</strong> 01/02/2025</p>
+                                <p><strong>Credit Bureau:</strong> TransUnion</p>
+                                <p><strong>Score:</strong> Good standing</p>
+                                <div class="d-grid gap-2 mt-3">
+                                    <button class="btn btn-sm btn-primary">Run New Check</button>
+                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">Debarment Register Check</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <span class="badge bg-success fs-6">✅ Not Listed</span>
+                                </div>
+                                <p><strong>Last Checked:</strong> 01/12/2024</p>
+                                <p><strong>Next Check:</strong> 01/03/2025</p>
+                                <p><strong>Register:</strong> FSCA Debarment Register</p>
+                                <p><strong>Result:</strong> No matches found</p>
+                                <div class="d-grid gap-2 mt-3">
+                                    <button class="btn btn-sm btn-primary">Run New Check</button>
+                                    <button class="btn btn-sm btn-outline-primary">View Certificate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Upload Qualification Modal -->
+    <div class="modal fade" id="uploadQualificationModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload New Qualification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Qualification Type *</label>
+                            <select class="form-select" required>
+                                <option value="">Select...</option>
+                                <option>Degree</option>
+                                <option>Diploma</option>
+                                <option>Certificate</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Qualification Name *</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Institution *</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Year Obtained *</label>
+                            <input type="date" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Upload Certificate *</label>
+                            <div class="upload-zone">
+                                <div class="text-center py-4">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                    <p class="mb-2"><strong>Drag & drop certificate here</strong></p>
+                                    <button type="button" class="btn btn-sm btn-primary">Browse</button>
+                                    <p class="mt-2 small text-muted">PDF, JPG, PNG - Max 5MB</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Save & Submit</button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/fit-and-proper.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAIS Compliance Platform - Phase 1 Overview | Broker Portal</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-teal: #5CBDB4;
+            --charcoal-grey: #4A4A4A;
+            --light-grey: #F8F9FA;
+            --success: #28A745;
+            --warning: #FFC107;
+            --danger: #DC3545;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            color: var(--charcoal-grey);
+            line-height: 1.6;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-teal) 0%, #4a9d96 100%);
+            color: white;
+            padding: 80px 0;
+            margin-bottom: 0;
+        }
+        
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-section .lead {
+            font-size: 1.3rem;
+            opacity: 0.95;
+        }
+        
+        .section-title {
+            color: var(--primary-teal);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--primary-teal);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            border-top: 4px solid var(--primary-teal);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(92,189,180,0.2);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: var(--charcoal-grey);
+            margin-top: 0.5rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--primary-teal);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            box-shadow: 0 6px 16px rgba(92,189,180,0.15);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-teal);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-icon i {
+            font-size: 1.8rem;
+            color: white;
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--charcoal-grey);
+            margin-bottom: 1rem;
+        }
+        
+        .regulatory-box {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 4px;
+        }
+        
+        .risk-box {
+            background: #ffebee;
+            border-left: 4px solid var(--danger);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 4px;
+        }
+        
+        .benefit-box {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 4px;
+        }
+        
+        .diagram-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin: 2rem 0;
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary-teal);
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+        
+        .timeline-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 45%;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: auto;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-right: auto;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-teal);
+            border: 4px solid white;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #4a9d96 0%, var(--primary-teal) 100%);
+            color: white;
+            padding: 60px 0;
+            margin-top: 4rem;
+        }
+        
+        .cta-button {
+            background: white;
+            color: var(--primary-teal);
+            font-weight: 700;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            background: #f8f9fa;
+        }
+        
+        .badge-custom {
+            background: var(--primary-teal);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .compliance-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+        
+        .flow-step {
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+        }
+        
+        .flow-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .flow-arrow {
+            font-size: 2rem;
+            color: var(--primary-teal);
+            margin: 0 1rem;
+        }
+        
+        ul.custom-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        ul.custom-list li {
+            padding-left: 2rem;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        ul.custom-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .penalty-highlight {
+            background: #fff3e0;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-content {
+                width: calc(100% - 80px);
+                margin-left: 60px !important;
+            }
+            
+            .timeline-marker {
+                left: 30px;
+            }
+            
+            .flow-arrow {
+                display: none;
+            }
+        }
+        
+        .source-citation {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <span class="badge-custom">FAIS Compliance Solution</span>
+                    <h1>Stay Compliant. Stay in Business.</h1>
+                    <p class="lead">
+                        A comprehensive compliance platform designed specifically for South African financial services providers to meet FSCA's stringent FAIS requirements.
+                    </p>
+                    <p class="lead">
+                        <strong>Phase 1:</strong> Core Compliance Modules for Fit & Proper, CPD, FICA, and Document Retention
+                    </p>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <svg width="200" height="200" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="90" fill="white" opacity="0.1"/>
+                        <path d="M 100 30 L 120 80 L 170 80 L 130 115 L 145 165 L 100 135 L 55 165 L 70 115 L 30 80 L 80 80 Z" 
+                              fill="white" stroke="white" stroke-width="2"/>
+                        <text x="100" y="110" text-anchor="middle" fill="white" font-size="24" font-weight="bold">FSCA</text>
+                        <text x="100" y="130" text-anchor="middle" fill="white" font-size="12">Compliant</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="container my-5">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">R10M</div>
+                    <div class="stat-label">Maximum Fine for Non-Compliance</div>
+                    <small class="text-muted d-block mt-2">FAIS Act Section 36</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">Years Imprisonment Risk</div>
+                    <small class="text-muted d-block mt-2">FAIS Act Section 36</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Years Document Retention Required</div>
+                    <small class="text-muted d-block mt-2">FAIS Act Section 17</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">CPD Hours Annually (Multi-Class)</div>
+                    <small class="text-muted d-block mt-2">FAIS Act Section 8A</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 class="section-title">The Compliance Challenge</h2>
+                <p class="lead">
+                    The Financial Sector Conduct Authority (FSCA) enforces strict compliance requirements under the Financial Advisory and Intermediary Services (FAIS) Act 37 of 2002. Non-compliance can result in license suspension, heavy fines, criminal prosecution, and reputational damage.
+                </p>
+                
+                <!-- 2014 AMENDMENTS HIGHLIGHT -->
+                <div class="feature-card" style="border-left: 5px solid #FFC107; background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            <i class="bi bi-file-earmark-text" style="font-size: 4rem; color: #FFC107;"></i>
+                        </div>
+                        <div class="col-md-10">
+                            <h4 style="color: #4A4A4A; margin-bottom: 1rem;">
+                                <i class="bi bi-lightning-fill text-warning me-2"></i>
+                                Critical 2014 Legislative Amendments
+                            </h4>
+                            <p><strong>FAIS Circular 4 of 2014</strong> implemented significant amendments via the Financial Services Laws General Amendment Act (FSLGA) 45 of 2013, effective 28 February 2014:</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="mb-0">
+                                        <li><strong>Section 6A Inserted:</strong> Fit & Proper Requirements now statutory law</li>
+                                        <li><strong>Section 8A Inserted:</strong> CPD became mandatory fit and proper requirement</li>
+                                        <li><strong>Section 17 Amended:</strong> Stricter compliance officer requirements</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="mb-0">
+                                        <li><strong>Section 36 Amended:</strong> Maximum fine increased <span class="text-danger"><strong>1000% from R1M to R10M</strong></span></li>
+                                        <li><strong>Section 38A-C Inserted:</strong> Business rescue, liquidation, and directive powers</li>
+                                        <li><strong>Enforcement Strengthened:</strong> FSCA given broader powers and tougher sanctions</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p class="mt-3 mb-0" style="background: white; padding: 1rem; border-radius: 8px; border-left: 4px solid #DC3545;">
+                                <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                                <strong>What This Means:</strong> Compliance is no longer a "best practice" - it's <strong>statutory law</strong> with severe criminal and financial penalties. The R10M maximum fine demonstrates FSCA's commitment to strict enforcement.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="regulatory-box">
+                    <h5><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Legislative Mandate - Not Optional</h5>
+                    <p class="mb-0">
+                        <strong>FAIS Act 37 of 2002</strong> (as amended by Financial Services Laws General Amendment Act 45 of 2013) establishes statutory obligations for all Financial Services Providers (FSPs), Key Individuals (KIs), and Representatives:
+                    </p>
+                    <ul class="mt-2 mb-0">
+                        <li><strong>Section 6A:</strong> Fit and Proper Requirements (inserted 2014)</li>
+                        <li><strong>Section 8A:</strong> Continuous Professional Development - mandatory legal requirement (inserted 2014)</li>
+                        <li><strong>Section 13:</strong> Representatives must be competent and meet COB training</li>
+                        <li><strong>Section 17:</strong> Compliance Officers appointed and reporting requirements</li>
+                        <li><strong>FICA Act 38 of 2001:</strong> FSPs are Accountable Institutions</li>
+                    </ul>
+                    <p class="source-citation mt-3">Source: FAIS Act 37 of 2002, FSLGA Act 45 of 2013, FAIS Circular 4 of 2014, Board Notice 194 of 2017</p>
+                </div>
+
+                <div class="risk-box">
+                    <h5><i class="bi bi-shield-x text-danger me-2"></i>Legal Consequences of Non-Compliance</h5>
+                    <p><strong>FAIS Act Section 36 - Penalties (as amended 2014):</strong></p>
+                    <ul class="mb-0">
+                        <li><strong>License Withdrawal:</strong> FSCA can suspend or withdraw your FSP license (Section 9)</li>
+                        <li><strong>Financial Penalties:</strong> Maximum fine increased to <strong>R10,000,000</strong> per violation (amended from R1M in 2014)</li>
+                        <li><strong>Criminal Prosecution:</strong> Imprisonment for up to 10 years (Section 36)</li>
+                        <li><strong>Representative Debarment:</strong> Permanent ban from the financial services industry (Section 14A)</li>
+                        <li><strong>Reputational Damage:</strong> Public disclosure on FSCA website, loss of client trust</li>
+                        <li><strong>Administrative Sanctions:</strong> Additional penalties under Financial Institutions Act</li>
+                    </ul>
+                    <p class="penalty-highlight mt-3 mb-0">
+                        <i class="bi bi-exclamation-octagon-fill text-danger me-2"></i>
+                        <strong>Critical Update:</strong> The 2014 amendments increased maximum fines from R1 million to R10 million - a 1000% increase demonstrating FSCA's serious enforcement posture.
+                    </p>
+                    <p class="source-citation mt-3">Source: FAIS Act Section 36 (as amended by FSLGA 2013), FAIS Circular 4 of 2014, FSCA Enforcement Actions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance Flow Diagram -->
+    <div class="container my-5">
+        <div class="diagram-container">
+            <h3 class="text-center mb-4" style="color: var(--primary-teal);">Integrated Compliance Workflow</h3>
+            <div class="compliance-flow">
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <strong>Fit & Proper</strong>
+                    <p class="small text-muted">Qualifications, Exams, Experience</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <strong>CPD Tracking</strong>
+                    <p class="small text-muted">18 Hours Annually</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <strong>FICA/KYC</strong>
+                    <p class="small text-muted">Client Verification</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <i class="bi bi-folder2-open"></i>
+                    </div>
+                    <strong>Documents</strong>
+                    <p class="small text-muted">5-Year Retention</p>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <div class="flow-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <strong>Compliance</strong>
+                    <p class="small text-muted">Continuous Monitoring</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phase 1 Modules -->
+    <div class="container my-5">
+        <h2 class="section-title">Phase 1: Core Compliance Modules</h2>
+        <p class="lead mb-5">
+            Four critical modules that form the foundation of FAIS compliance, addressing the most immediate regulatory requirements and highest-risk areas.
+        </p>
+
+        <!-- Module 1: Fit & Proper -->
+        <div class="feature-card">
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="feature-icon">
+                        <i class="bi bi-person-badge-fill"></i>
+                    </div>
+                </div>
+                <div class="col-lg-10">
+                    <h3 class="feature-title">1. Fit & Proper Management</h3>
+                    
+                    <div class="regulatory-box">
+                        <h6><strong>Legislative Requirement: FAIS Act Section 6A (Inserted 2014)</strong></h6>
+                        <p>
+                            Section 6A of the FAIS Act establishes the legal obligation for all FSPs, Key Individuals, and Representatives to meet and maintain Fit and Proper requirements:
+                        </p>
+                        <ul>
+                            <li><strong>Honesty & Integrity (Section 6A(2)(a)):</strong> Good standing with no criminal record, debarments, or adverse credit history</li>
+                            <li><strong>Competency (Section 6A(2)(b)):</strong> Approved qualifications, RE1 and RE5 exams (minimum 65%), and Class of Business training</li>
+                            <li><strong>Operational Ability (Section 6A(2)(c)):</strong> Adequate systems, governance, and risk management</li>
+                            <li><strong>Financial Soundness (Section 6A(2)(d)):</strong> Demonstrated financial stability</li>
+                            <li><strong>Continuous Compliance (Section 8A):</strong> Ongoing adherence to requirements, not just at authorization</li>
+                        </ul>
+                        <p class="mb-0"><strong>Board Notice 194 of 2017</strong> provides detailed Fit and Proper requirements including:</p>
+                        <ul class="mb-0">
+                            <li>Minimum experience for Key Individuals (typically 3-5 years)</li>
+                            <li>Specific qualification requirements per product category</li>
+                            <li>Class of Business training requirements</li>
+                            <li>Ongoing monitoring and reporting obligations</li>
+                        </ul>
+                        <p class="source-citation">Source: FAIS Act Section 6A & 8A (2014), Section 13, Board Notice 194 of 2017</p>
+                    </div>
+
+                    <h6 class="mt-4"><strong>Why You Need This Module:</strong></h6>
+                    <ul class="custom-list">
+                        <li><strong>Centralized Tracking:</strong> Single source of truth for all representatives' qualifications, exams, and training</li>
+                        <li><strong>Automated Alerts:</strong> Never miss expiry dates for criminal clearances, credentials, or training renewals</li>
+                        <li><strong>Competence Register:</strong> Maintain FSCA-compliant competence register ready for inspection</li>
+                        <li><strong>Audit Trail:</strong> Complete documentation of all qualifications and verifications</li>
+                        <li><strong>Risk Mitigation:</strong> Identify and address gaps before FSCA audits</li>
+                    </ul>
+
+                    <div class="penalty-highlight">
+                        <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                        <strong>Legal Risk:</strong> Representatives operating without valid qualifications or COB training violate Section 13 and can result in immediate license suspension (Section 9), personal debarment (Section 14A), and fines up to R10 million (Section 36).
+                    </div>
+
+                    <h6 class="mt-4"><strong>Key Features:</strong></h6>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Qualification verification & SAQA tracking</li>
+                                <li>RE1/RE5 certificate management</li>
+                                <li>Class of Business training tracker</li>
+                                <li>Criminal clearance monitoring</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Credit status checks</li>
+                                <li>Debarment register screening</li>
+                                <li>Experience documentation</li>
+                                <li>Good standing declarations</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="diagram-container mt-4">
+                        <h6 class="text-center mb-3">Fit & Proper Verification Cycle</h6>
+                        <canvas id="fitProperChart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 2: CPD Management -->
+        <div class="feature-card">
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="feature-icon">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                </div>
+                <div class="col-lg-10">
+                    <h3 class="feature-title">2. CPD Management & Tracking</h3>
+                    
+                    <div class="regulatory-box">
+                        <h6><strong>Legislative Requirement: FAIS Act Section 8A (Inserted 2014)</strong></h6>
+                        <p>
+                            <strong>Section 8A</strong> makes Continuous Professional Development a <strong>mandatory fit and proper requirement</strong> - not a guideline, but law. Failure to complete CPD renders a representative non-compliant with Section 8A.
+                        </p>
+                        <p>
+                            <strong>Board Notice 194 of 2017</strong> specifies CPD requirements based on authorisations:
+                        </p>
+                        <ul>
+                            <li><strong>6-12 hours:</strong> Single subclass or single class of business</li>
+                            <li><strong>18 hours:</strong> Multiple classes of business (most common for brokers)</li>
+                            <li><strong>20 hours:</strong> Long-term insurance, health insurance, or investments</li>
+                            <li><strong>Minimum 3 hours:</strong> Ethics and Practice Standards (mandatory component)</li>
+                            <li><strong>CPD Cycle:</strong> 1 June to 31 May annually</li>
+                            <li><strong>Accreditation:</strong> Must be from FSCA-recognized professional bodies (FPI, IOBSA, SAIFM)</li>
+                            <li><strong>Verification:</strong> CPD certificates must be retained as proof of compliance</li>
+                        </ul>
+                        <p class="penalty-highlight mt-2 mb-0">
+                            <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                            <strong>Legal Consequence:</strong> Section 8A non-compliance means the representative does not meet fit and proper requirements, triggering potential license suspension under Section 9.
+                        </p>
+                        <p class="source-citation mt-2">Source: FAIS Act Section 8A (2014), Section 13, Board Notice 194 of 2017 - Determination of CPD</p>
+                    </div>
+
+                    <h6 class="mt-4"><strong>Why You Need This Module:</strong></h6>
+                    <ul class="custom-list">
+                        <li><strong>Automatic Calculations:</strong> System calculates exact hours required based on each representative's authorisations</li>
+                        <li><strong>Real-Time Tracking:</strong> Live dashboard shows progress toward annual requirements</li>
+                        <li><strong>Deadline Management:</strong> Automated reminders at 90, 60, 30 days before 31 May deadline</li>
+                        <li><strong>Certificate Validation:</strong> Verify CPD certificates are from accredited providers</li>
+                        <li><strong>Ethics Tracking:</strong> Separate tracking ensures minimum 3 ethics hours are met</li>
+                        <li><strong>Team Oversight:</strong> Key Individuals can monitor entire team's compliance status</li>
+                        <li><strong>Pro-Rata Calculations:</strong> Automatic adjustments for leave, new appointments</li>
+                    </ul>
+
+                    <div class="penalty-highlight">
+                        <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                        <strong>Legal Risk:</strong> Non-compliance with CPD requirements (Section 8A) leads to immediate suspension of representatives and potential debarment (Section 14A). FSCA conducts regular audits of CPD records. Maximum penalty: R10 million fine and/or 10 years imprisonment (Section 36).
+                    </div>
+
+                    <h6 class="mt-4"><strong>Key Features:</strong></h6>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Visual progress dashboards</li>
+                                <li>Certificate upload & storage</li>
+                                <li>Automatic hour allocation</li>
+                                <li>Ethics hours tracker</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Accredited provider directory</li>
+                                <li>Team compliance overview</li>
+                                <li>Automated alerts & reminders</li>
+                                <li>Compliance certificates</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="diagram-container mt-4">
+                        <h6 class="text-center mb-3">CPD Requirements by Authorisation</h6>
+                        <canvas id="cpdChart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 3: FICA Compliance -->
+        <div class="feature-card">
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                </div>
+                <div class="col-lg-10">
+                    <h3 class="feature-title">3. FICA Client Verification Workflow</h3>
+                    
+                    <div class="regulatory-box">
+                        <h6><strong>Regulatory Requirement (FICA Act 38 of 2001)</strong></h6>
+                        <p>
+                            All FSPs are Accountable Institutions under FICA and must:
+                        </p>
+                        <ul>
+                            <li><strong>Verify Client Identity:</strong> Obtain and verify ID document and proof of residence (< 3 months)</li>
+                            <li><strong>Risk Assessment:</strong> Classify clients as Low (SDD), Medium (CDD), or High Risk (EDD)</li>
+                            <li><strong>PEP Screening:</strong> Screen all clients against Politically Exposed Person databases</li>
+                            <li><strong>Sanctions Screening:</strong> Check against OFAC, UN, EU, HMT sanctions lists</li>
+                            <li><strong>Ongoing Monitoring:</strong> Regular reviews (annual for CDD, quarterly for EDD)</li>
+                            <li><strong>Record Keeping:</strong> Maintain all FICA records for 5 years</li>
+                            <li><strong>Suspicious Activity Reporting:</strong> Report STRs/SARs to Financial Intelligence Centre</li>
+                        </ul>
+                        <p class="source-citation">Source: Financial Intelligence Centre Act 38 of 2001, FIC Guidance Notes</p>
+                    </div>
+
+                    <h6 class="mt-4"><strong>Why You Need This Module:</strong></h6>
+                    <ul class="custom-list">
+                        <li><strong>Step-by-Step Workflow:</strong> Guided 6-step verification process ensures nothing is missed</li>
+                        <li><strong>Automated Screening:</strong> Integrated PEP and sanctions screening (simulated)</li>
+                        <li><strong>Risk Calculator:</strong> Automatic risk assessment based on FICA guidelines</li>
+                        <li><strong>Document Management:</strong> Centralized storage of all FICA documentation</li>
+                        <li><strong>Review Scheduler:</strong> Automatic reminders for annual/quarterly reviews</li>
+                        <li><strong>Audit Ready:</strong> Complete audit trail for FIC inspections</li>
+                        <li><strong>Compliance Dashboard:</strong> Real-time visibility of verification status across all clients</li>
+                    </ul>
+
+                    <div class="penalty-highlight">
+                        <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                        <strong>Legal Risk:</strong> FICA violations can result in administrative sanctions up to R100 million (FICA Act), criminal prosecution under FICA, and FAIS Act penalties up to R10 million (Section 36). South Africa was grey-listed by FATF until 2024, significantly increasing regulatory scrutiny of AML/CFT compliance.
+                    </div>
+
+                    <h6 class="mt-4"><strong>Key Features:</strong></h6>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Client verification wizard</li>
+                                <li>ID number validation</li>
+                                <li>Risk assessment tool</li>
+                                <li>PEP screening</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Sanctions list checking</li>
+                                <li>Ongoing monitoring scheduler</li>
+                                <li>Review queue management</li>
+                                <li>STR/SAR workflow</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="diagram-container mt-4">
+                        <h6 class="text-center mb-3">FICA Verification Process</h6>
+                        <div style="max-width: 800px; margin: 0 auto;">
+                            <svg viewBox="0 0 800 400" width="100%" height="400">
+                                <!-- Step 1 -->
+                                <circle cx="100" cy="100" r="40" fill="#5CBDB4"/>
+                                <text x="100" y="108" text-anchor="middle" fill="white" font-size="16" font-weight="bold">1</text>
+                                <text x="100" y="160" text-anchor="middle" font-size="14">Client Details</text>
+                                
+                                <!-- Arrow -->
+                                <path d="M 140 100 L 200 100" stroke="#5CBDB4" stroke-width="3" marker-end="url(#arrowhead)"/>
+                                
+                                <!-- Step 2 -->
+                                <circle cx="240" cy="100" r="40" fill="#5CBDB4"/>
+                                <text x="240" y="108" text-anchor="middle" fill="white" font-size="16" font-weight="bold">2</text>
+                                <text x="240" y="160" text-anchor="middle" font-size="14">ID Verification</text>
+                                
+                                <!-- Arrow -->
+                                <path d="M 280 100 L 340 100" stroke="#5CBDB4" stroke-width="3" marker-end="url(#arrowhead)"/>
+                                
+                                <!-- Step 3 -->
+                                <circle cx="380" cy="100" r="40" fill="#5CBDB4"/>
+                                <text x="380" y="108" text-anchor="middle" fill="white" font-size="16" font-weight="bold">3</text>
+                                <text x="380" y="160" text-anchor="middle" font-size="14">Proof of Address</text>
+                                
+                                <!-- Arrow down -->
+                                <path d="M 380 140 L 380 200" stroke="#5CBDB4" stroke-width="3" marker-end="url(#arrowhead)"/>
+                                
+                                <!-- Step 4 -->
+                                <circle cx="380" cy="240" r="40" fill="#5CBDB4"/>
+                                <text x="380" y="248" text-anchor="middle" fill="white" font-size="16" font-weight="bold">4</text>
+                                <text x="380" y="300" text-anchor="middle" font-size="14">Risk Assessment</text>
+                                
+                                <!-- Arrow left -->
+                                <path d="M 340 240 L 280 240" stroke="#5CBDB4" stroke-width="3" marker-end="url(#arrowhead)"/>
+                                
+                                <!-- Step 5 -->
+                                <circle cx="240" cy="240" r="40" fill="#5CBDB4"/>
+                                <text x="240" y="248" text-anchor="middle" fill="white" font-size="16" font-weight="bold">5</text>
+                                <text x="240" y="300" text-anchor="middle" font-size="14">Screening</text>
+                                
+                                <!-- Arrow left -->
+                                <path d="M 200 240 L 140 240" stroke="#5CBDB4" stroke-width="3" marker-end="url(#arrowhead)"/>
+                                
+                                <!-- Step 6 -->
+                                <circle cx="100" cy="240" r="40" fill="#28A745"/>
+                                <text x="100" y="248" text-anchor="middle" fill="white" font-size="16" font-weight="bold">✓</text>
+                                <text x="100" y="300" text-anchor="middle" font-size="14">Verified</text>
+                                
+                                <!-- Ongoing monitoring -->
+                                <rect x="480" y="150" width="250" height="80" fill="#FFC107" opacity="0.2" rx="10"/>
+                                <text x="605" y="180" text-anchor="middle" font-size="16" font-weight="bold" fill="#4A4A4A">Ongoing Monitoring</text>
+                                <text x="605" y="205" text-anchor="middle" font-size="12" fill="#4A4A4A">Annual/Quarterly Reviews</text>
+                                
+                                <defs>
+                                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#5CBDB4"/>
+                                    </marker>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 4: Document Management -->
+        <div class="feature-card">
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="feature-icon">
+                        <i class="bi bi-folder2-open"></i>
+                    </div>
+                </div>
+                <div class="col-lg-10">
+                    <h3 class="feature-title">4. Document Management & 5-Year Retention</h3>
+                    
+                    <div class="regulatory-box">
+                        <h6><strong>Regulatory Requirement (FAIS Act Section 17, FICA Act)</strong></h6>
+                        <p>
+                            FSPs must maintain comprehensive records for a minimum of 5 years:
+                        </p>
+                        <ul>
+                            <li><strong>Transaction Records:</strong> All client transactions, advice given, and products recommended</li>
+                            <li><strong>Client Documentation:</strong> Agreements, risk profiles, FICA documents</li>
+                            <li><strong>Correspondence:</strong> All communications with clients</li>
+                            <li><strong>Compliance Records:</strong> CPD certificates, qualifications, internal audits</li>
+                            <li><strong>Complaints:</strong> Complete records of all complaints and resolutions</li>
+                            <li><strong>Calculation:</strong> Retention starts from transaction/document date, not upload date</li>
+                            <li><strong>Format:</strong> Must be readily accessible and retrievable</li>
+                        </ul>
+                        <p class="source-citation">Source: FAIS Act Section 17, FICA Act Sections 22-23</p>
+                    </div>
+
+                    <h6 class="mt-4"><strong>Why You Need This Module:</strong></h6>
+                    <ul class="custom-list">
+                        <li><strong>Automated Retention:</strong> System calculates 5-year retention period from document date</li>
+                        <li><strong>Centralized Storage:</strong> Single secure repository for all compliance documents</li>
+                        <li><strong>Smart Categorization:</strong> Automatic organization by type, client, representative</li>
+                        <li><strong>Expiry Alerts:</strong> Notifications 90, 60, 30 days before documents require renewal</li>
+                        <li><strong>Version Control:</strong> Track all document versions with complete history</li>
+                        <li><strong>Audit Trail:</strong> Every document access, modification, and deletion is logged</li>
+                        <li><strong>Legal Hold:</strong> Prevent deletion of documents under dispute or investigation</li>
+                        <li><strong>Search & Retrieve:</strong> Instantly find any document for FSCA inspections</li>
+                    </ul>
+
+                    <div class="penalty-highlight">
+                        <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                        <strong>Legal Risk:</strong> Inability to produce required documents during FSCA audit (Section 4 inspection powers) can result in immediate license suspension (Section 9), substantial fines up to R10 million (Section 36), and criminal prosecution. Manual record-keeping significantly increases risk of lost, expired, or non-compliant documents.
+                    </div>
+
+                    <h6 class="mt-4"><strong>Key Features:</strong></h6>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <ul>
+                                <li>5-year retention automation</li>
+                                <li>Drag & drop uploads</li>
+                                <li>Advanced search & filters</li>
+                                <li>Version control</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Complete audit trail</li>
+                                <li>Expiry tracking</li>
+                                <li>Legal hold mechanism</li>
+                                <li>Secure deletion workflow</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="diagram-container mt-4">
+                        <h6 class="text-center mb-3">5-Year Document Lifecycle</h6>
+                        <canvas id="retentionChart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="container my-5">
+        <h2 class="section-title">Why Choose Our Compliance Platform?</h2>
+        
+        <div class="row g-4 mt-3">
+            <div class="col-md-6">
+                <div class="benefit-box">
+                    <h5><i class="bi bi-shield-check text-success me-2"></i>Comprehensive Compliance</h5>
+                    <p>All Phase 1 modules work together seamlessly, ensuring no compliance gaps and reducing your regulatory risk.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="benefit-box">
+                    <h5><i class="bi bi-clock-history text-success me-2"></i>Time Savings</h5>
+                    <p>Automate manual processes, reduce administrative burden by 70%, and free up time for client service.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="benefit-box">
+                    <h5><i class="bi bi-bell text-success me-2"></i>Proactive Alerts</h5>
+                    <p>Never miss a deadline with automated reminders for CPD, document expiry, FICA reviews, and credentials.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="benefit-box">
+                    <h5><i class="bi bi-graph-up text-success me-2"></i>Audit Ready</h5>
+                    <p>Complete audit trails, instant report generation, and organized documentation ready for FSCA inspection.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="benefit-box">
+                    <h5><i class="bi bi-people text-success me-2"></i>Team Visibility</h5>
+                    <p>Key Individuals and Compliance Officers get real-time dashboards showing entire team's compliance status.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="benefit-box">
+                    <h5><i class="bi bi-currency-dollar text-success me-2"></i>Cost Effective</h5>
+                    <p>Prevent costly fines, license suspensions, and legal fees through proactive compliance management.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROI Calculation -->
+    <div class="container my-5">
+        <div class="diagram-container">
+            <h3 class="text-center mb-4" style="color: var(--primary-teal);">Return on Investment</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="text-danger">Cost of Non-Compliance</h5>
+                    <ul>
+                        <li><strong>FSCA Fine (Section 36):</strong> R50,000 - R10,000,000</li>
+                        <li><strong>License Suspension:</strong> Loss of revenue during suspension period</li>
+                        <li><strong>Legal Fees:</strong> R100,000 - R500,000+</li>
+                        <li><strong>Reputational Damage:</strong> Loss of clients and business relationships</li>
+                        <li><strong>Administrative Penalties:</strong> Additional sanctions under Financial Institutions Act</li>
+                        <li><strong>Opportunity Cost:</strong> Time spent on remediation vs. growth</li>
+                        <li><strong class="text-danger">Total Potential Cost: R10,000,000+</strong></li>
+                    </ul>
+                    <p class="small text-muted mt-3"><em>Note: 2014 amendments increased maximum penalty from R1M to R10M - demonstrating FSCA's commitment to strict enforcement.</em></p>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="text-success">Platform Investment</h5>
+                    <ul>
+                        <li><strong>Platform Subscription:</strong> [Contact for pricing]</li>
+                        <li><strong>Training & Implementation:</strong> Included</li>
+                        <li><strong>Support & Updates:</strong> Included</li>
+                        <li><strong>Legislative Updates:</strong> Automatic</li>
+                        <li><strong>Peace of Mind:</strong> Priceless</li>
+                        <li><strong>Time Saved:</strong> 70% reduction in admin burden</li>
+                        <li><strong class="text-success">ROI: Immediate - single penalty avoidance pays for years</strong></li>
+                    </ul>
+                    <p class="small text-muted mt-3"><em>Platform cost is negligible compared to even one non-compliance incident.</em></p>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <canvas id="roiChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Implementation Timeline -->
+    <div class="container my-5">
+        <h2 class="section-title">Implementation Timeline</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <h5>Week 1-2: Onboarding & Setup</h5>
+                    <ul>
+                        <li>User accounts and permissions</li>
+                        <li>Data migration from existing systems</li>
+                        <li>Initial configuration</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <h5>Week 3-4: Training</h5>
+                    <ul>
+                        <li>Compliance Officer training</li>
+                        <li>Representative training</li>
+                        <li>Administrative training</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <h5>Week 5-6: Go Live</h5>
+                    <ul>
+                        <li>Phased rollout by module</li>
+                        <li>Support and monitoring</li>
+                        <li>Fine-tuning and optimization</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <h5>Ongoing: Continuous Support</h5>
+                    <ul>
+                        <li>Regular updates for regulatory changes</li>
+                        <li>Dedicated support team</li>
+                        <li>Quarterly compliance reviews</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="cta-section text-center">
+        <div class="container">
+            <h2 class="mb-4">Ready to Transform Your Compliance Management?</h2>
+            <p class="lead mb-5">
+                Don't risk your license. Join leading South African brokers who trust our platform to manage their FAIS compliance.
+            </p>
+            <button class="cta-button me-3 mb-3">Schedule a Demo</button>
+            <button class="cta-button mb-3" style="background: transparent; color: white; border: 2px solid white;">Request a Quote</button>
+            
+            <div class="mt-5">
+                <p class="mb-2"><i class="bi bi-check-circle-fill me-2"></i>30-Day Money-Back Guarantee</p>
+                <p class="mb-2"><i class="bi bi-check-circle-fill me-2"></i>No Long-Term Contracts</p>
+                <p class="mb-2"><i class="bi bi-check-circle-fill me-2"></i>Free Training & Support</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 style="color: var(--primary-teal);">CustomApp Broker Portal</h5>
+                    <p class="text-muted">FAIS Compliance Platform</p>
+                    <p class="small text-muted">All regulatory information sourced from FSCA official website and FAIS/FICA legislation.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h6>Contact Us</h6>
+                    <p class="text-muted mb-1"><i class="bi bi-envelope me-2"></i><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef8c80829f83868e818c8aaf8c9a9c9b80828e9f9fc18c80c1958e">[email&#160;protected]</a></p>
+                    <p class="text-muted mb-1"><i class="bi bi-telephone me-2"></i>+27 21 555 1234</p>
+                    <p class="text-muted"><i class="bi bi-geo-alt me-2"></i>Cape Town, South Africa</p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-12 text-center text-muted small">
+                    <p>&copy; 2024 CustomApp. All rights reserved. | This document is for informational purposes only and does not constitute legal advice. Please consult with qualified compliance professionals for specific guidance.</p>
+                    <p><strong>Disclaimer:</strong> This platform is designed to assist with compliance management but does not guarantee compliance. Ultimate responsibility for compliance remains with the FSP.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart Initialization -->
+    <script>
+        // Fit & Proper Chart
+        const fitProperCtx = document.getElementById('fitProperChart').getContext('2d');
+        new Chart(fitProperCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Qualifications', 'RE Exams', 'COB Training', 'Experience', 'Good Standing'],
+                datasets: [{
+                    label: 'Compliance Rate (%)',
+                    data: [95, 100, 85, 90, 98],
+                    backgroundColor: [
+                        '#5CBDB4',
+                        '#28A745',
+                        '#FFC107',
+                        '#5CBDB4',
+                        '#28A745'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // CPD Requirements Chart
+        const cpdCtx = document.getElementById('cpdChart').getContext('2d');
+        new Chart(cpdCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Single Subclass (6h)', 'Multiple Subclasses (12h)', 'Multiple Classes (18h)', 'Specialist (20h)'],
+                datasets: [{
+                    data: [15, 25, 45, 15],
+                    backgroundColor: ['#5CBDB4', '#4a9d96', '#3d8d86', '#28A745']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Document Retention Chart
+        const retentionCtx = document.getElementById('retentionChart').getContext('2d');
+        new Chart(retentionCtx, {
+            type: 'line',
+            data: {
+                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Deletion'],
+                datasets: [{
+                    label: 'Documents in System',
+                    data: [1000, 1200, 1400, 1500, 1550, 200],
+                    borderColor: '#5CBDB4',
+                    backgroundColor: 'rgba(92, 189, 180, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // ROI Chart
+        const roiCtx = document.getElementById('roiChart').getContext('2d');
+        new Chart(roiCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Maximum Potential Fine', 'License Suspension Cost', 'Legal Fees', 'Platform Investment'],
+                datasets: [{
+                    label: 'Cost (ZAR)',
+                    data: [10000000, 2000000, 300000, -50000],
+                    backgroundColor: ['#DC3545', '#DC3545', '#DC3545', '#28A745']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            callback: function(value) {
+                                return 'R' + (value/1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document Management - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/document-styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="document-management-container">
+        <!-- Top Navigation Tabs -->
+        <div class="doc-tabs-container">
+            <ul class="nav nav-tabs doc-tabs" id="docTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="library-tab" data-bs-toggle="tab" data-bs-target="#library" type="button" role="tab">
+                        <i class="fas fa-folder-open me-2"></i>Document Library
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab">
+                        <i class="fas fa-upload me-2"></i>Upload Documents
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="retention-tab" data-bs-toggle="tab" data-bs-target="#retention" type="button" role="tab">
+                        <i class="fas fa-clock me-2"></i>Retention Management
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="search-tab" data-bs-toggle="tab" data-bs-target="#search" type="button" role="tab">
+                        <i class="fas fa-search me-2"></i>Search & Filter
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">
+                        <i class="fas fa-history me-2"></i>Audit Trail
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="storage-tab" data-bs-toggle="tab" data-bs-target="#storage" type="button" role="tab">
+                        <i class="fas fa-hdd me-2"></i>Storage Analytics
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="doc-content-wrapper">
+            <!-- Left Sidebar -->
+            <aside class="doc-sidebar" id="docSidebar">
+                <div class="sidebar-header">
+                    <h6 class="mb-0">Quick Navigation</h6>
+                    <button class="btn btn-sm btn-link d-md-none" id="closeSidebar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="sidebar-content">
+                    <!-- By Category -->
+                    <div class="sidebar-section">
+                        <h6 class="sidebar-title">By Category</h6>
+                        <ul class="sidebar-menu">
+                            <li><a href="#" data-filter="all"><i class="fas fa-folder me-2"></i>All Documents <span class="badge">1,847</span></a></li>
+                            <li><a href="#" data-filter="fica"><i class="fas fa-id-card me-2"></i>FICA Documentation <span class="badge">235</span></a></li>
+                            <li><a href="#" data-filter="agreements"><i class="fas fa-file-contract me-2"></i>Client Agreements <span class="badge">186</span></a></li>
+                            <li><a href="#" data-filter="cpd"><i class="fas fa-certificate me-2"></i>CPD Certificates <span class="badge">124</span></a></li>
+                            <li><a href="#" data-filter="qualifications"><i class="fas fa-graduation-cap me-2"></i>Qualifications & Training <span class="badge">45</span></a></li>
+                            <li><a href="#" data-filter="compliance"><i class="fas fa-shield-alt me-2"></i>Compliance Reports <span class="badge">67</span></a></li>
+                            <li><a href="#" data-filter="risk"><i class="fas fa-exclamation-triangle me-2"></i>Risk Management <span class="badge">34</span></a></li>
+                            <li><a href="#" data-filter="insurance"><i class="fas fa-file-invoice me-2"></i>Insurance Policies <span class="badge">12</span></a></li>
+                            <li><a href="#" data-filter="financial"><i class="fas fa-chart-line me-2"></i>Financial Statements <span class="badge">24</span></a></li>
+                            <li><a href="#" data-filter="correspondence"><i class="fas fa-envelope me-2"></i>Correspondence <span class="badge">892</span></a></li>
+                            <li><a href="#" data-filter="other"><i class="fas fa-file me-2"></i>Other <span class="badge">228</span></a></li>
+                        </ul>
+                    </div>
+
+                    <!-- By Status -->
+                    <div class="sidebar-section">
+                        <h6 class="sidebar-title">By Status</h6>
+                        <ul class="sidebar-menu">
+                            <li><a href="#" data-filter="active"><i class="fas fa-check-circle me-2 text-success"></i>Active <span class="badge">1,792</span></a></li>
+                            <li><a href="#" data-filter="expiring"><i class="fas fa-clock me-2 text-warning"></i>Expiring Soon <span class="badge">12</span></a></li>
+                            <li><a href="#" data-filter="expired"><i class="fas fa-times-circle me-2 text-danger"></i>Expired <span class="badge">0</span></a></li>
+                            <li><a href="#" data-filter="archived"><i class="fas fa-archive me-2 text-secondary"></i>Archived <span class="badge">43</span></a></li>
+                            <li><a href="#" data-filter="pending"><i class="fas fa-hourglass-half me-2 text-info"></i>Pending Deletion <span class="badge">5</span></a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="sidebar-section">
+                        <h6 class="sidebar-title">Quick Links</h6>
+                        <ul class="sidebar-menu">
+                            <li><a href="#" data-filter="my-docs"><i class="fas fa-user me-2"></i>My Documents</a></li>
+                            <li><a href="#" data-filter="shared"><i class="fas fa-share me-2"></i>Shared with Me</a></li>
+                            <li><a href="#" data-filter="recent"><i class="fas fa-clock me-2"></i>Recent</a></li>
+                            <li><a href="#" data-filter="favorites"><i class="fas fa-star me-2 text-warning"></i>Favorites</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="doc-main-content">
+                <!-- Tab Content -->
+                <div class="tab-content doc-content" id="docTabContent">
+                    <!-- 1. DOCUMENT LIBRARY TAB -->
+                    <div class="tab-pane fade show active" id="library" role="tabpanel">
+                        <div class="container-fluid py-4">
+                            <!-- Overview Stats -->
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-md-6 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-icon text-primary">
+                                            <i class="fas fa-file-alt fa-3x"></i>
+                                        </div>
+                                        <div class="stat-value">1,847</div>
+                                        <div class="stat-label">Total Documents</div>
+                                        <div class="stat-sublabel">In library</div>
+                                        <small class="text-success">+45 this month</small>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-6 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-icon text-info">
+                                            <i class="fas fa-hdd fa-3x"></i>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="progress-circle-small">
+                                                <svg width="80" height="80">
+                                                    <circle class="progress-bg" cx="40" cy="40" r="35"></circle>
+                                                    <circle class="progress-bar progress-green" cx="40" cy="40" r="35" 
+                                                            stroke-dasharray="220" stroke-dashoffset="167"></circle>
+                                                </svg>
+                                                <div class="progress-text">24%</div>
+                                            </div>
+                                        </div>
+                                        <div class="stat-label mt-2">Storage Used</div>
+                                        <div class="stat-sublabel">2.4 GB / 10 GB</div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-6 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-icon text-warning">
+                                            <i class="fas fa-clock fa-3x"></i>
+                                        </div>
+                                        <div class="stat-value">12</div>
+                                        <div class="stat-label">Expiring Soon</div>
+                                        <div class="stat-sublabel">Next 30 days</div>
+                                        <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchDocTab('retention-tab')">View expiring</a>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-6 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-icon text-info">
+                                            <i class="fas fa-eye fa-3x"></i>
+                                        </div>
+                                        <div class="stat-value">8</div>
+                                        <div class="stat-label">Pending Review</div>
+                                        <div class="stat-sublabel">Require attention</div>
+                                        <a href="#" class="btn btn-sm btn-link mt-2">Review now</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Toolbar -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <button class="btn btn-primary" onclick="switchDocTab('upload-tab')">
+                                                <i class="fas fa-upload me-1"></i>Upload Documents
+                                            </button>
+                                            <button class="btn btn-outline-secondary">
+                                                <i class="fas fa-folder-plus me-1"></i>Create Folder
+                                            </button>
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                    Bulk Actions
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="#">Move to folder</a></li>
+                                                    <li><a class="dropdown-item" href="#">Add tags</a></li>
+                                                    <li><a class="dropdown-item" href="#">Download selected</a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item text-danger" href="#">Delete selected</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-outline-secondary active" data-view="grid">
+                                                    <i class="fas fa-th"></i>
+                                                </button>
+                                                <button class="btn btn-outline-secondary" data-view="list">
+                                                    <i class="fas fa-list"></i>
+                                                </button>
+                                                <button class="btn btn-outline-secondary" data-view="table">
+                                                    <i class="fas fa-table"></i>
+                                                </button>
+                                            </div>
+                                            <select class="form-select form-select-sm" style="width: auto;">
+                                                <option>Date uploaded (newest)</option>
+                                                <option>Date uploaded (oldest)</option>
+                                                <option>Name (A-Z)</option>
+                                                <option>Name (Z-A)</option>
+                                                <option>Size (largest)</option>
+                                                <option>Size (smallest)</option>
+                                                <option>Retention date</option>
+                                            </select>
+                                            <button class="btn btn-outline-secondary" id="toggleFilters">
+                                                <i class="fas fa-filter me-1"></i>Filters
+                                            </button>
+                                            <button class="btn btn-outline-secondary" id="toggleSearch">
+                                                <i class="fas fa-search me-1"></i>Search
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Search Bar -->
+                            <div class="card mb-4" id="searchBar" style="display: none;">
+                                <div class="card-body">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        <input type="text" class="form-control" placeholder="Search by name, client, tags, or content...">
+                                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedSearch">
+                                            Advanced
+                                        </button>
+                                    </div>
+                                    <div class="collapse mt-3" id="advancedSearch">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Document Type</label>
+                                                <select class="form-select">
+                                                    <option>All Types</option>
+                                                    <option>PDF</option>
+                                                    <option>Word</option>
+                                                    <option>Excel</option>
+                                                    <option>Image</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Category</label>
+                                                <select class="form-select">
+                                                    <option>All Categories</option>
+                                                    <option>FICA Documentation</option>
+                                                    <option>Client Agreements</option>
+                                                    <option>CPD Certificates</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Date Range</label>
+                                                <input type="date" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <button class="btn btn-primary">Search</button>
+                                            <button class="btn btn-outline-secondary">Clear Filters</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Document Grid View -->
+                            <div id="gridView" class="document-view">
+                                <div class="row g-4">
+                                    <!-- Sample Document Cards -->
+                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                        <div class="document-card">
+                                            <div class="document-thumbnail">
+                                                <i class="fas fa-file-pdf fa-4x text-danger"></i>
+                                                <span class="status-badge bg-success">Active</span>
+                                            </div>
+                                            <div class="document-info">
+                                                <h6 class="document-name" title="FICA_Verification_Thabo_Mokoena.pdf">FICA_Verification_Thabo_Mokoena.pdf</h6>
+                                                <div class="document-meta">
+                                                    <span class="badge bg-primary">FICA Documentation</span>
+                                                    <small class="text-muted d-block mt-1">2.4 MB | PDF</small>
+                                                    <small class="text-muted d-block">Uploaded: 15/12/2024</small>
+                                                    <small class="text-muted d-block">By: Sarah Naidoo</small>
+                                                    <div class="tags mt-2">
+                                                        <span class="badge bg-light text-dark">#fica</span>
+                                                        <span class="badge bg-light text-dark">#client-verification</span>
+                                                    </div>
+                                                    <div class="retention-info mt-2">
+                                                        <small class="text-muted">Retention: 4 years, 365 days remaining</small>
+                                                    </div>
+                                                </div>
+                                                <div class="document-actions">
+                                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-download"></i></button>
+                                                    <div class="dropdown d-inline">
+                                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                                            <i class="fas fa-ellipsis-v"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a class="dropdown-item" href="#">Edit</a></li>
+                                                            <li><a class="dropdown-item" href="#">Move</a></li>
+                                                            <li><a class="dropdown-item" href="#">Share</a></li>
+                                                            <li><hr class="dropdown-divider"></li>
+                                                            <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- More cards would go here -->
+                                </div>
+                                
+                                <!-- Pagination -->
+                                <nav aria-label="Page navigation" class="mt-4">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                                    </ul>
+                                    <div class="text-center mt-2">
+                                        <small class="text-muted">Showing 1-20 of 1,847 documents</small>
+                                    </div>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. UPLOAD DOCUMENTS TAB -->
+                    <div class="tab-pane fade" id="upload" role="tabpanel">
+                        <div class="container-fluid py-4">
+                            <h2 class="mb-4">Upload Documents</h2>
+                            
+                            <!-- Upload Method Selection -->
+                            <div class="row mb-4">
+                                <div class="col-md-4 mb-3">
+                                    <div class="upload-method-card active" data-method="single">
+                                        <i class="fas fa-file-plus fa-3x text-primary mb-3"></i>
+                                        <h5>Single File Upload</h5>
+                                        <p class="text-muted">Upload one document at a time</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="upload-method-card" data-method="bulk">
+                                        <i class="fas fa-files fa-3x text-info mb-3"></i>
+                                        <h5>Bulk Upload</h5>
+                                        <p class="text-muted">Upload multiple documents simultaneously</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="upload-method-card" data-method="scan">
+                                        <i class="fas fa-scanner fa-3x text-success mb-3"></i>
+                                        <h5>Scan Document</h5>
+                                        <p class="text-muted">Scan document directly from scanner/camera</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Upload Zone -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="upload-zone" id="uploadZone">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-cloud-upload-alt fa-4x text-muted mb-3"></i>
+                                            <p class="mb-2"><strong>Drag & drop your file here</strong></p>
+                                            <p class="text-muted mb-3">or</p>
+                                            <button class="btn btn-primary">Browse Files</button>
+                                            <p class="mt-3 small text-muted">PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Max 50MB)</p>
+                                        </div>
+                                    </div>
+                                    <input type="file" id="documentFile" class="d-none" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" multiple>
+                                    
+                                    <!-- Document Details Form (shown after file selection) -->
+                                    <div id="documentDetailsForm" style="display: none;" class="mt-4">
+                                        <h5>Document Details</h5>
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Document Name *</label>
+                                                    <input type="text" class="form-control" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Document Category *</label>
+                                                    <select class="form-select" required>
+                                                        <option>FICA Documentation</option>
+                                                        <option>Client Agreements</option>
+                                                        <option>CPD Certificates</option>
+                                                        <option>Qualifications & Training</option>
+                                                        <option>Compliance Reports</option>
+                                                        <option>Risk Management Policies</option>
+                                                        <option>Insurance Policies</option>
+                                                        <option>Financial Statements</option>
+                                                        <option>Correspondence</option>
+                                                        <option>Other</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Document Date *</label>
+                                                    <input type="date" class="form-control" required>
+                                                    <small class="text-muted">Date the document was created or issued</small>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Upload Date</label>
+                                                    <input type="date" class="form-control" value="">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Related Client</label>
+                                                    <input type="text" class="form-control" placeholder="Search client by name or ID">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Related Representative</label>
+                                                    <select class="form-select">
+                                                        <option>Select representative...</option>
+                                                        <option>Sarah Naidoo</option>
+                                                        <option>Thabo Mokoena</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-12 mb-3">
+                                                    <label class="form-label">Description</label>
+                                                    <textarea class="form-control" rows="3"></textarea>
+                                                </div>
+                                                <div class="col-12 mb-3">
+                                                    <label class="form-label">Tags</label>
+                                                    <input type="text" class="form-control" placeholder="Add tags separated by commas">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Access Level</label>
+                                                    <select class="form-select">
+                                                        <option>Private (Only me)</option>
+                                                        <option>Team (All representatives)</option>
+                                                        <option>Compliance Officers only</option>
+                                                        <option>Custom</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Expiry Date (optional)</label>
+                                                    <input type="date" class="form-control">
+                                                </div>
+                                                <div class="col-12 mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="sensitiveDoc">
+                                                        <label class="form-check-label" for="sensitiveDoc">
+                                                            Contains sensitive personal information
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="alert alert-info">
+                                                <strong>Retention Information:</strong><br>
+                                                This document will be retained until: <strong>15/12/2029</strong> (5 years from document date)<br>
+                                                Retention period: <strong>1,825 days remaining</strong>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" class="btn btn-primary">Upload Document</button>
+                                                <button type="button" class="btn btn-outline-secondary">Save as Draft</button>
+                                                <button type="button" class="btn btn-link">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. RETENTION MANAGEMENT TAB -->
+                    <div class="tab-pane fade" id="retention" role="tabpanel">
+                        <div class="container-fluid py-4">
+                            <h2 class="mb-4">Retention Management</h2>
+                            
+                            <!-- Policy Overview -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Retention Policy Overview</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <strong>Retention Period:</strong><br>
+                                            <span class="h5">5 years (1,825 days)</span>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong>Legislation:</strong><br>
+                                            <span>FAIS Act 37 of 2002 - Section 17</span>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong>Calculation:</strong><br>
+                                            <span>From document creation/transaction date</span>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong>Compliance Status:</strong><br>
+                                            <span class="badge bg-success">✅ All documents within policy</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Retention Stats -->
+                            <div class="row mb-4">
+                                <div class="col-md-3 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-value text-success">1,792</div>
+                                        <div class="stat-label">Active Documents</div>
+                                        <div class="stat-sublabel">Within 5-year retention</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-value text-warning">12</div>
+                                        <div class="stat-label">Expiring Soon</div>
+                                        <div class="stat-sublabel">< 30 days to 5 years</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-value text-info">43</div>
+                                        <div class="stat-label">Eligible for Deletion</div>
+                                        <div class="stat-sublabel">> 5 years old</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-value text-danger">5</div>
+                                        <div class="stat-label">Deletion Hold</div>
+                                        <div class="stat-sublabel">Legal hold/dispute</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Documents by Retention Status -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <ul class="nav nav-tabs card-header-tabs" id="retentionTabs" role="tablist">
+                                        <li class="nav-item">
+                                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#expiringSoon">Expiring Soon</button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#eligibleForDeletion">Eligible for Deletion</button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#deletionHold">Deletion Hold</button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#archived">Archived</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade show active" id="expiringSoon">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Document Name</th>
+                                                            <th>Category</th>
+                                                            <th>Document Date</th>
+                                                            <th>Retention Expires</th>
+                                                            <th>Days Remaining</th>
+                                                            <th>Client</th>
+                                                            <th>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Client_Agreement_JohnSmit.pdf</td>
+                                                            <td>Client Agreements</td>
+                                                            <td>20/01/2020</td>
+                                                            <td>20/01/2025</td>
+                                                            <td><span class="badge bg-warning">36 days</span></td>
+                                                            <td>John Smit</td>
+                                                            <td>
+                                                                <button class="btn btn-sm btn-outline-primary">Review</button>
+                                                                <button class="btn btn-sm btn-outline-secondary">Extend Hold</button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="eligibleForDeletion">
+                                            <div class="alert alert-warning">
+                                                <strong>Before deleting documents, confirm:</strong>
+                                                <ul class="mb-0 mt-2">
+                                                    <li>No active legal proceedings</li>
+                                                    <li>No ongoing disputes with clients</li>
+                                                    <li>No regulatory investigation requiring these records</li>
+                                                    <li>All related transactions closed</li>
+                                                    <li>Compliance officer approval obtained</li>
+                                                </ul>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th><input type="checkbox"></th>
+                                                            <th>Document Name</th>
+                                                            <th>Category</th>
+                                                            <th>Document Date</th>
+                                                            <th>Days Over Retention</th>
+                                                            <th>Status</th>
+                                                            <th>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><input type="checkbox"></td>
+                                                            <td>Old_Client_Agreement_2018.pdf</td>
+                                                            <td>Agreements</td>
+                                                            <td>15/11/2018</td>
+                                                            <td>423 days over</td>
+                                                            <td><span class="badge bg-success">✅ Ready for deletion</span></td>
+                                                            <td>
+                                                                <button class="btn btn-sm btn-outline-primary">Review</button>
+                                                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="deletionHold">
+                                            <p>Documents on legal/compliance hold</p>
+                                        </div>
+                                        <div class="tab-pane fade" id="archived">
+                                            <p>Archived documents</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. SEARCH & FILTER TAB -->
+                    <div class="tab-pane fade" id="search" role="tabpanel">
+                        <div class="container-fluid py-4">
+                            <h2 class="mb-4">Search & Filter</h2>
+                            <p>Advanced search and filtering interface</p>
+                        </div>
+                    </div>
+
+                    <!-- 5. AUDIT TRAIL TAB -->
+                    <div class="tab-pane fade" id="audit" role="tabpanel">
+                        <div class="container-fluid py-4">
+                            <h2 class="mb-4">Audit Trail</h2>
+                            
+                            <!-- Audit Stats -->
+                            <div class="row mb-4">
+                                <div class="col-md-3 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-value">15,234</div>
+                                        <div class="stat-label">Total Activities</div>
+                                        <div class="stat-sublabel">All time</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-value">8,456</div>
+                                        <div class="stat-label">Document Access</div>
+                                        <div class="stat-sublabel">Views this month</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-value">234</div>
+                                        <div class="stat-label">Modifications</div>
+                                        <div class="stat-sublabel">This month</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-4">
+                                    <div class="stat-card">
+                                        <div class="stat-value">43</div>
+                                        <div class="stat-label">Deletions</div>
+                                        <div class="stat-sublabel">This month (all approved)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Audit Log Table -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Audit Log</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Timestamp</th>
+                                                    <th>User</th>
+                                                    <th>Activity Type</th>
+                                                    <th>Document Name</th>
+                                                    <th>Category</th>
+                                                    <th>Details</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>15/12/2024 16:45:23</td>
+                                                    <td>Sarah Naidoo</td>
+                                                    <td><span class="badge bg-primary">📤 Upload</span></td>
+                                                    <td>FICA_Verification_Client_A.pdf</td>
+                                                    <td>FICA Documentation</td>
+                                                    <td>Uploaded to /FICA/ID Documents/</td>
+                                                    <td><button class="btn btn-sm btn-outline-primary">View Details</button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>15/12/2024 16:30:15</td>
+                                                    <td>Thabo Mokoena</td>
+                                                    <td><span class="badge bg-info">👁️ View</span></td>
+                                                    <td>CPD_Certificate_Ethics.pdf</td>
+                                                    <td>CPD Certificates</td>
+                                                    <td>Viewed document (3:45 duration)</td>
+                                                    <td><button class="btn btn-sm btn-outline-primary">View Details</button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. STORAGE ANALYTICS TAB -->
+                    <div class="tab-pane fade" id="storage" role="tabpanel">
+                        <div class="container-fluid py-4">
+                            <h2 class="mb-4">Storage Analytics</h2>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Storage Usage</h5>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <div class="progress-circle-large mb-3">
+                                                <svg width="150" height="150">
+                                                    <circle class="progress-bg" cx="75" cy="75" r="65"></circle>
+                                                    <circle class="progress-bar progress-green" cx="75" cy="75" r="65" 
+                                                            stroke-dasharray="408" stroke-dashoffset="310"></circle>
+                                                </svg>
+                                                <div class="progress-text-large">24%</div>
+                                            </div>
+                                            <h4>2.4 GB / 10 GB</h4>
+                                            <p class="text-success">✅ Sufficient storage</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5 class="mb-0">Storage by Category</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="storageCategoryChart" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Storage by User</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>User</th>
+                                                    <th>Documents</th>
+                                                    <th>Storage Used</th>
+                                                    <th>% of Total</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Sarah Naidoo</td>
+                                                    <td>678</td>
+                                                    <td>1.1 GB</td>
+                                                    <td>46%</td>
+                                                    <td><button class="btn btn-sm btn-outline-primary">View Docs</button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Thabo Mokoena</td>
+                                                    <td>456</td>
+                                                    <td>734 MB</td>
+                                                    <td>31%</td>
+                                                    <td><button class="btn btn-sm btn-outline-primary">View Docs</button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/document-library.js"></script>
+    <script src="../js/upload-handler.js"></script>
+    <script src="../js/retention-manager.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,336 @@
+/* Clients & FICA Management Styles */
+
+:root {
+    --primary-color: #5CBDB4;
+    --text-color: #4A4A4A;
+    --bg-color: #FFFFFF;
+    --light-grey: #F8F9FA;
+    --success: #28A745;
+    --warning: #FFC107;
+    --danger: #DC3545;
+    --info: #17A2B8;
+}
+
+/* Tab Navigation */
+.clients-fica-tabs-container {
+    background: var(--bg-color);
+    border-bottom: 2px solid var(--light-grey);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.clients-fica-tabs {
+    border-bottom: none;
+    margin-bottom: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.clients-fica-tabs .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.clients-fica-tabs .nav-link {
+    color: var(--text-color);
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 15px 20px;
+    margin-right: 0;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.clients-fica-tabs .nav-link:hover {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: var(--light-grey);
+}
+
+.clients-fica-tabs .nav-link.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    background-color: transparent;
+    font-weight: 600;
+}
+
+.clients-fica-content {
+    padding: 20px;
+    min-height: calc(100vh - 200px);
+}
+
+/* Stat Cards */
+.stat-card {
+    background: var(--bg-color);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 100%;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-top: 4px solid var(--primary-color);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.stat-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    opacity: 0.2;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 15px 0 5px 0;
+}
+
+.stat-label {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.stat-sublabel {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+/* Activity List */
+.activity-list {
+    list-style: none;
+    padding: 0;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+/* Avatar Styles */
+.avatar-lg {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+/* Client Type Cards */
+.client-type-card {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.client-type-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Wizard Styles */
+.wizard-progress {
+    margin-bottom: 30px;
+}
+
+.wizard-steps {
+    font-size: 0.85rem;
+}
+
+.wizard-steps .step {
+    flex: 1;
+    text-align: center;
+    padding: 5px;
+    color: #6c757d;
+}
+
+.wizard-steps .step.active {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.wizard-step {
+    display: none;
+}
+
+.wizard-step.active {
+    display: block;
+}
+
+/* Compliance Status Box */
+.compliance-status-box {
+    padding: 20px;
+}
+
+.regulatory-deadlines {
+    margin-top: 20px;
+}
+
+.regulatory-deadlines ul {
+    margin-top: 10px;
+}
+
+/* Verification Items */
+.verification-item {
+    background: var(--light-grey);
+    transition: background 0.2s;
+}
+
+.verification-item:hover {
+    background: #e9ecef;
+}
+
+/* Review Items */
+.review-item {
+    background: var(--light-grey);
+    transition: background 0.2s;
+}
+
+.review-item:hover {
+    background: #e9ecef;
+}
+
+/* Report Cards */
+.report-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.report-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: var(--light-grey);
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+    padding: 15px 20px;
+}
+
+/* Badge Styles */
+.badge {
+    font-weight: 500;
+    padding: 5px 10px;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 8px 16px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #4a9d96;
+    border-color: #4a9d96;
+}
+
+/* Progress Bars */
+.progress {
+    border-radius: 10px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+/* Table Styles */
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: var(--light-grey);
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(92, 189, 180, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .clients-fica-tabs-container {
+        overflow-x: auto;
+    }
+
+    .clients-fica-tabs {
+        flex-wrap: nowrap;
+        min-width: max-content;
+    }
+
+    .clients-fica-tabs .nav-link {
+        white-space: nowrap;
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+}
+

@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Executive Dashboard - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/dashboard.css" rel="stylesheet">
+    <link href="../css/health-score.css" rel="stylesheet">
+    <link href="../css/cards.css" rel="stylesheet">
+    <link href="../css/widgets.css" rel="stylesheet">
+    <link href="../css/timeline.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 1. HEADER WITH FSP LICENSE STATUS -->
+    <div class="dashboard-header">
+        <div class="container-fluid">
+            <div class="row align-items-center py-3">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <div class="company-logo me-3">
+                            <i class="fas fa-building fa-2x text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">ABC Financial Services (Pty) Ltd</h5>
+                            <small class="text-muted">FSP 12345</small>
+                            <span class="badge bg-success ms-2">✓ ACTIVE</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h4 class="mb-0">Executive Dashboard</h4>
+                    <small class="text-muted">Compliance Overview & Team Performance</small>
+                    <div class="mt-1">
+                        <small class="text-muted">Last Updated: <span id="last-updated">15/12/2024 14:30</span></small>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="d-flex align-items-center justify-content-end gap-2">
+                        <div class="user-info me-3">
+                            <small class="text-muted">Thabo Mokoena</small><br>
+                            <small class="text-muted">FSP Owner</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary position-relative">
+                            <i class="fas fa-bell"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">12</span>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="refreshDashboard()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#" onclick="exportDashboard('pdf')">Export to PDF</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="exportDashboard('excel')">Export to Excel</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="exportDashboard('email')">Email to Board</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="scheduleEmail()">Schedule Weekly Email</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FSP License Information Card -->
+        <div class="container-fluid">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">FSP License Status: <span class="badge bg-light text-dark">ACTIVE ✓</span></h5>
+                            <small>Valid Until: 14/03/2026 (441 days remaining)</small>
+                        </div>
+                        <button class="btn btn-sm btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#licenseDetails">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="collapse show" id="licenseDetails">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>License Details</h6>
+                                <ul class="list-unstyled">
+                                    <li><strong>Issue Date:</strong> 15/03/2015</li>
+                                    <li><strong>Years Licensed:</strong> 9 years, 9 months</li>
+                                    <li><strong>License Type:</strong> Category I - Long-term Insurance, Investments</li>
+                                    <li><strong>Representatives:</strong> 12 active, 0 suspended</li>
+                                    <li><strong>Key Individuals:</strong> 3 appointed</li>
+                                    <li><strong>Compliance Officer:</strong> Sarah Naidoo</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Insurance Status</h6>
+                                <div class="mb-3">
+                                    <strong>Professional Indemnity:</strong>
+                                    <span class="badge bg-success ms-2">✓ Current</span>
+                                    <ul class="list-unstyled ms-3 mt-2">
+                                        <li><small>Insurer: Guardrisk</small></li>
+                                        <li><small>Policy: PI-2024-789456</small></li>
+                                        <li><small>Coverage: R5,000,000</small></li>
+                                        <li><small>Expiry: 15/01/2025 <span class="badge bg-warning">31 days ⚠️</span></small></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <strong>Fidelity Guarantee:</strong>
+                                    <span class="badge bg-success ms-2">✓ Current</span>
+                                    <ul class="list-unstyled ms-3 mt-2">
+                                        <li><small>Insurer: Santam</small></li>
+                                        <li><small>Policy: FG-2024-123789</small></li>
+                                        <li><small>Coverage: R3,000,000</small></li>
+                                        <li><small>Expiry: 28/02/2025 (75 days)</small></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-sm btn-outline-primary me-2">View Full License Details</button>
+                            <button class="btn btn-sm btn-outline-primary me-2">Download License Certificate</button>
+                            <button class="btn btn-sm btn-outline-primary">Renewal Reminders</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. OVERALL COMPLIANCE HEALTH SCORE (Hero Section) -->
+    <div class="container-fluid mb-4">
+        <div class="card health-score-card">
+            <div class="card-body text-center py-5">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="health-score-display">
+                            <canvas id="healthScoreChart" width="300" height="300"></canvas>
+                            <div class="health-score-overlay">
+                                <div class="health-score-value" id="healthScoreValue">87%</div>
+                                <div class="health-score-label">OVERALL COMPLIANCE</div>
+                                <div class="health-score-status text-success">Good Standing</div>
+                            </div>
+                        </div>
+                        <div class="health-score-trend mt-3">
+                            <span class="badge bg-success">
+                                <i class="fas fa-arrow-up"></i> +3% vs last month
+                            </span>
+                            <span class="ms-2">Improving</span>
+                            <a href="#" class="ms-2" onclick="showTrendChart()">View 12-month trend</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="mb-3">Score Breakdown</h6>
+                        <div class="mini-gauges">
+                            <div class="mini-gauge mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span><i class="fas fa-graduation-cap me-2"></i>Fit & Proper</span>
+                                    <span class="badge bg-success">92%</span>
+                                </div>
+                                <small class="text-muted">11/12 compliant</small>
+                            </div>
+                            <div class="mini-gauge mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span><i class="fas fa-book me-2"></i>CPD</span>
+                                    <span class="badge bg-warning">75%</span>
+                                </div>
+                                <small class="text-muted">9/12 compliant • 167 days to deadline</small>
+                            </div>
+                            <div class="mini-gauge mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span><i class="fas fa-shield-check me-2"></i>FICA</span>
+                                    <span class="badge bg-success">88%</span>
+                                </div>
+                                <small class="text-muted">580/660 clients</small>
+                            </div>
+                            <div class="mini-gauge mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span><i class="fas fa-folder me-2"></i>Documents</span>
+                                    <span class="badge bg-success">95%</span>
+                                </div>
+                                <small class="text-muted">850/895 current</small>
+                            </div>
+                            <div class="mini-gauge mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span><i class="fas fa-shield-alt me-2"></i>Insurance</span>
+                                    <span class="badge bg-success">100%</span>
+                                </div>
+                                <small class="text-muted">All current</small>
+                            </div>
+                            <div class="mini-gauge">
+                                <div class="d-flex justify-content-between">
+                                    <span><i class="fas fa-hand-paper me-2"></i>TCF</span>
+                                    <span class="badge bg-success">85%</span>
+                                </div>
+                                <small class="text-muted">Compliant</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <div class="audit-info">
+                            <small class="text-muted">
+                                Last Full Audit: 10/12/2024 (5 days ago) • 
+                                Next Scheduled Audit: 20/12/2024 (5 days)
+                            </small>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-primary me-2">Schedule Audit</button>
+                                <button class="btn btn-sm btn-outline-primary me-2">Run Quick Check</button>
+                                <button class="btn btn-sm btn-outline-primary">View Audit History</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. CRITICAL ALERTS & ACTION ITEMS -->
+    <div class="container-fluid mb-4">
+        <div class="alert-section">
+            <h5 class="mb-3"><i class="fas fa-exclamation-triangle text-danger me-2"></i>REQUIRES IMMEDIATE ATTENTION</h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="alert-card critical">
+                        <div class="alert-icon-large">🔴</div>
+                        <div class="alert-count">1</div>
+                        <div class="alert-label">CRITICAL ISSUE</div>
+                        <div class="alert-summary">Mike Johnson's RE5 expired 2 days ago</div>
+                        <div class="alert-due text-danger">OVERDUE</div>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-danger">View Details</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="alert-card high">
+                        <div class="alert-icon-large">🟠</div>
+                        <div class="alert-count">3</div>
+                        <div class="alert-label">HIGH PRIORITY</div>
+                        <div class="alert-summary">45 FICA reviews overdue</div>
+                        <div class="alert-due">6 days remaining</div>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-warning">View All 3</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="alert-card medium">
+                        <div class="alert-icon-large">🟡</div>
+                        <div class="alert-count">5</div>
+                        <div class="alert-label">MEDIUM PRIORITY</div>
+                        <div class="alert-summary">3 reps behind CPD schedule</div>
+                        <div class="alert-due">30 days remaining</div>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-warning">View All 5</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="alert-card upcoming">
+                        <div class="alert-icon-large">📅</div>
+                        <div class="alert-count">8</div>
+                        <div class="alert-label">UPCOMING DEADLINES</div>
+                        <div class="alert-summary">Quarterly FSCA return - 31/01/2025</div>
+                        <div class="alert-due">47 days</div>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-info">View Calendar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <button class="btn btn-sm btn-outline-primary me-2">View All Alerts (17)</button>
+                <button class="btn btn-sm btn-outline-secondary me-2">Create Custom Alert</button>
+                <button class="btn btn-sm btn-outline-secondary">Generate Alert Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. TEAM COMPLIANCE OVERVIEW -->
+    <div class="container-fluid mb-4">
+        <h4 class="mb-3">Team Performance & Compliance Status</h4>
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="stat-value text-primary">12</div>
+                    <div class="stat-label">Active Representatives</div>
+                    <div class="stat-breakdown">
+                        <span class="text-success">✓ Compliant: 11 (92%)</span><br>
+                        <span class="text-danger">✗ Non-Compliant: 1 (8%)</span>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-success"><i class="fas fa-arrow-up"></i> +1 this month</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary mt-2">View Team Matrix</button>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="stat-value text-success">87%</div>
+                    <div class="stat-label">Average Compliance Score</div>
+                    <div class="stat-breakdown">
+                        <small>Highest: 98% (Sarah Naidoo)</small><br>
+                        <small>Lowest: 45% (Mike Johnson)</small>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-success"><i class="fas fa-arrow-up"></i> +2% vs last month</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary mt-2">View Rankings</button>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="stat-value text-warning">3</div>
+                    <div class="stat-label">At Risk Representatives</div>
+                    <div class="stat-breakdown">
+                        <small>Mike Johnson (45% - critical)</small><br>
+                        <small>Johan Smith (68% - warning)</small><br>
+                        <small>Peter Nel (72% - warning)</small>
+                    </div>
+                    <button class="btn btn-sm btn-warning mt-2">Send Reminders</button>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="stat-value text-success">5</div>
+                    <div class="stat-label">Recent Achievements</div>
+                    <div class="stat-breakdown">
+                        <small>Sarah Naidoo: CPD completed</small><br>
+                        <small>Thabo Mokoena: FICA audit passed</small><br>
+                        <small>Lisa van Wyk: RE5 renewed</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary mt-2">View All</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Compliance Matrix -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Team Compliance Matrix</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Rep Name</th>
+                                <th>F&P</th>
+                                <th>CPD</th>
+                                <th>FICA</th>
+                                <th>Docs</th>
+                                <th>Overall</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="table-success">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <strong>Sarah Naidoo</strong>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">✓</span></td>
+                                <td><span class="badge bg-success">20/18 hrs ✓</span></td>
+                                <td><span class="badge bg-success">✓</span></td>
+                                <td><span class="badge bg-success">✓</span></td>
+                                <td><span class="badge bg-success">98%</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-envelope"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <strong>Thabo Mokoena</strong>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">✓</span></td>
+                                <td><span class="badge bg-warning">14/18 hrs ⚠️</span></td>
+                                <td><span class="badge bg-success">✓</span></td>
+                                <td><span class="badge bg-success">✓</span></td>
+                                <td><span class="badge bg-success">85%</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-envelope"></i></button>
+                                </td>
+                            </tr>
+                            <tr class="table-danger">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <strong>Mike Johnson</strong>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-danger">✗ RE5 Expired</span></td>
+                                <td><span class="badge bg-warning">8/18 hrs ⚠️</span></td>
+                                <td><span class="badge bg-success">✓</span></td>
+                                <td><span class="badge bg-warning">⚠️ 2 expired</span></td>
+                                <td><span class="badge bg-danger">45%</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-1"><i class="fas fa-exclamation-triangle"></i> Urgent</button>
+                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-primary me-2">View Full Team Matrix</button>
+                    <button class="btn btn-sm btn-outline-secondary me-2">Export to Excel</button>
+                    <button class="btn btn-sm btn-outline-secondary">Generate Team Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. COMPLIANCE BY AREA (Six Cards) -->
+    <div class="container-fluid mb-4">
+        <h4 class="mb-3">Compliance by Area</h4>
+        <div class="row g-3">
+            <!-- Card 1: Fit & Proper -->
+            <div class="col-md-4">
+                <div class="compliance-area-card">
+                    <div class="card-header-area">
+                        <i class="fas fa-graduation-cap fa-2x me-2"></i>
+                        <div>
+                            <h6 class="mb-0">Fit & Proper</h6>
+                            <span class="badge bg-success">92% Compliant</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="h4 mb-2">11 / 12 Representatives</div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 92%"></div>
+                        </div>
+                        <ul class="list-unstyled small">
+                            <li>✓ RE5 Current: 11 (1 expired)</li>
+                            <li>✓ RE1 Current: 11 (1 expired)</li>
+                            <li>✓ Class of Business: 12</li>
+                            <li class="text-danger">✗ Issues: 1 Critical</li>
+                        </ul>
+                        <div class="alert alert-danger py-2 px-3 mb-2">
+                            <small>🔴 Mike Johnson: RE5 expired 13/12/2024</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary w-100">View All Representatives</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: CPD Management -->
+            <div class="col-md-4">
+                <div class="compliance-area-card">
+                    <div class="card-header-area">
+                        <i class="fas fa-book fa-2x me-2"></i>
+                        <div>
+                            <h6 class="mb-0">CPD Compliance</h6>
+                            <span class="badge bg-warning">75% Compliant</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="h4 mb-2">9 / 12 Representatives</div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-warning" style="width: 75%"></div>
+                        </div>
+                        <ul class="list-unstyled small">
+                            <li>✓ Completed (18+ hrs): 9</li>
+                            <li>⚠️ In Progress (10-17 hrs): 2</li>
+                            <li>✗ At Risk (< 10 hrs): 1</li>
+                            <li>📅 Days to Deadline: <strong>167 days</strong></li>
+                        </ul>
+                        <div class="mt-2">
+                            <small class="text-muted">Team Total: 165 hrs • Avg: 13.75 hrs/person</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary w-100 mt-2">View CPD Dashboard</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: FICA Compliance -->
+            <div class="col-md-4">
+                <div class="compliance-area-card">
+                    <div class="card-header-area">
+                        <i class="fas fa-shield-check fa-2x me-2"></i>
+                        <div>
+                            <h6 class="mb-0">FICA Verification</h6>
+                            <span class="badge bg-success">88% Compliant</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="h4 mb-2">580 / 660 Clients</div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 88%"></div>
+                        </div>
+                        <ul class="list-unstyled small">
+                            <li>✓ Current: 580 clients</li>
+                            <li>⚠️ Reviews Due (30 days): 35</li>
+                            <li>✗ Overdue: 45</li>
+                            <li>🔴 High Risk: 25 (all current ✓)</li>
+                        </ul>
+                        <button class="btn btn-sm btn-outline-primary w-100 mt-2">View FICA Dashboard</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Document Management -->
+            <div class="col-md-4">
+                <div class="compliance-area-card">
+                    <div class="card-header-area">
+                        <i class="fas fa-folder fa-2x me-2"></i>
+                        <div>
+                            <h6 class="mb-0">Document Compliance</h6>
+                            <span class="badge bg-success">95% Compliant</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="h4 mb-2">850 / 895 Documents</div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 95%"></div>
+                        </div>
+                        <ul class="list-unstyled small">
+                            <li>✓ Active & Current: 850</li>
+                            <li>⚠️ Expiring (90 days): 30</li>
+                            <li>✗ Expired: 15</li>
+                            <li>📦 5-Year Retention: 100% compliant</li>
+                        </ul>
+                        <button class="btn btn-sm btn-outline-primary w-100 mt-2">View Document Library</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5: Insurance Coverage -->
+            <div class="col-md-4">
+                <div class="compliance-area-card">
+                    <div class="card-header-area">
+                        <i class="fas fa-shield-alt fa-2x me-2"></i>
+                        <div>
+                            <h6 class="mb-0">Insurance Policies</h6>
+                            <span class="badge bg-success">100% Compliant</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="h4 mb-2 text-success">ALL POLICIES CURRENT ✓</div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                        </div>
+                        <ul class="list-unstyled small">
+                            <li>✓ PI: R5,000,000 (Guardrisk)</li>
+                            <li class="text-warning">⚠️ Expiry: 15/01/2025 (31 days)</li>
+                            <li>✓ FG: R3,000,000 (Santam)</li>
+                            <li>✓ Expiry: 28/02/2025 (75 days)</li>
+                        </ul>
+                        <button class="btn btn-sm btn-outline-primary w-100 mt-2">View Policies</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6: Supervision & Oversight -->
+            <div class="col-md-4">
+                <div class="compliance-area-card">
+                    <div class="card-header-area">
+                        <i class="fas fa-users fa-2x me-2"></i>
+                        <div>
+                            <h6 class="mb-0">Representative Supervision</h6>
+                            <span class="badge bg-success">100% Compliant</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="h4 mb-2">ALL REPS SUPERVISED ✓</div>
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                        </div>
+                        <ul class="list-unstyled small">
+                            <li>Supervision Ratio: 1:4</li>
+                            <li>✓ All reps assigned to KI: 12/12</li>
+                            <li>✓ Supervision agreements: 12/12</li>
+                            <li>✓ Regular meetings: 100% compliance</li>
+                        </ul>
+                        <button class="btn btn-sm btn-outline-primary w-100 mt-2">View Hierarchy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. CPD PROGRESS WIDGET -->
+    <div class="container-fluid mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">CPD Progress Tracker</h5>
+                <small class="text-muted">Annual cycle: 1 June 2024 - 31 May 2025</small>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div class="h2 text-primary">167</div>
+                        <div class="text-muted">DAYS REMAINING</div>
+                        <div class="progress mt-2" style="height: 10px;">
+                            <div class="progress-bar bg-primary" style="width: 52%"></div>
+                        </div>
+                        <small class="text-muted">52% of year elapsed</small>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="cpdProgressChart" height="150"></canvas>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Top Performers</h6>
+                        <ol class="small">
+                            <li>🥇 Sarah Naidoo: 20 hrs (111%)</li>
+                            <li>🥈 Lisa van Wyk: 19 hrs (106%)</li>
+                            <li>🥉 Pieter Venter: 18.5 hrs (103%)</li>
+                        </ol>
+                        <h6 class="mt-3">Need Attention</h6>
+                        <ul class="small text-danger">
+                            <li>🔴 Mike Johnson: 8 hrs (44%)</li>
+                            <li>⚠️ Johan Smith: 12 hrs (67%)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-primary me-2">View CPD Dashboard</button>
+                    <button class="btn btn-sm btn-outline-secondary me-2">Send Reminders</button>
+                    <button class="btn btn-sm btn-outline-secondary">Progress Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. FICA STATUS WIDGET -->
+    <div class="container-fluid mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">FICA Review Status</h5>
+                <small class="text-muted">Client verification compliance</small>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <div class="h3 text-success">88%</div>
+                            <div class="text-muted">Compliant</div>
+                            <div class="small">580 / 660 clients current</div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Low Risk (5-year):</span>
+                                <span>480/495 (97%)</span>
+                            </div>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" style="width: 97%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Medium Risk (3-year):</span>
+                                <span>90/115 (78%)</span>
+                            </div>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-warning" style="width: 78%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>High Risk (Annual):</span>
+                                <span>25/25 (100%)</span>
+                            </div>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-primary me-2">View FICA Dashboard</button>
+                    <button class="btn btn-sm btn-outline-warning me-2">Overdue List (45)</button>
+                    <button class="btn btn-sm btn-outline-secondary">FICA Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. RECENT ACTIVITY TIMELINE -->
+    <div class="container-fluid mb-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Activity & System Events</h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary active">All</button>
+                        <button type="button" class="btn btn-outline-primary">Critical</button>
+                        <button type="button" class="btn btn-outline-primary">My Activity</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="activity-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon bg-success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>Sarah Naidoo</strong> verified CPD certificate for Thabo Mokoena
+                                    <br><small class="text-muted">2.0 hours Ethics - FICA Compliance Workshop</small>
+                                </div>
+                                <small class="text-muted">2 hours ago</small>
+                            </div>
+                            <span class="badge bg-info mt-1">CPD</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon bg-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>System</strong> created alert: 45 FICA reviews overdue
+                                    <br><small class="text-muted">Medium-risk clients require 3-year reviews</small>
+                                </div>
+                                <small class="text-muted">4 hours ago</small>
+                            </div>
+                            <span class="badge bg-purple mt-1">FICA</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon bg-danger pulse">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>System</strong> CRITICAL: Mike Johnson's RE5 certificate expired
+                                    <br><small class="text-muted">Certificate expired 13/12/2024, rep suspended</small>
+                                </div>
+                                <small class="text-muted">2 days ago</small>
+                            </div>
+                            <span class="badge bg-danger mt-1">Fit & Proper</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-3">Show More Activity</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. UPCOMING DEADLINES CALENDAR -->
+    <div class="container-fluid mb-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Upcoming Deadlines & Important Dates</h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary active">List View</button>
+                        <button type="button" class="btn btn-outline-primary">Calendar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="deadline-list">
+                    <div class="deadline-item overdue">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="deadline-date text-danger">13/12/2024 (2 days ago)</div>
+                                <div class="deadline-title">Mike Johnson RE5 Certificate Expired</div>
+                                <div class="deadline-category">Fit & Proper</div>
+                            </div>
+                            <div>
+                                <span class="badge bg-danger">OVERDUE</span>
+                                <button class="btn btn-sm btn-danger mt-2">Resolve Now</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="deadline-item high">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="deadline-date text-warning">20/12/2024 (5 days)</div>
+                                <div class="deadline-title">Q4 FICA Internal Audit</div>
+                                <div class="deadline-category">Internal Audit</div>
+                            </div>
+                            <div>
+                                <span class="badge bg-warning">HIGH</span>
+                                <button class="btn btn-sm btn-outline-warning mt-2">View Checklist</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="deadline-item medium">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="deadline-date">15/01/2025 (31 days)</div>
+                                <div class="deadline-title">Professional Indemnity Insurance Renewal</div>
+                                <div class="deadline-category">Insurance</div>
+                            </div>
+                            <div>
+                                <span class="badge bg-warning">HIGH</span>
+                                <button class="btn btn-sm btn-outline-primary mt-2">Upload Renewal</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="deadline-item critical">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="deadline-date">31/05/2025 (167 days)</div>
+                                <div class="deadline-title">CPD Annual Deadline (18 hours required)</div>
+                                <div class="deadline-category">CPD</div>
+                            </div>
+                            <div>
+                                <span class="badge bg-danger">CRITICAL</span>
+                                <button class="btn btn-sm btn-outline-primary mt-2">View CPD Dashboard</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-3">Show All Deadlines (42 upcoming)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. QUICK ACTIONS PANEL -->
+    <div class="container-fluid mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h6>Compliance</h6>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">+ Create Alert</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">📋 Schedule Audit</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">✓ Run Quick Check</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">📊 Generate Report</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Team Management</h6>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">+ Add Representative</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">📧 Send Team Reminder</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">👥 View Team Matrix</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">📈 Team Performance</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>Documents & CPD</h6>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">📤 Upload Document</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">+ Add CPD Record</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">✓ Verify Certificate</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">📋 Expiring Docs (45)</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <h6>FICA & Reports</h6>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">+ Add Client</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">📅 Schedule FICA Review</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">📄 Executive Summary</a></li>
+                            <li><a href="#" class="btn btn-sm btn-link p-0 text-start">📧 Email to Board</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 11. KEY STATISTICS (Bottom Section) -->
+    <div class="container-fluid mb-4">
+        <h4 class="mb-3">Key Statistics</h4>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Active Representatives</div>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +1 this month</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">87%</div>
+                    <div class="stat-label">Average Compliance Score</div>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +2% vs last month</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">660</div>
+                    <div class="stat-label">Active Clients</div>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +23 this quarter</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">88%</div>
+                    <div class="stat-label">FICA Compliant</div>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +3% this month</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">895</div>
+                    <div class="stat-label">Total Documents</div>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +45 this week</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">Documents Current</div>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +1% this month</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Compliance Checks (30 days)</div>
+                    <small class="text-success"><i class="fas fa-arrow-up"></i> +2 vs previous</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Audits Completed (this quarter)</div>
+                    <small class="text-muted">On schedule ✓</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/dashboard-main.js"></script>
+    <script src="../js/health-score.js"></script>
+    <script src="../js/charts.js"></script>
+    <script src="../js/auto-refresh.js"></script>
+    <script src="../js/export.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,62 @@
+/* Health Score Styles */
+
+.health-score-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 2px solid var(--primary-color);
+}
+
+.health-score-display {
+    position: relative;
+    display: inline-block;
+    margin: 20px auto;
+}
+
+.health-score-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.health-score-value {
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.health-score-label {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-color);
+    margin-top: 5px;
+}
+
+.health-score-status {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.health-score-trend {
+    margin-top: 20px;
+}
+
+.mini-gauges {
+    text-align: left;
+}
+
+.mini-gauge {
+    padding: 10px;
+    background: var(--light-grey);
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.audit-info {
+    padding-top: 20px;
+    border-top: 1px solid var(--light-grey);
+}
+

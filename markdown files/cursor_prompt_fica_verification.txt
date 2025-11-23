@@ -1,0 +1,1663 @@
+CURSOR PROMPT: FICA CLIENT VERIFICATION WORKFLOW MODULE
+=======================================================
+
+Create a fully functional, realistic HTML mockup for the FICA (Financial Intelligence Centre Act) Client Verification Workflow module of a South African broker compliance portal. This module handles KYC (Know Your Customer), risk assessment, PEP/sanctions screening, and ongoing monitoring as per FICA Act 38 of 2001 requirements.
+
+## BRAND & DESIGN REQUIREMENTS
+
+**Brand Colors:**
+- Primary (Teal/Turquoise): #5CBDB4
+- Text (Charcoal Grey): #4A4A4A
+- Background: #FFFFFF
+- Light Grey: #F8F9FA
+- Success: #28A745
+- Warning: #FFC107
+- Danger: #DC3545
+- Info: #17A2B8
+
+**Framework & Theme:**
+- Use Bootstrap 5+ with Phoenix v1.23.0 theme: https://prium.github.io/phoenix/v1.23.0/index.html
+- Fully responsive design (mobile-first)
+- Vanilla JavaScript only (no frameworks)
+- South African locale (ID format, phone +27, currency ZAR, dates DD/MM/YYYY)
+
+## MODULE STRUCTURE
+
+### Top Navigation Tabs
+- FICA Dashboard (default)
+- Verify New Client
+- Verification Queue
+- Risk Assessment
+- Screening & Monitoring
+- Reviews & Updates
+- Reports
+
+---
+
+## 1. FICA DASHBOARD
+
+### Hero Section: Compliance Metrics (4 cards)
+
+**Card 1: Verification Status**
+- Large donut chart: 94% verified
+- Center number: 235 / 248
+- Label: "Clients Verified"
+- Status: âœ“ Good Compliance (green)
+- Subtitle: "13 pending verification"
+
+**Card 2: High-Risk Clients**
+- Large number: 8
+- Icon: Alert triangle
+- Label: "High-Risk Clients"
+- Subtitle: "Requiring EDD"
+- Badge: Amber warning
+- Link: "View Details"
+
+**Card 3: Pending Verifications**
+- Large number: 13
+- Icon: Clock
+- Label: "Pending Verifications"
+- Subtitle: "Awaiting documentation"
+- Badge: Blue info
+- Link: "Review Queue"
+
+**Card 4: Overdue Reviews**
+- Large number: 5
+- Icon: Calendar-x
+- Label: "Overdue Reviews"
+- Subtitle: "Require immediate attention"
+- Badge: Red danger
+- Link: "View Overdue"
+
+### Verification Breakdown (Visual Section)
+
+**By Risk Category (Horizontal bar chart):**
+- Low Risk (SDD): 180 clients (73%)
+- Standard Risk (CDD): 48 clients (19%)
+- High Risk (EDD): 8 clients (3%)
+- Not Yet Classified: 12 clients (5%)
+
+**By Status (Donut chart):**
+- Fully Verified: 235 clients (95%)
+- Partial Verification: 8 clients (3%)
+- Pending: 5 clients (2%)
+
+**By Document Status:**
+- All Documents: 225 clients
+- Missing Documents: 18 clients
+- Expired Documents: 5 clients
+
+### Recent Activity Feed (Last 10 activities)
+
+**Activity List:**
+
+**Activity 1:**
+- Type icon: âœ“ (green checkmark)
+- "Client Thabo Mokoena verified"
+- Details: "Standard CDD completed"
+- User: Sarah Naidoo
+- Time: 2 hours ago
+- Action: View Client
+
+**Activity 2:**
+- Type icon: âš  (amber warning)
+- "PEP screening match found"
+- Details: "Client Lerato Dlamini - Requires EDD"
+- User: System
+- Time: 5 hours ago
+- Action: Review Match
+
+**Activity 3:**
+- Type icon: ðŸ“„ (document)
+- "Documents uploaded"
+- Details: "Client Johan van Zyl - ID & Proof of address"
+- User: Pieter Vermeulen
+- Time: 1 day ago
+- Action: Verify Documents
+
+**Activity 4:**
+- Type icon: ðŸ”„ (refresh)
+- "Review completed"
+- Details: "Client Nomsa Khumalo - Annual review passed"
+- User: Sarah Naidoo
+- Time: 2 days ago
+
+**Activity 5:**
+- Type icon: ðŸš¨ (alert)
+- "Sanctions screening alert"
+- Details: "Potential match requires investigation"
+- User: System
+- Time: 3 days ago
+- Action: Investigate
+
+### Quick Actions Panel
+- [Primary Button] Verify New Client
+- [Secondary Button] Bulk Upload
+- [Secondary Button] Run Screenings
+- [Link] View All Pending
+- [Link] Generate Compliance Report
+
+### Alerts & Warnings
+
+**Alert Cards:**
+
+**Alert 1:** (Critical - Red)
+- Icon: Exclamation-circle
+- Title: "5 Reviews Overdue"
+- Message: "The following clients have overdue annual reviews"
+- Client list: M. van der Merwe (30 days), P. Botha (15 days), etc.
+- Action: "Review Now"
+
+**Alert 2:** (Warning - Amber)
+- Icon: Warning
+- Title: "Expiring Documents"
+- Message: "8 clients have documents expiring in next 30 days"
+- Action: "View Expiring"
+
+**Alert 3:** (Info - Blue)
+- Icon: Info-circle
+- Title: "New Screening Rules"
+- Message: "Updated PEP list available - run bulk screening recommended"
+- Action: "Run Screening"
+- Dismiss option
+
+### Calendar Widget: Upcoming Reviews
+
+**Mini calendar showing:**
+- This month's scheduled reviews
+- Color-coded dots:
+  - Green: Completed
+  - Blue: Scheduled
+  - Red: Overdue
+- Next 5 reviews list:
+  - 20/12/2024: Johan Smit - Annual Review
+  - 22/12/2024: Mary Johnson - EDD Review
+  - 05/01/2025: Thandi Nkosi - Document Renewal
+  - 10/01/2025: Pieter Nel - High-Risk Review
+  - 15/01/2025: Sarah Brown - Standard Review
+
+---
+
+## 2. VERIFY NEW CLIENT TAB
+
+### Client Type Selection (First Step - Large Cards)
+
+**Card 1: Individual Client**
+- Icon: Person
+- Description: "Natural person - South African or foreign national"
+- Most common
+- [Select] button
+
+**Card 2: Corporate Client**
+- Icon: Building
+- Description: "Company, close corporation, trust, or partnership"
+- [Select] button
+
+**Card 3: Foreign Individual**
+- Icon: Globe
+- Description: "Individual client without SA ID"
+- [Select] button
+
+### Individual Client Verification Form (Step-by-step Wizard)
+
+**Progress Indicator:**
+1. Basic Details
+2. Identity Verification
+3. Proof of Residence
+4. Risk Assessment
+5. Screening
+6. Review & Submit
+
+---
+
+#### STEP 1: BASIC DETAILS
+
+**Form Fields:**
+
+**Personal Information:**
+1. Title (dropdown): Mr | Mrs | Ms | Dr | Prof | Other
+2. First Name (text) - required
+3. Middle Name(s) (text) - optional
+4. Surname (text) - required
+5. Preferred Name (text) - optional
+6. Date of Birth (date picker) - required
+   - Auto-calculate age
+   - Validation: Must be 18+
+7. Gender (dropdown): Male | Female | Other | Prefer not to say
+8. Nationality (dropdown with search): South African | Other...
+9. Country of Birth (dropdown)
+
+**Contact Information:**
+10. Mobile Number (text with format): +27 [  ] [  ] [  ] [  ] - required
+    - Format validation
+11. Alternative Number (text) - optional
+12. Email Address (email) - required
+    - Email validation
+13. Alternative Email (email) - optional
+
+**Residential Address:**
+14. Address Type: â—‹ Residential â—‹ Business â—‹ Postal
+15. Street Address Line 1 (text) - required
+16. Street Address Line 2 (text) - optional
+17. Suburb (text) - required
+18. City (text) - required
+19. Province (dropdown): Western Cape | Gauteng | KwaZulu-Natal | etc.
+20. Postal Code (text) - required (4 digits)
+21. Country (dropdown) - default: South Africa
+
+**Postal Address (if different):**
+- Checkbox: â˜ Same as residential address
+- If unchecked, repeat address fields
+
+**Additional Information:**
+22. Marital Status (dropdown): Single | Married | Divorced | Widowed
+23. Number of Dependants (number) - optional
+24. Occupation (text) - required
+25. Employer Name (text) - optional
+26. Tax Number (text) - required
+    - Format validation: 10 digits
+27. Country of Tax Residence (dropdown)
+
+**Buttons:**
+- [Primary] Next: Identity Verification
+- [Secondary] Save as Draft
+- [Link] Cancel
+
+---
+
+#### STEP 2: IDENTITY VERIFICATION
+
+**Instructions:**
+"Upload a clear, legible copy of the client's South African ID document (green bar-coded ID or smart ID card). Both sides must be visible."
+
+**ID Document Upload:**
+- Drag & drop zone (or click to browse)
+- Accepted formats: PDF, JPG, PNG - Max 5MB per file
+- Two upload sections:
+  1. ID Front Side (required)
+  2. ID Back Side (required)
+- Preview thumbnails after upload
+- "Replace" and "Remove" options
+
+**Auto-Extract Information (OCR):**
+After upload, system attempts to extract:
+- ID Number
+- Full Names
+- Surname
+- Date of Birth
+- Gender
+
+**ID Number Verification:**
+- ID Number (text) - 13 digits - required
+- Format: [  ] [  ] [  ] [  ] [  ] [  ] [  ] [  ] [  ] [  ] [  ] [  ] [  ]
+- Real-time validation:
+  - âœ“ Valid format
+  - âœ“ Valid checksum
+  - âœ“ Matches Date of Birth
+  - âœ“ Matches Gender
+- Auto-populate from previous step if matches
+- Warning if mismatch: "ID number doesn't match entered details"
+
+**Verification Checklist:**
+- â˜‘ ID document is clear and legible
+- â˜‘ All corners of ID visible
+- â˜‘ No tampering or alterations visible
+- â˜‘ ID is valid (not expired)
+- â˜‘ Photo matches client (if known)
+
+**Additional Identity Documents (Optional):**
+- Driver's License
+- Passport
+- Proof of Bank Account
+- Other supporting documents
+
+**Buttons:**
+- [Primary] Next: Proof of Residence
+- [Secondary] Back
+- [Secondary] Save as Draft
+- [Link] Cancel
+
+---
+
+#### STEP 3: PROOF OF RESIDENCE
+
+**Instructions:**
+"Upload a proof of residence document not older than 3 months. Accepted documents: Utility bill, bank statement, municipal account, lease agreement."
+
+**Document Requirements Display:**
+- Must be in client's name
+- Must show residential address
+- Must be dated within last 3 months
+- Must be an original document (not a handwritten letter)
+
+**Upload Section:**
+- Drag & drop zone
+- Accepted formats: PDF, JPG, PNG - Max 5MB
+- Preview thumbnail
+- Document type selector (dropdown):
+  - Utility Bill (Electricity/Water/Gas)
+  - Bank Statement
+  - Municipal Account
+  - Lease/Rental Agreement
+  - Mortgage Statement
+  - Other (specify)
+- Document Date (date picker) - required
+  - Auto-validation: Must be within 3 months
+  - Warning if older: "âš  Document is older than 3 months"
+
+**Address Verification:**
+- Address from document (auto-extracted if possible)
+- Compare with entered address
+- Highlight differences if any:
+  - âš  Address on document differs from entered address
+  - Options: Update entered address | Mark as alternative address | Continue anyway
+
+**Alternative Proof Options:**
+If client can't provide standard proof:
+- Affidavit from traditional leader
+- Letter from employer (on letterhead)
+- Confirmation from financial institution
+- Reason for alternative (textarea)
+
+**Verification Checklist:**
+- â˜‘ Document is dated within 3 months
+- â˜‘ Document clearly shows client name
+- â˜‘ Document clearly shows address
+- â˜‘ Address matches residential address
+- â˜‘ Document appears authentic
+
+**Buttons:**
+- [Primary] Next: Risk Assessment
+- [Secondary] Back
+- [Secondary] Save as Draft
+- [Link] Cancel
+
+---
+
+#### STEP 4: RISK ASSESSMENT
+
+**Introduction:**
+"Complete the risk assessment to determine the appropriate due diligence level (SDD, CDD, or EDD)."
+
+**Risk Factors Questionnaire:**
+
+**1. Client Profile:**
+- What is the client's source of income?
+  - â—‹ Employment/Salary
+  - â—‹ Business/Self-employed
+  - â—‹ Investment Income
+  - â—‹ Inheritance
+  - â—‹ Other (specify)
+  - Risk: Low | Medium | High
+
+**2. Expected Transaction Activity:**
+- What is the expected monthly transaction value?
+  - â—‹ < R50,000 (Low)
+  - â—‹ R50,000 - R200,000 (Medium)
+  - â—‹ > R200,000 (High)
+- How frequent are expected transactions?
+  - â—‹ Infrequent (< 5 per month)
+  - â—‹ Regular (5-20 per month)
+  - â—‹ High frequency (> 20 per month)
+
+**3. Source of Funds:**
+- What is the primary source of funds for investments?
+  - â—‹ Salary/Wages
+  - â—‹ Business Profits
+  - â—‹ Sale of Assets
+  - â—‹ Inheritance/Gift
+  - â—‹ Savings
+  - â—‹ Other (specify)
+- Can client provide documented proof?
+  - â—‹ Yes, readily available
+  - â—‹ Yes, but requires time
+  - â—‹ No
+  - Risk indicator shown
+
+**4. Geographic Risk:**
+- Does client have business/financial ties to high-risk countries?
+  - â—‹ No
+  - â—‹ Yes (specify countries)
+- If yes, list countries and explain nature of ties
+- Auto-highlight if FATF high-risk jurisdiction
+
+**5. Product/Service Risk:**
+- What products/services will client use?
+  - â˜ Long-term Insurance
+  - â˜ Short-term Insurance
+  - â˜ Investment Products
+  - â˜ Retirement Annuities
+  - â˜ Offshore Investments
+- Each checked item shows risk level
+
+**6. PEP Status:**
+- Is the client a Politically Exposed Person (PEP)?
+  - â—‹ No
+  - â—‹ Domestic PEP (SA government official)
+  - â—‹ Foreign PEP (foreign government official)
+  - â—‹ International Organization PEP
+  - â—‹ Family member of PEP
+  - â—‹ Close associate of PEP
+- If Yes: Position/Role (text)
+- If Yes: Relationship to PEP (if family/associate)
+- Auto-flag for EDD if PEP
+
+**7. Beneficial Ownership:**
+- Is the client acting on behalf of another person?
+  - â—‹ No, acting for themselves
+  - â—‹ Yes, acting on behalf of another
+- If Yes:
+  - Beneficial owner details (required)
+  - Relationship to beneficial owner
+  - Reason for acting on behalf
+  - Flag for additional documentation
+
+**Risk Score Calculation:**
+- Real-time calculation as form is filled
+- Risk meter showing Low | Medium | High
+- Color-coded: Green | Amber | Red
+
+**Automatic Risk Classification:**
+- Based on total score:
+  - **Low Risk:** Standard CDD or SDD
+  - **Medium Risk:** Standard CDD
+  - **High Risk:** Enhanced EDD required
+
+**Risk Classification Result (Display Card):**
+- **Assessed Risk Level:** MEDIUM (Amber badge)
+- **Due Diligence Required:** Customer Due Diligence (CDD)
+- **Contributing Factors:**
+  - Source of funds: Low risk
+  - Transaction volume: Medium risk
+  - Product type: Low risk
+  - Geographic: Low risk
+  - PEP status: Not applicable
+- **Additional Requirements:**
+  - Source of funds declaration
+  - Regular monitoring (annual reviews)
+
+**Buttons:**
+- [Primary] Next: Screening
+- [Secondary] Back
+- [Secondary] Override Risk Classification (for Compliance Officers only)
+- [Secondary] Save as Draft
+- [Link] Cancel
+
+---
+
+#### STEP 5: SCREENING
+
+**Introduction:**
+"Automated screening against PEP, sanctions, and adverse media databases."
+
+**Screening Status:**
+- Status: â³ Screening in Progress...
+- Progress bar
+- Estimated time: 30-60 seconds
+
+**Screening Results (After completion):**
+
+**PEP Screening:**
+- Status: âœ“ No Match Found (Green)
+- Database: World-Check, Refinitiv, Dow Jones
+- Last Updated: 15/12/2024 10:30
+- [View Details] button
+
+**OR if match:**
+- Status: âš  Potential Match (Amber)
+- Name: Similar to "Thabo Mokoena"
+- Match Score: 85%
+- Details: Government official in Department of Finance
+- [Review Match] [Accept] [Reject] buttons
+
+**Sanctions Screening:**
+- Status: âœ“ Clear (Green)
+- Lists Checked:
+  - OFAC (US Office of Foreign Assets Control)
+  - UN Sanctions List
+  - EU Sanctions List
+  - HMT (UK Treasury) List
+  - DFAT (Australian) List
+- Last Updated: 15/12/2024 10:30
+- [View Details]
+
+**Adverse Media Screening:**
+- Status: âœ“ No Negative Findings (Green)
+- Sources: Global news databases
+- Keywords: Money laundering, fraud, corruption, terrorism
+- Last Screened: 15/12/2024 10:30
+- [View Full Report]
+
+**Criminal Background Check:**
+- Status: â—‹ Not Performed (Optional)
+- [Run Check] button
+- Note: "Client consent required"
+
+**Screening Summary Card:**
+- Overall Result: âœ“ CLEAR (Green badge)
+- All Checks Passed: 3/3
+- Manual Review Required: No
+- Next Scheduled Screening: 15/03/2025 (3 months)
+
+**If any matches found:**
+- Status: âš  REQUIRES REVIEW (Amber)
+- Matches Found: 1 potential PEP match
+- Action Required: Manual review by Compliance Officer
+- [Assign to Compliance] button
+- [Add Notes] textarea
+
+**Auto-Schedule Ongoing Monitoring:**
+- Frequency based on risk:
+  - Low Risk: Annual
+  - Medium Risk: Quarterly
+  - High Risk: Monthly
+- Next Screening: Auto-calculated and displayed
+
+**Buttons:**
+- [Primary] Next: Review & Submit
+- [Secondary] Re-run Screening
+- [Secondary] Back
+- [Secondary] Save as Draft
+- [Link] Cancel
+
+---
+
+#### STEP 6: REVIEW & SUBMIT
+
+**Comprehensive Summary:**
+
+**Section 1: Client Information**
+- Collapsible accordion showing all entered data
+- Edit buttons for each section
+- Verification status icons
+
+**Personal Details:**
+- Name: Thabo Johannes Mokoena
+- ID Number: 8506155800083
+- Date of Birth: 15/06/1985 (39 years old)
+- Nationality: South African
+- Contact: +27 82 123 4567 | thabo.mokoena@email.com
+- [Edit] button
+
+**Address:**
+- Residential: 123 Main Road, Rondebosch, Cape Town, Western Cape, 7700
+- Postal: Same as residential
+- [Edit]
+
+**Employment:**
+- Occupation: Financial Analyst
+- Employer: ABC Investments Ltd
+- Tax Number: 1234567890
+- [Edit]
+
+**Section 2: Documents Uploaded**
+- âœ“ ID Document (Front & Back) - Verified
+- âœ“ Proof of Residence (Utility Bill dated 10/12/2024) - Verified
+- [View Documents]
+
+**Section 3: Risk Assessment**
+- Risk Level: MEDIUM (Amber badge)
+- Due Diligence: Customer Due Diligence (CDD)
+- Risk Score: 45/100
+- [View Full Assessment]
+
+**Section 4: Screening Results**
+- PEP Screening: âœ“ Clear
+- Sanctions Screening: âœ“ Clear
+- Adverse Media: âœ“ Clear
+- Overall: âœ“ PASSED
+- [View Screening Report]
+
+**Section 5: Compliance Checklist**
+
+Automated checklist with statuses:
+- âœ“ Personal details captured
+- âœ“ ID document verified
+- âœ“ Proof of residence verified (< 3 months)
+- âœ“ Tax number validated
+- âœ“ Risk assessment completed
+- âœ“ Screening passed
+- âœ“ All mandatory fields completed
+- âœ“ No red flags identified
+
+**Verification Status:** READY TO SUBMIT
+
+**Final Actions Section:**
+
+**Verified By:**
+- Officer: Sarah Naidoo (Compliance Officer)
+- Date: 15/12/2024
+- Time: 11:45
+
+**Add Notes (Optional):**
+- Textarea for any additional comments
+- "Notes will be added to client's compliance file"
+
+**Approval Workflow:**
+- If CDD: Can be approved immediately
+- If EDD: Requires Compliance Officer approval
+- Display: "This client will be auto-approved (CDD level)"
+
+**Buttons:**
+- [Primary - Large] Complete Verification
+- [Secondary] Save as Draft
+- [Secondary] Print Summary
+- [Link] Back to Edit
+- [Link] Cancel Verification
+
+**After Submission:**
+- Success modal/page
+- Client Reference Number: CLT-2024-12345
+- Verification Date: 15/12/2024
+- Status: âœ“ Verified and Active
+- Next Review Date: 15/12/2025
+- Actions:
+  - [View Client Profile]
+  - [Download Verification Report]
+  - [Verify Another Client]
+  - [Return to Dashboard]
+
+---
+
+## 3. VERIFICATION QUEUE TAB
+
+### Queue Overview Stats (Cards)
+
+**Card 1: Total in Queue**
+- Number: 13
+- Subtitle: "Pending verification"
+
+**Card 2: Awaiting Documents**
+- Number: 8
+- Subtitle: "Client action required"
+
+**Card 3: Ready for Review**
+- Number: 5
+- Subtitle: "Complete documentation"
+
+**Card 4: Average Time**
+- Number: 2.5 days
+- Subtitle: "Average verification time"
+
+### Filter & Sort Controls
+
+**Filters:**
+- Status: All | Awaiting Documents | Ready for Review | In Progress | On Hold
+- Priority: All | High | Medium | Low
+- Risk Level: All | High Risk (EDD) | Medium Risk (CDD) | Low Risk (SDD)
+- Assigned To: All | Me | Unassigned | Other Officers
+- Date Range: Last 7 days | Last 30 days | Last 90 days | Custom
+
+**Sort By:**
+- Date Submitted (Newest/Oldest)
+- Priority (High to Low)
+- Client Name (A-Z)
+- Progress (Most/Least Complete)
+
+**Search:**
+- Search by client name, ID number, or reference
+
+**View Options:**
+- [List View] | [Kanban Board] | [Table View]
+
+### Verification Queue List/Table
+
+**Table Columns:**
+| Priority | Client Name | ID/Ref Number | Status | Risk Level | Progress | Submitted | Assigned To | Actions |
+
+**Sample Rows:**
+
+**Row 1:**
+- ðŸ”´ High Priority
+- Johan van Zyl
+- 7803125678901
+- ðŸ“„ Ready for Review (blue badge)
+- Medium Risk (CDD)
+- Progress bar: 100%
+- 3 days ago (12/12/2024)
+- Sarah Naidoo
+- [Review Now] [Assign] [View]
+
+**Row 2:**
+- ðŸŸ¡ Medium Priority
+- Lerato Dlamini
+- 9205086789012
+- â³ Awaiting Documents (amber badge)
+- High Risk (EDD)
+- Progress bar: 60%
+- 5 days ago (10/12/2024)
+- Unassigned
+- [Request Docs] [Assign] [View]
+
+**Row 3:**
+- ðŸŸ¢ Low Priority
+- Sipho Ndlovu
+- 8507145890123
+- ðŸ”„ In Progress (yellow badge)
+- Low Risk (SDD)
+- Progress bar: 75%
+- 1 day ago (14/12/2024)
+- Thabo Mokoena
+- [Continue] [View]
+
+**Row 4:**
+- ðŸŸ¡ Medium Priority
+- Mary Johnson (Foreign)
+- Passport: B1234567
+- â¸ On Hold (grey badge)
+- High Risk (EDD)
+- Progress bar: 40%
+- 10 days ago (05/12/2024)
+- Sarah Naidoo
+- [Resume] [View] [Close]
+
+**Bulk Actions:**
+- Select multiple: Checkboxes
+- Actions: Assign to... | Set Priority | Export | Delete
+
+**Pagination:**
+- Showing 1-20 of 13 clients
+- Page controls
+
+### Client Detail Side Panel/Modal
+
+**When clicking "View" or "Review Now":**
+
+**Header:**
+- Client Name & Photo placeholder
+- Reference Number
+- Status badge
+- Priority indicator
+- Assigned to info
+
+**Tabs in Panel:**
+
+**Tab 1: Summary**
+- Quick overview of all information
+- Progress checklist
+- Missing items highlighted in red
+- Actions: Continue Verification | Request Documents | On Hold
+
+**Tab 2: Documents**
+- List of uploaded documents with thumbnails
+- Document status (verified/pending/missing)
+- Download/view options
+- Upload additional documents button
+- Document expiry tracking
+
+**Tab 3: Activity Log**
+- Timeline of all actions
+- Who did what and when
+- Status changes
+- Document uploads
+- Notes added
+
+**Tab 4: Screening Results**
+- PEP screening results
+- Sanctions screening
+- Adverse media
+- Re-run screening button
+
+**Tab 5: Notes & Comments**
+- Internal notes
+- Communication log
+- Add new note textarea
+- Tag other officers (@mention)
+
+**Actions in Panel:**
+- Complete Verification
+- Request More Documents (email template)
+- Assign to Another Officer
+- Set Priority
+- Put On Hold
+- Close/Cancel
+- Print Summary
+
+---
+
+## 4. RISK ASSESSMENT TAB
+
+### Risk Distribution Dashboard
+
+**Visual Overview:**
+
+**Donut Chart: Clients by Risk Level**
+- Low Risk (SDD): 180 clients (73%) - Green
+- Medium Risk (CDD): 48 clients (19%) - Amber
+- High Risk (EDD): 8 clients (3%) - Red
+- Not Assessed: 12 clients (5%) - Grey
+
+**Risk Factors Breakdown (Bar Charts):**
+
+**By Geographic Risk:**
+- South Africa only: 220 clients
+- Cross-border (low risk): 15 clients
+- Cross-border (high risk): 3 clients
+- Multiple jurisdictions: 10 clients
+
+**By Transaction Volume:**
+- Low (<R50k): 180 clients
+- Medium (R50k-R200k): 55 clients
+- High (>R200k): 13 clients
+
+**By Source of Funds:**
+- Employment/Salary: 190 clients
+- Business Income: 35 clients
+- Investment Income: 15 clients
+- Inheritance: 5 clients
+- Other: 3 clients
+
+### High-Risk Clients Section
+
+**Table: Clients Requiring EDD**
+
+**Columns:**
+| Client Name | Risk Score | Risk Factors | EDD Status | Last Review | Next Review | Actions |
+
+**Sample Row:**
+- Lerato Dlamini
+- 85/100 (High)
+- PEP, Large transactions, Offshore ties
+- âœ“ Complete
+- 01/11/2024
+- 01/02/2025
+- [View Profile] [Review Now] [Download Report]
+
+**Risk Flags:**
+- ðŸš© PEP (Politically Exposed Person)
+- ðŸš© High Transaction Volume
+- ðŸš© Cross-border Activities
+- ðŸš© Cash-Intensive Business
+- ðŸš© Complex Ownership Structure
+- ðŸš© Adverse Media
+
+**EDD Requirements Checklist:**
+- Source of wealth documentation
+- Source of funds documentation
+- Enhanced ongoing monitoring
+- Senior management approval
+- Detailed business purpose
+- References and background checks
+
+### Risk Assessment Tools
+
+**1. Manual Risk Assessment**
+- Button: "Assess New Client"
+- Opens risk questionnaire
+- Real-time risk scoring
+- Generates risk profile report
+
+**2. Bulk Risk Re-assessment**
+- Select multiple clients
+- Re-run risk calculations
+- Update risk levels based on new information
+- Generate comparative report
+
+**3. Risk Mitigation Tracker**
+- For high-risk clients
+- Track mitigation measures implemented
+- Document compliance with EDD
+- Approval workflows
+
+### Risk Matrix
+
+**Interactive Matrix Display:**
+
+Rows: Transaction Volume (Low/Medium/High)
+Columns: Geographic Risk (Low/Medium/High)
+
+Each cell shows:
+- Number of clients in that category
+- Recommended due diligence level
+- Click to see client list
+
+**Example Cell:**
+- High Transaction Volume + High Geographic Risk
+- 3 clients
+- Recommended: Enhanced EDD
+- Clients: L. Dlamini, M. Johnson, P. Singh
+
+### Alerts & Triggers
+
+**Automated Risk Alerts:**
+
+**Alert 1:** Risk Level Change
+- Client: Sipho Ndlovu
+- Previous: Low Risk
+- New: Medium Risk
+- Reason: Transaction volume increased
+- Action: Upgrade to CDD
+- Date: 10/12/2024
+
+**Alert 2:** Review Required
+- Client: Mary Johnson
+- Risk: High (EDD)
+- Last Review: 6 months ago
+- Action: Schedule EDD review
+- Overdue: Yes (15 days)
+
+**Risk Triggers Configuration:**
+- Set thresholds for automatic alerts
+- Transaction volume limits
+- Geographic changes
+- Screening hits
+- Document expiries
+
+---
+
+## 5. SCREENING & MONITORING TAB
+
+### Screening Dashboard
+
+**Stats Cards:**
+
+**Card 1: Total Screenings**
+- Number: 248
+- Subtitle: "All clients screened"
+- Last: 1 hour ago
+
+**Card 2: Active Monitoring**
+- Number: 248
+- Subtitle: "Clients being monitored"
+- Frequency shown
+
+**Card 3: Matches Found**
+- Number: 5
+- Subtitle: "Requiring review"
+- Status: 3 resolved, 2 pending
+
+**Card 4: False Positives**
+- Number: 12
+- Subtitle: "This month"
+- Trend: â†“ 20% vs last month
+
+### Screening Types
+
+**Tabbed Interface:**
+
+**Tab 1: PEP Screening**
+
+**Overview:**
+- Total PEPs Identified: 2
+- Domestic PEPs: 1
+- Foreign PEPs: 1
+- Family Members/Associates: 0
+- Last Bulk Screening: 01/12/2024
+- Next Scheduled: 01/01/2025
+
+**PEP List Table:**
+| Client Name | PEP Type | Position | Jurisdiction | Status | Last Screened | Actions |
+
+**Sample Row:**
+- Lerato Dlamini
+- Domestic PEP
+- Deputy Director - Dept of Finance
+- South Africa
+- âœ“ Verified (Green)
+- 01/12/2024
+- [View Profile] [Re-screen] [Download Report]
+
+**Actions:**
+- Run Bulk PEP Screening
+- Add Manual PEP (for known PEPs)
+- Update PEP Database
+- Export PEP List
+
+**Tab 2: Sanctions Screening**
+
+**Sanctions Lists Status:**
+- OFAC (US): âœ“ Updated 14/12/2024
+- UN Sanctions: âœ“ Updated 14/12/2024
+- EU Sanctions: âœ“ Updated 13/12/2024
+- UK HMT: âœ“ Updated 14/12/2024
+- AU Sanctions: âœ“ Updated 10/12/2024
+
+**Screening Results:**
+- Total Clients Screened: 248
+- Matches Found: 0
+- False Positives (Resolved): 3
+- Last Screening: 1 hour ago
+
+**Pending Matches Table:**
+| Client Name | List | Match Score | Reason | Status | Date Found | Actions |
+
+**Sample Row (if any):**
+- John Smith
+- OFAC
+- 75%
+- Name similarity
+- â³ Under Review
+- 10/12/2024
+- [Investigate] [Accept Match] [Reject as False Positive]
+
+**Actions:**
+- Run Bulk Sanctions Screening
+- Update Sanctions Lists
+- Download Screening Report
+- Configure Alerts
+
+**Tab 3: Adverse Media Screening**
+
+**Screening Configuration:**
+- Keywords Monitored:
+  - Money laundering
+  - Fraud
+  - Corruption
+  - Tax evasion
+  - Terrorism
+  - Sanctions violation
+  - Criminal conviction
+- Sources: International news databases
+- Languages: English, Afrikaans
+- Frequency: Weekly
+
+**Adverse Media Hits:**
+- Active Alerts: 1
+- Resolved Alerts: 4
+- False Positives: 8
+
+**Alerts Table:**
+| Client Name | Alert Type | Source | Date | Relevance Score | Status | Actions |
+
+**Sample Row:**
+- Michael Brown
+- Fraud allegation
+- Business Day (SA)
+- 05/12/2024
+- 65% (Medium)
+- â³ Under Investigation
+- [View Article] [Assess Risk] [Dismiss]
+
+**Tab 4: Custom Watchlists**
+
+**Create and manage internal watchlists:**
+- Suspicious Clients
+- Declined Clients
+- Terminated Relationships
+- Internal Investigation List
+
+**Watchlist Management:**
+- Add to Watchlist
+- Remove from Watchlist
+- Share with Team
+- Export Watchlist
+- Set Alerts for Matches
+
+### Ongoing Monitoring Schedule
+
+**Table: Scheduled Screenings**
+
+| Client Name | Risk Level | Frequency | Last Screened | Next Scheduled | Auto/Manual | Actions |
+
+**Sample Row:**
+- Lerato Dlamini
+- High (EDD)
+- Monthly
+- 01/12/2024
+- 01/01/2025
+- Auto
+- [Screen Now] [Edit Schedule] [View History]
+
+**Bulk Actions:**
+- Run All Overdue Screenings
+- Update All Schedules
+- Export Schedule
+- Email Reminders
+
+### Screening History & Audit Trail
+
+**Comprehensive log of all screenings:**
+- Date/Time
+- Client
+- Type of screening
+- Results
+- Officer who initiated
+- Actions taken
+- Notes
+
+**Filter Options:**
+- Date range
+- Client
+- Screening type
+- Results (matches/no matches)
+- Officer
+
+**Export Options:**
+- Export to Excel
+- Generate PDF Report
+- Compliance Audit Report
+
+---
+
+## 6. REVIEWS & UPDATES TAB
+
+### Review Schedule Overview
+
+**Stats Cards:**
+
+**Card 1: Due This Month**
+- Number: 15
+- Subtitle: "Reviews scheduled"
+- Link: View Schedule
+
+**Card 2: Overdue**
+- Number: 5
+- Subtitle: "Require immediate attention"
+- Status: Critical (red)
+- Link: View Overdue
+
+**Card 3: Completed**
+- Number: 28
+- Subtitle: "This month"
+- Trend: â†‘ 15% vs last month
+
+**Card 4: Next Review**
+- Client: Johan Smit
+- Date: Tomorrow (20/12/2024)
+- Type: Annual Review
+- Link: Start Review
+
+### Review Calendar
+
+**Calendar View:**
+- Month/Week/Day views
+- Color-coded by review type:
+  - Green: Annual reviews (CDD)
+  - Amber: High-risk reviews (EDD)
+  - Blue: Document renewals
+  - Red: Overdue reviews
+
+**Filters:**
+- Review type
+- Risk level
+- Assigned officer
+- Status
+
+### Review Queue Table
+
+**Columns:**
+| Priority | Client Name | Review Type | Due Date | Days Overdue | Last Review | Assigned To | Status | Actions |
+
+**Sample Rows:**
+
+**Row 1:** (Overdue - Red highlight)
+- ðŸ”´ Critical
+- Pieter van der Merwe
+- Annual Review (CDD)
+- 15/11/2024
+- 30 days overdue
+- 15/11/2023
+- Sarah Naidoo
+- âš  Overdue
+- [Start Review Now] [Escalate]
+
+**Row 2:**
+- ðŸŸ¡ Due Soon
+- Mary Johnson
+- High-Risk Review (EDD)
+- 22/12/2024
+- 2 days
+- 22/09/2024
+- Sarah Naidoo
+- ðŸ“… Scheduled
+- [Start Review] [Reschedule]
+
+**Row 3:**
+- ðŸŸ¢ On Track
+- Thabo Mokoena
+- Document Renewal
+- 05/01/2025
+- 16 days
+- 05/01/2023
+- Thabo Mokoena
+- ðŸ“„ Pending Upload
+- [Upload Documents] [View]
+
+**Bulk Actions:**
+- Send Reminders
+- Assign Reviews
+- Generate Reports
+- Export List
+
+### Review Workflow (When Starting a Review)
+
+**Step 1: Pre-Review Checklist**
+- âœ“ Client file accessed
+- âœ“ Previous review notes reviewed
+- âœ“ Current risk assessment viewed
+- âœ“ Recent transaction activity checked
+- âœ“ Latest screening results verified
+
+**Step 2: Information Verification**
+
+**Update Required Information:**
+- Contact details still current?
+  - â—‹ Yes, no changes
+  - â—‹ Yes, but updated (capture changes)
+  - â—‹ No, require update
+- Residential address unchanged?
+  - â—‹ Yes
+  - â—‹ No (upload new proof of residence)
+- Employment status same?
+  - â—‹ Yes
+  - â—‹ Changed (capture new details)
+- Marital status unchanged?
+  - â—‹ Yes
+  - â—‹ Changed
+- Tax residency unchanged?
+  - â—‹ Yes
+  - â—‹ Changed (capture new info)
+
+**Step 3: Document Review**
+
+**Check Document Status:**
+- ID Document: Valid until [date] - âœ“ OK / âš  Expiring Soon / âœ— Expired
+- Proof of Residence: Dated [date] - âœ“ Current / âš  Update Required
+- Source of Funds: Last updated [date] - âœ“ OK / âš  Update Required
+- Beneficial Ownership: Last declared [date] - âœ“ OK
+
+**Request New Documents (if required):**
+- Select documents needed
+- Generate email to client
+- Set deadline for submission
+- Flag for follow-up
+
+**Step 4: Transaction Review**
+
+**Review Transaction Pattern:**
+- Transaction volume: [chart]
+- Compared to expected activity: â—‹ Consistent â—‹ Increased â—‹ Decreased
+- Any unusual patterns? â—‹ No â—‹ Yes (explain)
+- Any large/unusual transactions? â—‹ No â—‹ Yes (list)
+
+**If unusual activity:**
+- Request explanation from client
+- Review supporting documents
+- Consider STR/SAR if suspicious
+- Update risk assessment
+
+**Step 5: Re-screening**
+
+**Run Fresh Screenings:**
+- [Run PEP Screening] button - Status after: âœ“ Clear / âš  Match
+- [Run Sanctions Screening] button - Status after: âœ“ Clear / âš  Match
+- [Run Adverse Media Screening] button - Status after: âœ“ Clear / âš  Hit
+
+**Review Results:**
+- Any new matches? Investigate
+- Any changes from last screening? Document
+- All clear? Proceed to next step
+
+**Step 6: Risk Re-assessment**
+
+**Current Risk Level:** Medium (CDD)
+**Re-assessment Questions:**
+- Any changes to client circumstances? â—‹ Yes â—‹ No
+- Any new risk factors identified? â—‹ Yes â—‹ No
+- Transaction activity as expected? â—‹ Yes â—‹ No
+- Screening results satisfactory? â—‹ Yes â—‹ No
+
+**New Risk Assessment:**
+- Risk Score: 42/100 (was 45/100)
+- Risk Level: Medium (CDD) - UNCHANGED
+- â—‹ Risk level appropriate â—‹ Upgrade to High â—‹ Downgrade to Low
+
+**Step 7: Review Conclusion**
+
+**Review Summary:**
+- Information verified: âœ“ Yes
+- Documents current: âœ“ Yes
+- Screenings clear: âœ“ Yes
+- Risk level appropriate: âœ“ Yes
+- No concerns identified: âœ“ Yes
+
+**Review Decision:**
+- â—‹ Continue relationship - No changes required
+- â—‹ Continue relationship - With updated information
+- â—‹ Continue relationship - Upgrade to EDD
+- â—‹ Flag for further investigation
+- â—‹ Recommend termination
+
+**Officer Notes:**
+- Textarea for detailed notes
+- Will be added to client audit trail
+
+**Approval (if required for EDD):**
+- Submit to Compliance Officer
+- Attach supporting documents
+- Set follow-up date
+
+**Next Review Date:**
+- Based on risk level:
+  - Low: Annual (12 months)
+  - Medium: Annual (12 months)
+  - High: Quarterly (3 months)
+- Scheduled: 20/12/2025
+- Reminder: 30 days before
+
+**Actions:**
+- [Complete Review] button
+- [Save as Draft]
+- [Request More Information]
+- [Cancel]
+
+**After Completion:**
+- Success confirmation
+- Review report generated
+- Next review scheduled
+- Client file updated
+- Return to queue
+
+---
+
+## 7. REPORTS TAB
+
+### Report Types (Selection Cards)
+
+**Report 1: FICA Compliance Summary**
+- Icon: Chart-bar
+- Description: "Overall FICA compliance status report"
+- Options:
+  - Date range
+  - Include charts
+  - Format: PDF | Excel
+- [Generate] button
+
+**Report 2: Client Verification Report**
+- Icon: User-check
+- Description: "Detailed report for individual client"
+- Options:
+  - Select client (dropdown)
+  - Include documents
+  - Include screening results
+  - Format: PDF
+- [Generate] button
+
+**Report 3: High-Risk Clients Report**
+- Icon: Alert-triangle
+- Description: "Report on all high-risk clients requiring EDD"
+- Options:
+  - Date range
+  - Include risk assessments
+  - Include monitoring schedule
+  - Format: PDF | Excel
+- [Generate] button
+
+**Report 4: Screening Results Report**
+- Icon: Search
+- Description: "PEP, sanctions, and adverse media screening results"
+- Options:
+  - Screening type
+  - Date range
+  - Include only matches
+  - Format: PDF | Excel
+- [Generate] button
+
+**Report 5: Review Schedule Report**
+- Icon: Calendar
+- Description: "Upcoming and overdue review schedule"
+- Options:
+  - Time period
+  - Filter by risk level
+  - Include overdue only
+  - Format: PDF | Excel
+- [Generate] button
+
+**Report 6: Audit Trail Report**
+- Icon: File-text
+- Description: "Complete audit trail for FSCA inspection"
+- Options:
+  - Date range
+  - Select clients
+  - Include all documents
+  - Format: PDF
+- [Generate] button
+
+**Report 7: Non-Compliance Report**
+- Icon: X-circle
+- Description: "Clients with incomplete or expired FICA"
+- Options:
+  - Type of non-compliance
+  - Date range
+  - Format: Excel
+- [Generate] button
+
+### Report Generation Interface
+
+**After selecting report type:**
+
+**Report Configuration:**
+1. Report Title (pre-filled, editable)
+2. Date Range (if applicable)
+3. Filters/Parameters (based on report type)
+4. Include Options (checkboxes):
+   - â˜‘ Executive Summary
+   - â˜‘ Detailed Findings
+   - â˜‘ Charts and Graphs
+   - â˜‘ Supporting Documents
+   - â˜‘ Client Details
+   - â˜‘ Compliance Officer Notes
+5. Format Selection:
+   - â—‹ PDF (recommended for distribution)
+   - â—‹ Excel (for data analysis)
+6. Distribution:
+   - Email to: (comma-separated emails)
+   - â˜ Save to document library
+   - â˜ Schedule recurring report
+
+**Preview Section:**
+- Thumbnail preview of report
+- Estimated pages
+- Estimated file size
+
+**Actions:**
+- [Generate Report] (primary button)
+- [Preview] (opens in new window)
+- [Save Configuration] (for recurring use)
+- [Cancel]
+
+### Report History
+
+**Table of Generated Reports:**
+| Report Name | Type | Generated By | Date | Format | Size | Actions |
+
+**Sample Row:**
+- FICA Compliance Summary Dec 2024
+- Compliance Summary
+- Sarah Naidoo
+- 15/12/2024 10:30
+- PDF
+- 2.4 MB
+- [Download] [Email] [Regenerate] [Delete]
+
+**Filters:**
+- Report type
+- Date range
+- Generated by
+- Format
+
+**Storage Management:**
+- Total reports: 145
+- Storage used: 125 MB
+- Auto-archive after: 6 months
+
+---
+
+## TECHNICAL FEATURES
+
+### Form Validation
+- Real-time SA ID number validation (checksum algorithm)
+- Phone number format validation (+27 format)
+- Email validation
+- File upload validation (size, type)
+- Required field enforcement
+- Date range validation
+- Address format checking
+
+### Document Handling
+- Drag & drop upload
+- Multiple file upload
+- File preview (thumbnails for images, first page for PDFs)
+- OCR for ID extraction
+- Document version control
+- Secure download links
+- Document expiry tracking
+
+### Risk Scoring Engine
+- Real-time risk calculation
+- Weighted scoring algorithm
+- Automatic classification (Low/Medium/High)
+- Risk factor breakdown
+- Historical risk tracking
+- Risk trend analysis
+
+### Screening Integration (Simulated)
+- Mock API calls with realistic delays
+- PEP database simulation
+- Sanctions list checking
+- Adverse media search
+- Match scoring algorithm
+- False positive handling
+- Re-screening scheduler
+
+### Workflow Management
+- Multi-step wizard with progress tracking
+- Save as draft at any point
+- Auto-save every 30 seconds
+- Resume from where you left off
+- Validation at each step
+- Can go back to edit previous steps
+- Submit only when complete
+
+### Notifications
+- Toast notifications for success/error
+- Email notifications (simulated)
+- In-app alerts
+- Deadline reminders
+- Overdue alerts
+- Screening hit notifications
+
+### Search & Filter
+- Real-time search
+- Multiple filter combinations
+- Advanced search options
+- Save search criteria
+- Quick filters
+- Sort options
+
+### Audit Trail
+- Track all actions
+- Who, what, when
+- Before/after values for changes
+- Document access log
+- Export audit trail
+- Compliance reporting
+
+### Mobile Responsive
+- Mobile-friendly forms (one field per row)
+- Touch-friendly buttons
+- Mobile document upload (camera integration)
+- Swipe gestures
+- Responsive tables (convert to cards)
+- Mobile-optimized wizards
+
+### Accessibility
+- ARIA labels
+- Keyboard navigation
+- Screen reader support
+- High contrast mode
+- Focus indicators
+- Form field labels
+
+### Performance
+- Lazy loading of documents
+- Pagination for large lists
+- Caching of screening results
+- Optimized file uploads
+- Background processing indicators
+- Minimal page reloads
+
+---
+
+## SAMPLE DATA
+
+**Clients in System:**
+- Total: 248
+- Fully Verified: 235 (95%)
+- Pending: 13 (5%)
+
+**Sample Clients:**
+
+**1. Thabo Johannes Mokoena**
+- ID: 8506155800083
+- Status: âœ“ Verified
+- Risk: Medium (CDD)
+- Last Review: 15/11/2024
+- Next Review: 15/11/2025
+
+**2. Lerato Dlamini**
+- ID: 9205086789012
+- Status: âœ“ Verified
+- Risk: High (EDD) - PEP
+- Position: Deputy Director, Dept of Finance
+- Last Review: 01/11/2024
+- Next Review: 01/02/2025
+
+**3. Johan van Zyl**
+- ID: 7803125678901
+- Status: â³ Pending (Ready for Review)
+- Risk: Medium (CDD)
+- Documents: Complete
+- Days in Queue: 3
+
+**4. Mary Johnson (Foreign)**
+- Passport: B1234567
+- Status: â³ Pending (Awaiting Docs)
+- Risk: High (EDD) - Cross-border
+- Missing: Proof of residence
+- Days in Queue: 10
+
+**5. Sipho Ndlovu**
+- ID: 8507145890123
+- Status: ðŸ”„ In Progress
+- Risk: Low (SDD)
+- Progress: 75%
+- Days in Queue: 1
+
+**Compliance Officers:**
+- Sarah Naidoo (Senior Compliance Officer)
+- Thabo Mokoena (Compliance Assistant)
+- Pieter Vermeulen (MLRO)
+
+**Current Date:** 15/12/2024
+
+---
+
+## FILE STRUCTURE
+
+```
+fica-verification/
+â”œâ”€â”€ index.html
+â”œâ”€â”€ css/
+â”‚   â”œâ”€â”€ fica-styles.css
+â”‚   â”œâ”€â”€ wizard.css
+â”‚   â”œâ”€â”€ charts.css
+â”‚   â””â”€â”€ responsive.css
+â”œâ”€â”€ js/
+â”‚   â”œâ”€â”€ fica-dashboard.js
+â”‚   â”œâ”€â”€ verification-wizard.js
+â”‚   â”œâ”€â”€ verification-queue.js
+â”‚   â”œâ”€â”€ risk-assessment.js
+â”‚   â”œâ”€â”€ screening.js
+â”‚   â”œâ”€â”€ reviews.js
+â”‚   â”œâ”€â”€ reports.js
+â”‚   â”œâ”€â”€ id-validator.js (SA ID checksum algorithm)
+â”‚   â”œâ”€â”€ risk-calculator.js
+â”‚   â”œâ”€â”€ charts.js
+â”‚   â””â”€â”€ data.js
+â””â”€â”€ assets/
+    â”œâ”€â”€ sample-documents/
+    â””â”€â”€ icons/
+```
+
+Generate a complete, production-ready FICA compliance system that handles the full client verification workflow from initial capture to ongoing monitoring. Include all validations, screening simulations, risk calculations, and South African-specific requirements. The system should be immediately usable for training and user acceptance testing.

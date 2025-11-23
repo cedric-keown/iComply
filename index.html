@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hope Diamond Transport - Admin Portal</title>
+    <title>iComply - Broker Portal</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,271 +14,956 @@
     <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
     <!-- SweetAlert2 -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <!-- Choices.js -->
-    <link href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css" rel="stylesheet">
     <!-- Custom Styles -->
     <link href="css/main.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #5CBDB4;
+            --text-color: #4A4A4A;
+            --bg-color: #FFFFFF;
+            --light-grey: #F8F9FA;
+            --success: #28A745;
+            --warning: #FFC107;
+            --danger: #DC3545;
+            --info: #17A2B8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: var(--text-color);
+            background-color: var(--light-grey);
+            padding-top: 70px;
+        }
+
+        /* Top Navigation Bar */
+        .top-navbar {
+            background: var(--bg-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 70px;
+            z-index: 1030;
+        }
+
+        .navbar-brand {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .navbar-brand:hover {
+            color: var(--primary-color);
+        }
+
+        .global-search {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 20px;
+            position: relative;
+        }
+
+        .global-search input {
+            width: 100%;
+            padding: 8px 40px 8px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .global-search input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(92, 189, 180, 0.25);
+        }
+
+        .global-search i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .action-button {
+            position: relative;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-button:hover {
+            background-color: var(--light-grey);
+        }
+
+        .action-button .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--danger);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .user-menu-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .user-menu-dropdown:hover {
+            background-color: var(--light-grey);
+        }
+
+        /* Ensure user dropdown menu opens on the right */
+        .navbar-actions .dropdown {
+            position: relative;
+        }
+
+        .navbar-actions .dropdown-menu.dropdown-menu-end {
+            right: 0 !important;
+            left: auto !important;
+            margin-top: 8px;
+        }
+
+        .avatar-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            height: calc(100vh - 70px);
+            width: 260px;
+            background: var(--bg-color);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, width 0.3s ease;
+            overflow-y: auto;
+            z-index: 1020;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu-item {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .sidebar-menu-item:hover {
+            background-color: var(--light-grey);
+        }
+
+        .sidebar-menu-item.active {
+            background-color: rgba(92, 189, 180, 0.1);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .sidebar-menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .sidebar-menu-item span {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-menu-item {
+            justify-content: center;
+        }
+
+        .menu-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 70px;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumb-nav {
+            background: var(--bg-color);
+            padding: 10px 20px;
+            margin: -20px -20px 20px -20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .breadcrumb {
+            margin: 0;
+            background: none;
+        }
+
+        /* Dashboard Cards */
+        .stat-card {
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 10px 0;
+        }
+
+        .stat-card .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.3;
+            float: right;
+        }
+
+        .progress-bar-custom {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--light-grey);
+            margin: 15px 0;
+        }
+
+        .progress-bar-custom .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #4a9d96 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .hero-section h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.75rem;
+        }
+
+        .hero-section p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        /* Tables */
+        .data-table {
+            background: var(--bg-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .data-table table {
+            margin: 0;
+        }
+
+        .data-table thead {
+            background: var(--light-grey);
+        }
+
+        .data-table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding: 15px;
+        }
+
+        .data-table td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        /* Alerts List */
+        .alert-item {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-item.critical {
+            border-left: 4px solid var(--danger);
+        }
+
+        .alert-item.high {
+            border-left: 4px solid #ff9800;
+        }
+
+        .alert-item.medium {
+            border-left: 4px solid var(--warning);
+        }
+
+        /* Mobile */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .global-search {
+                display: none;
+            }
+        }
+
+        /* Dropdowns */
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 10px 0;
+        }
+
+        .dropdown-item {
+            padding: 10px 20px;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--light-grey);
+        }
+
+        .dropdown-divider {
+            margin: 10px 0;
+        }
+    </style>
 </head>
-
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light top-navbar fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="#" route="dashboard">
-                <i class="fas fa-truck me-2 text-light"></i>
-                <span class="fw-bold">Hope Diamond Transport</span>
-                <small class="ms-2 text-light opacity-75">Admin Portal</small>
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            <!-- Left side -->
+            <button class="btn btn-link d-lg-none me-2" id="sidebarToggleMobile" type="button">
+                <i class="fas fa-bars"></i>
             </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <!-- Navigation items can be added here if needed -->
+            <a class="navbar-brand" href="#" onclick="goToDashboard()">
+                <i class="fas fa-shield-alt me-2"></i>
+                <span class="d-none d-md-inline">iComply</span>
+            </a>
+            
+            <!-- Center - Global Search -->
+            <div class="global-search d-none d-lg-block">
+                <input type="search" id="globalSearch" placeholder="Search representatives, clients, documents... (Ctrl+K)" autocomplete="off">
+                <i class="fas fa-search"></i>
+            </div>
+            
+            <!-- Right side -->
+            <div class="navbar-actions">
+                <button class="action-button" id="alertsButton" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">12</span>
+            </button>
+                <ul class="dropdown-menu dropdown-menu-end" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                    <li class="dropdown-header d-flex justify-content-between align-items-center">
+                        <span>Alerts & Notifications</span>
+                        <button class="btn btn-sm btn-link p-0">Mark All</button>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <div class="alert-item critical">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>🔴 CRITICAL</strong>
+                                    <p class="mb-1 small">Mike Johnson's RE5 expired 2 days ago</p>
+                                    <small class="text-muted">2h ago</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">View</button>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="alert-item high">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>🟠 HIGH PRIORITY</strong>
+                                    <p class="mb-1 small">45 FICA reviews overdue</p>
+                                    <small class="text-muted">3h ago</small>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary">View</button>
+                            </div>
+                        </div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-center" href="#">View All Alerts</a></li>
+                </ul>
+                
+                <button class="action-button" id="helpButton" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li class="dropdown-header">Help & Support</li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-book me-2"></i>Documentation</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-video me-2"></i>Video Tutorials</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-keyboard me-2"></i>Keyboard Shortcuts</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-phone me-2"></i>Contact Support</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-star me-2"></i>What's New</a></li>
                 </ul>
 
-                <ul class="navbar-nav ms-auto">
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                            data-bs-toggle="dropdown">
-                            <div class="avatar avatar-sm me-2">
-                                <div
-                                    class="avatar-name rounded-circle bg-light text-primary d-flex align-items-center justify-content-center">
+                <div class="dropdown">
+                    <div class="user-menu-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar-sm">
                                     <i class="fas fa-user"></i>
                                 </div>
+                        <span class="d-none d-md-inline user-name">Thabo M.</span>
+                        <i class="fas fa-chevron-down d-none d-md-inline"></i>
                             </div>
-                            <span>Demo User</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 280px;">
                             <li class="dropdown-header">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-sm me-2">
-                                        <div
-                                            class="avatar-name rounded-circle bg-primary text-white d-flex align-items-center justify-content-center">
+                            <div class="avatar-sm me-2" style="width: 40px; height: 40px;">
                                             <i class="fas fa-user"></i>
-                                        </div>
                                     </div>
                                     <div>
-                                        <div class="fw-bold">Demo User</div>
-                                        <small class="text-muted">Administrator</small>
+                                <div class="fw-bold">Thabo Mokoena</div>
+                                <small class="text-muted">FSP Owner</small>
                                     </div>
                                 </div>
                             </li>
-                            <!-- <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#" onclick="showProfile()">
-                                    <i class="fas fa-user me-2"></i>Profile
-                                </a></li>
-                            <li><a class="dropdown-item" href="#" onclick="showSettings()">
-                                    <i class="fas fa-cog me-2"></i>Settings
-                                </a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li> -->
-                            <li><a class="dropdown-item text-danger" href="#" onclick="signOut()">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Sign Out
-                                </a></li>
-                        </ul>
-                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-lock me-2"></i>Change Password</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Preferences</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-moon me-2"></i>Dark Mode</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                 </ul>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="container-fluid mt-navbar">
-        <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar" id="sidebarMenu">
-                <div class="d-flex flex-column h-100">
-                    <div class="flex-grow-1 pt-3">
-                        <ul class="nav flex-column gap-1">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#" route="dashboard">
-                                    <i class="fas fa-gauge-high me-2"></i>Dashboard
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header d-none d-lg-flex justify-content-between align-items-center">
+            <small class="text-muted" id="currentDate"></small>
+            <button class="btn btn-sm btn-link" id="sidebarToggle" type="button">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <a class="sidebar-menu-item active" href="#" data-route="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" route="inspections-grid">
-                                    <i class="fas fa-clipboard-check me-2"></i>Inspections
+            <li>
+                <a class="sidebar-menu-item" href="#" data-route="representatives">
+                    <i class="fas fa-users"></i>
+                    <span>Representatives</span>
+                    <span class="menu-badge">15</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" route="vehicles-grid">
-                                    <i class="fas fa-truck me-2"></i>Vehicles
+            <li>
+                <a class="sidebar-menu-item" href="#" data-route="cpd">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>CPD Management</span>
+                    <span class="menu-badge">5</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                                <a class="nav-link" href="#" route="drivers-grid">
-                                    <i class="fas fa-id-badge me-2"></i>Drivers
+            <li>
+                <a class="sidebar-menu-item" href="#" data-route="clients">
+                    <i class="fas fa-building"></i>
+                    <span>Clients & FICA</span>
+                    <span class="menu-badge">13</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-bs-toggle="collapse"
-                                data-bs-target="#userManagementCollapse" aria-expanded="false"
-                                aria-controls="userManagementCollapse">
-                                <i class="fas fa-users me-2"></i>User Management
-                                <i class="fas fa-chevron-down ms-auto"></i>
-                            </a>
-                            <div class="collapse" id="userManagementCollapse">
-                                <ul class="nav flex-column ms-3">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#" route="users-grid">
-                                            <i class="fas fa-user me-2"></i>Users
+            <li>
+                <a class="sidebar-menu-item" href="#" data-route="documents">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Documents</span>
+                    <span class="menu-badge">12</span>
+                </a>
+            </li>
+            <li>
+                <a class="sidebar-menu-item" href="#" data-route="fit-proper">
+                    <i class="fas fa-user-check"></i>
+                    <span>Fit & Proper</span>
+                    <span class="menu-badge">2</span>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#" route="roles-grid">
-                                            <i class="fas fa-user-tag me-2"></i>Roles
+            <li>
+                <a class="sidebar-menu-item" href="#" data-route="compliance">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Compliance</span>
+                    <span class="menu-badge">4</span>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#" route="role-permissions-grid">
-                                            <i class="fas fa-key me-2"></i>Database Role Permissions
+            <li>
+                <a class="sidebar-menu-item" href="#" data-route="complaints">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Complaints</span>
+                    <span class="menu-badge">2</span>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#" route="role-features-grid">
-                                            <i class="fas fa-cog me-2"></i>Role Features
+            <li>
+                <a class="sidebar-menu-item" href="#" data-route="alerts">
+                    <i class="fas fa-bell"></i>
+                    <span>Alerts & Notifications</span>
+                    <span class="menu-badge">17</span>
                                         </a>
                                     </li>
-                                </ul>
-                            </div>
+            <li>
+                <a class="sidebar-menu-item" href="#" data-route="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                                        </a>
+                                    </li>
+            <li>
+                <a class="sidebar-menu-item" href="#" data-route="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                                        </a>
                         </li>
                     </ul>
-                    </div>
-                    <div class="sidebar-footer p-3 border-top border-secondary">
-                        <button class="btn btn-link text-light w-100 text-start p-2" type="button" id="sidebarToggle" title="Toggle Sidebar">
-                            <i class="fas fa-chevron-left me-2"></i><span class="toggle-text">Collapse</span>
+        <div class="p-3 border-top mt-auto">
+            <div class="fw-bold small mb-2">QUICK ACTIONS</div>
+            <button class="btn btn-primary btn-sm w-100 mb-2">
+                <i class="fas fa-plus me-1"></i>Add Representative
+            </button>
+            <button class="btn btn-outline-primary btn-sm w-100">
+                <i class="fas fa-upload me-1"></i>Upload Document
                         </button>
-                    </div>
                 </div>
             </nav>
 
-            <!-- Main Content Area -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumb-nav" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+            </ol>
+        </nav>
 
-                <!-- Content Area -->
-                <div id="content-area">
-                    <!-- Dashboard content will be loaded here -->
-                    <div class="row">
-                        <div class="col-12">
-                            <!-- Page Header -->
-                            <div
-                                class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-4 pb-3 mb-4">
-                                <div>
-                                    <h1 class="h2 mb-1 text-dark">Dashboard</h1>
-                                    <p class="text-muted mb-0">Welcome back! Here's what's happening with your transport
-                                        operations.</p>
+        <!-- Dashboard Content -->
+        <div id="dashboardContent">
+            <!-- Hero Section - License Status Card -->
+            <div class="hero-section">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2><i class="fas fa-check-circle me-2"></i>FSP LICENSE ACTIVE</h2>
+                        <p class="mb-2">CustomApp Financial Services (Pty) Ltd | FSP 12345</p>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <small>License Valid Until: <strong>31/12/2025</strong> (377 days)</small><br>
+                                <small>Next Renewal: <strong>October 2025</strong></small>
                                 </div>
-                                <div class="btn-toolbar mb-2 mb-md-0">
-                                    <button class="btn btn-primary" onclick="_appRouter.routeTo('users-grid')">
-                                        <i class="fas fa-users me-1"></i>Manage Users
-                                    </button>
+                            <div class="col-md-6">
+                                <small>Professional Indemnity: <strong>✅ Valid</strong></small><br>
+                                <small>Fidelity: <strong>✅ Valid</strong></small>
                                 </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-light me-2">View License</button>
+                        <button class="btn btn-light">Renewal Checklist</button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
+            <!-- Row 1: Key Performance Indicators -->
+            <div class="row mb-4">
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-start border-primary border-4 shadow h-100">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total
-                                                Users</div>
-                                            <div class="h5 mb-0 fw-bold text-gray-800">150</div>
+                    <div class="stat-card">
+                        <div class="stat-label">Compliance Health</div>
+                        <div class="stat-value">87%</div>
+                        <div class="progress-bar-custom">
+                            <div class="progress-fill" style="width: 87%"></div>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        <div class="mt-3">
+                            <small>✅ 12/15 Reps</small><br>
+                            <small>⚠️ 3 Action Required</small>
                                         </div>
+                        <button class="btn btn-sm btn-outline-primary mt-2">View Details</button>
+                        <i class="fas fa-shield-alt stat-icon text-primary"></i>
+                                    </div>
+                                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-label">Monthly Revenue</div>
+                        <div class="stat-value">R 456,890</div>
+                        <div class="mt-2">
+                            <small class="text-success">↑ 12% vs last month</small>
+                            </div>
+                        <div class="mt-3">
+                            <small>YTD: <strong>R 4.2M</strong></small><br>
+                            <small>Target: <strong>R 5.5M</strong></small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary mt-2">View Reports</button>
+                        <i class="fas fa-chart-line stat-icon text-success"></i>
+                    </div>
+                </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-label">Active Clients</div>
+                        <div class="stat-value">248</div>
+                        <div class="mt-2">
+                            <small class="text-success">↑ 8 new this month</small>
+                                        </div>
+                        <div class="mt-3">
+                            <small>235 FICA Compliant</small><br>
+                            <small>13 Pending</small>
+                                        </div>
+                        <button class="btn btn-sm btn-outline-primary mt-2">View Clients</button>
+                        <i class="fas fa-users stat-icon text-info"></i>
+                                    </div>
+                                </div>
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-label">Team Performance</div>
+                        <div class="stat-value">4.2/5.0</div>
+                        <div class="mt-2">
+                            <small>⭐⭐⭐⭐☆</small>
+                        </div>
+                        <div class="mt-3">
+                            <small>Top: Sarah N. (4.8)</small><br>
+                            <small>CPD: 89% Complete</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary mt-2">View Team</button>
+                        <i class="fas fa-star stat-icon text-warning"></i>
+                    </div>
+                            </div>
+                        </div>
+
+            <!-- Row 2: Team Compliance Matrix -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="data-table">
+                        <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                            <h5 class="mb-0">Team Compliance Matrix</h5>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary me-2">Export</button>
+                                <button class="btn btn-sm btn-outline-secondary">Print</button>
+                                        </div>
+                                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Representative</th>
+                                        <th>F&P</th>
+                                        <th>CPD</th>
+                                        <th>FICA</th>
+                                        <th>Docs</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Sarah Naidoo</strong></td>
+                                        <td><span class="badge bg-success">✅</span></td>
+                                        <td>18/18</td>
+                                        <td><span class="badge bg-success">✅</span></td>
+                                        <td><span class="badge bg-success">✅</span></td>
+                                        <td><span class="badge bg-success">Compliant</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Thabo Mokoena</strong></td>
+                                        <td><span class="badge bg-success">✅</span></td>
+                                        <td>14/18</td>
+                                        <td><span class="badge bg-success">✅</span></td>
+                                        <td><span class="badge bg-success">✅</span></td>
+                                        <td><span class="badge bg-warning">In Progress</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Mike Khumalo</strong></td>
+                                        <td><span class="badge bg-success">✅</span></td>
+                                        <td>3/18</td>
+                                        <td><span class="badge bg-warning">⚠️</span></td>
+                                        <td><span class="badge bg-success">✅</span></td>
+                                        <td><span class="badge bg-danger">Non-Compliant</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Johan van Zyl</strong></td>
+                                        <td><span class="badge bg-warning">⚠️</span></td>
+                                        <td>16/18</td>
+                                        <td><span class="badge bg-success">✅</span></td>
+                                        <td><span class="badge bg-success">✅</span></td>
+                                        <td><span class="badge bg-warning">Action Req</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="p-3 border-top">
+                            <button class="btn btn-sm btn-primary me-2">View Full Matrix</button>
+                            <button class="btn btn-sm btn-outline-primary me-2">Send Reminders</button>
+                            <button class="btn btn-sm btn-outline-secondary">Export Report</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-start border-success border-4 shadow h-100">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs fw-bold text-success text-uppercase mb-1">
-                                                Active Users</div>
-                                            <div class="h5 mb-0 fw-bold text-gray-800">142</div>
+            <!-- Row 3: Critical Alerts & Upcoming Deadlines -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">🚨 CRITICAL ALERTS</h5>
+                            <span class="badge bg-danger">5</span>
                                         </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                        <div class="alert-item critical">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>🔴 Mike Khumalo</strong>
+                                    <p class="mb-1 small">RE5 expired 2 days ago</p>
                                         </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1">View</button>
+                                    <button class="btn btn-sm btn-outline-secondary">Alert</button>
                                     </div>
+                                </div>
+                            </div>
+                        <div class="alert-item high">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>🟠 Sarah Miller</strong>
+                                    <p class="mb-1 small">RE5 expires in 30 days</p>
+                        </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1">View</button>
+                                    <button class="btn btn-sm btn-outline-secondary">Schedule</button>
+                    </div>
+                </div>
+                        </div>
+                        <div class="alert-item high">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>🟠 FICA Reviews</strong>
+                                    <p class="mb-1 small">45 reviews overdue</p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1">View</button>
+                                    <button class="btn btn-sm btn-outline-secondary">Assign</button>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-start border-info border-4 shadow h-100">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs fw-bold text-info text-uppercase mb-1">Total
-                                                Roles</div>
-                                            <div class="h5 mb-0 fw-bold text-gray-800">8</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-user-tag fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <button class="btn btn-sm btn-link w-100 mt-2">View All Alerts (12)</button>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">📅 UPCOMING DEADLINES</h5>
                         </div>
-
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-start border-warning border-4 shadow h-100">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs fw-bold text-warning text-uppercase mb-1">
-                                                Pending Actions</div>
-                                            <div class="h5 mb-0 fw-bold text-gray-800">3</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-clock fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="mb-3">
+                            <strong>CPD Deadline</strong>
+                            <p class="mb-1 small">31 May 2025 (166 days)</p>
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: 89%"></div>
                             </div>
+                            <small>Progress: 89% complete</small>
+                            <button class="btn btn-sm btn-outline-primary d-block mt-2">View Team CPD</button>
+                        </div>
+                        <div class="mb-3">
+                            <strong>FICA Reviews</strong>
+                            <p class="mb-1 small">15 reviews next 30 days</p>
+                            <button class="btn btn-sm btn-outline-primary">View Schedule</button>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Insurance Renewals</strong>
+                            <p class="mb-1 small">PI: 31 Mar 2025 (107 days)</p>
+                            <p class="mb-1 small">Fidelity: 30 Apr 2025</p>
+                            <button class="btn btn-sm btn-outline-primary">View Policies</button>
+                        </div>
+                        <div>
+                            <strong>FSCA Submission</strong>
+                            <p class="mb-1 small">Annual Return: 31 Jan 2025</p>
+                            <button class="btn btn-sm btn-outline-primary">Start Preparation</button>
+                        </div>
+                    </div>
+        </div>
+    </div>
+
+            <!-- Row 4: Recent Activity & Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-4">
+                    <div class="stat-card">
+                        <h5 class="mb-3">RECENT ACTIVITY</h5>
+                        <div class="mb-3">
+                            <small class="text-muted">2h ago</small>
+                            <p class="mb-1">✅ Sarah Naidoo verified client FICA: Thabo Mokoena</p>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">3h ago</small>
+                            <p class="mb-1">📤 Mike Khumalo uploaded CPD - 2 hours ethics training</p>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">5h ago</small>
+                            <p class="mb-1">⚠️ System alert sent - RE5 expiry reminder (3 reps)</p>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">1d ago</small>
+                            <p class="mb-1">📝 New complaint logged - Client: John Smith (#2024-08)</p>
+                        </div>
+                        <button class="btn btn-sm btn-link w-100">View All Activity</button>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="stat-card">
+                        <h5 class="mb-3">QUICK ACTIONS</h5>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary text-start">
+                                <i class="fas fa-plus me-2"></i>Add Representative
+                            </button>
+                            <button class="btn btn-outline-primary text-start">
+                                <i class="fas fa-user-plus me-2"></i>Add Client
+                            </button>
+                            <button class="btn btn-outline-primary text-start">
+                                <i class="fas fa-upload me-2"></i>Upload Documents
+                            </button>
+                            <button class="btn btn-outline-primary text-start">
+                                <i class="fas fa-chart-bar me-2"></i>Generate Report
+                            </button>
+                            <button class="btn btn-outline-primary text-start">
+                                <i class="fas fa-envelope me-2"></i>Send Team Message
+                            </button>
+                            <button class="btn btn-outline-primary text-start">
+                                <i class="fas fa-calendar me-2"></i>Schedule Audit
+                            </button>
+                            <button class="btn btn-outline-primary text-start">
+                                <i class="fas fa-dollar-sign me-2"></i>View Financials
+                            </button>
+                            <button class="btn btn-outline-primary text-start">
+                                <i class="fas fa-cog me-2"></i>System Settings
+                            </button>
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
-    </div>
+    </main>
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.9/dist/signature_pad.umd.min.js"></script>
-
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- Application Scripts -->
-    <script src="js/data-functions.js"></script>
-    <script src="js/auth-service.js"></script>
-    <script src="js/common.js"></script>
-    <script src="js/appRouter.js"></script>
-    <script src="js/app.js"></script>
 
     <script>
-        // Initialize application
-        document.addEventListener('DOMContentLoaded', function () {
+        // Navigation State
+        const navigationState = {
+            currentUser: {
+                id: 'USR-001',
+                name: 'Thabo Mokoena',
+                role: 'FSP_OWNER',
+                fsp: 'CustomApp Financial Services',
+                fspNumber: 'FSP12345'
+            },
+            sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+            activeMenuItem: 'dashboard',
+            originalDashboardContent: null // Store original dashboard HTML
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if env=DEV is present in URL - if so, skip authentication check completely
+            const urlParams = new URLSearchParams(window.location.search);
+            const envParam = urlParams.get('env');
+            const isDevMode = envParam === 'DEV';
+            
+            // DEV MODE: Skip all authentication checks and proceed directly
+            if (isDevMode) {
+                console.log('DEV mode enabled - skipping authentication');
+                // Store original dashboard content
+                const dashboardContent = document.getElementById('dashboardContent');
+                if (dashboardContent && !navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                initializeNavigation();
+                initializeSidebar();
+                updateCurrentDate();
+                setupKeyboardShortcuts();
+                return; // Exit early, no authentication check
+            }
+            
+            // PRODUCTION MODE: Check authentication
             // Check authentication first
             const isAuthenticated = (typeof dataFunctions !== 'undefined' && dataFunctions.isAuthenticated()) ||
                                    (typeof authService !== 'undefined' && authService.isAuthenticated());
@@ -296,200 +980,647 @@
                 return;
             }
 
-            // Initialize sidebar collapse behavior
-            initializeSidebarCollapse();
+            // Store original dashboard content before any modules load
+            const dashboardContent = document.getElementById('dashboardContent');
+            if (dashboardContent && !navigationState.originalDashboardContent) {
+                navigationState.originalDashboardContent = dashboardContent.innerHTML;
+            }
 
-            // Initialize sidebar toggle
-            initializeSidebarToggle();
+            initializeNavigation();
+            initializeSidebar();
+            updateCurrentDate();
+            setupKeyboardShortcuts();
         });
 
-        // Initialize sidebar collapse behavior
-        function initializeSidebarCollapse() {
-            const userManagementToggle = document.querySelector('[data-bs-target="#userManagementCollapse"]');
-            const userManagementCollapse = document.getElementById('userManagementCollapse');
-            const sidebar = document.getElementById('sidebarMenu');
-
-            if (userManagementToggle && userManagementCollapse) {
-                // Add click handler to prevent default link behavior
-                userManagementToggle.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
+        // Initialize Navigation
+        function initializeNavigation() {
+            // Set active menu item
+            const activeItem = document.querySelector(`[data-route="${navigationState.activeMenuItem}"]`);
+            if (activeItem) {
+                document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+                    item.classList.remove('active');
                 });
-
-                // Close panel when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (sidebar && sidebar.classList.contains('collapsed')) {
-                        const isClickInside = userManagementCollapse.contains(e.target) || 
-                                            userManagementToggle.contains(e.target);
-                        if (!isClickInside && userManagementCollapse.classList.contains('show')) {
-                            const bsCollapse = bootstrap.Collapse.getInstance(userManagementCollapse);
-                            if (bsCollapse) {
-                                bsCollapse.hide();
-                            }
-                        }
-                    }
-                });
-
-                // Listen for collapse events to update chevron icon and position submenu
-                userManagementCollapse.addEventListener('show.bs.collapse', function () {
-                    const chevron = userManagementToggle.querySelector('.fa-chevron-down');
-                    if (chevron) {
-                        chevron.style.transform = 'rotate(180deg)';
-                    }
-                    
-                    // Position submenu panel when sidebar is collapsed
-                    if (sidebar && sidebar.classList.contains('collapsed')) {
-                        const navItem = userManagementToggle.closest('.nav-item');
-                        if (navItem) {
-                            const navItemRect = navItem.getBoundingClientRect();
-                            // Position the panel to align with the User Management button
-                            userManagementCollapse.style.top = navItemRect.top + 'px';
-                            userManagementCollapse.style.left = '70px';
-                            userManagementCollapse.style.position = 'fixed';
-                        }
-                    } else {
-                        // Reset positioning when sidebar is expanded
-                        userManagementCollapse.style.top = '';
-                        userManagementCollapse.style.left = '';
-                        userManagementCollapse.style.position = '';
-                    }
-                });
-
-                userManagementCollapse.addEventListener('hide.bs.collapse', function () {
-                    const chevron = userManagementToggle.querySelector('.fa-chevron-down');
-                    if (chevron) {
-                        chevron.style.transform = 'rotate(0deg)';
-                    }
-                    // Reset positioning
-                    userManagementCollapse.style.top = '';
-                    userManagementCollapse.style.left = '';
-                    userManagementCollapse.style.position = '';
-                });
+                activeItem.classList.add('active');
             }
 
-            // Initialize active state management
-            initializeActiveStates();
-        }
-
-        // Initialize active state management for sidebar
-        function initializeActiveStates() {
-            const navLinks = document.querySelectorAll('.sidebar .nav-link');
-            const sidebar = document.getElementById('sidebarMenu');
-            const userManagementCollapse = document.getElementById('userManagementCollapse');
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    // Remove active class from all links
-                    navLinks.forEach(l => l.classList.remove('active'));
-
-                    // Add active class to clicked link
-                    this.classList.add('active');
-
-                    // If this is a sub-link, also expand the parent
-                    const parentCollapse = this.closest('.collapse');
-                    if (parentCollapse) {
-                        const parentToggle = document.querySelector(`[data-bs-target="#${parentCollapse.id}"]`);
-                        if (parentToggle && !parentCollapse.classList.contains('show')) {
-                            parentToggle.click();
+            // Menu item clicks - use event delegation for better reliability
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                console.log('Setting up sidebar navigation...');
+                
+                // Remove any existing click handler to prevent duplicates
+                if (sidebar._clickHandler) {
+                    sidebar.removeEventListener('click', sidebar._clickHandler);
+                }
+                
+                // Create new handler
+                const clickHandler = function(e) {
+                    console.log('Sidebar clicked, target:', e.target);
+                    
+                    // Check if click is on menu item or its children
+                    let menuItem = e.target.closest('.sidebar-menu-item');
+                    
+                    // If not found, check if target is inside a menu item
+                    if (!menuItem) {
+                        const parent = e.target.parentElement;
+                        if (parent && parent.classList.contains('sidebar-menu-item')) {
+                            menuItem = parent;
+                        } else if (parent && parent.parentElement && parent.parentElement.classList.contains('sidebar-menu-item')) {
+                            menuItem = parent.parentElement;
                         }
                     }
                     
-                    // If sidebar is collapsed and this is a submenu item, close the panel
-                    if (sidebar && sidebar.classList.contains('collapsed') && 
-                        userManagementCollapse && 
-                        this.closest('#userManagementCollapse')) {
-                        const bsCollapse = bootstrap.Collapse.getInstance(userManagementCollapse);
-                        if (bsCollapse) {
-                            bsCollapse.hide();
+                    if (menuItem) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const route = menuItem.getAttribute('data-route');
+                        console.log('Menu item found, route:', route);
+                        if (route) {
+                            setActiveMenuItem(route);
+                            handleRoute(route);
+                        } else {
+                            console.warn('Menu item clicked but no route attribute found');
                         }
                     }
-                });
-            });
-        }
-
-        // Initialize sidebar toggle
-        function initializeSidebarToggle() {
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebar = document.getElementById('sidebarMenu');
-            const mainContent = document.querySelector('.main-content');
-            const userManagementCollapse = document.getElementById('userManagementCollapse');
+                };
+                
+                // Store reference for future removal
+                sidebar._clickHandler = clickHandler;
+                sidebar.addEventListener('click', clickHandler, true); // Use capture phase
+                
+                console.log('Sidebar navigation setup complete');
+            } else {
+                console.error('Sidebar element not found!');
+            }
             
-            if (sidebarToggle && sidebar && mainContent) {
-                sidebarToggle.addEventListener('click', function() {
-                    const wasCollapsed = sidebar.classList.contains('collapsed');
-                    
-                    sidebar.classList.toggle('collapsed');
-                    mainContent.classList.toggle('sidebar-collapsed');
-                    
-                    // If expanding from collapsed state and User Management panel is open, reset positioning to show inline
-                    if (wasCollapsed && userManagementCollapse && userManagementCollapse.classList.contains('show')) {
-                        // Reset positioning so it shows inline instead of as a panel
-                        userManagementCollapse.style.top = '';
-                        userManagementCollapse.style.left = '';
-                        userManagementCollapse.style.position = '';
-                        // Keep it open so items show inline
-                    }
+            // Also add direct listeners as backup
+            setTimeout(() => {
+                document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const route = this.getAttribute('data-route');
+                        console.log('Direct menu click, route:', route);
+                        if (route) {
+                            setActiveMenuItem(route);
+                            handleRoute(route);
+                        }
+                    });
                 });
+            }, 100);
+            
+            // Check for route in URL hash on page load
+            const hashChangeHandler = function() {
+                const route = window.location.hash.substring(1);
+                if (route) {
+                    console.log('Hash changed, route:', route);
+                    handleRoute(route);
+                }
+            };
+            
+            window.removeEventListener('hashchange', hashChangeHandler);
+            window.addEventListener('hashchange', hashChangeHandler);
+            
+            // Initial hash check
+            if (window.location.hash) {
+                const route = window.location.hash.substring(1);
+                console.log('Initial hash, route:', route);
+                handleRoute(route);
+            } else {
+                // If no hash, load dashboard by default
+                console.log('No hash found, loading dashboard...');
+                const dashboardContent = document.getElementById('dashboardContent');
+                const breadcrumbNav = document.querySelector('.breadcrumb-nav');
+                if (dashboardContent && !dashboardContent.querySelector('iframe')) {
+                    loadExecutiveDashboard(dashboardContent, breadcrumbNav);
+                }
             }
         }
+        
 
-        // Module loading function is defined in app.js
+        // Initialize Sidebar
+        function initializeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarToggleMobile = document.getElementById('sidebarToggleMobile');
+            const mainContent = document.getElementById('mainContent');
 
-        // Test function to verify navigation is working
-        function testNavigation() {
-            console.log('Navigation test clicked!');
-            alert('Navigation is working!');
-        }
+            // Restore collapsed state
+            if (navigationState.sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                const icon = sidebarToggle.querySelector('i');
+                if (icon) icon.classList.replace('fa-chevron-left', 'fa-chevron-right');
+            }
 
-        // Navigation functions
-        function showProfile() {
-            Swal.fire({
-                icon: 'info',
-                title: 'Profile Management',
-                text: 'Profile management will be implemented.',
-                confirmButtonColor: '#0d6efd'
-            });
-        }
+            // Desktop toggle
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    toggleSidebar();
+                });
+            }
 
-        function showSettings() {
-            Swal.fire({
-                icon: 'info',
-                title: 'Settings',
-                text: 'Settings page will be implemented.',
-                confirmButtonColor: '#0d6efd'
-            });
-        }
+            // Mobile toggle
+            if (sidebarToggleMobile) {
+                sidebarToggleMobile.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                });
+            }
 
-        function signOut() {
-            Swal.fire({
-                title: 'Sign Out',
-                text: 'Are you sure you want to sign out?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, sign out!',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Get cc parameter from localStorage (stored as client_guid during sign-in)
-                    const ccParam = localStorage.getItem('client_guid');
-                    
-                    // Use authService if available, otherwise handle manually
-                    if (typeof authService !== 'undefined' && typeof authService.signOut === 'function') {
-                        authService.signOut();
-                    } else {
-                        localStorage.removeItem('lambda_token');
-                        localStorage.removeItem('user_info');
-                        
-                        // Preserve cc parameter in redirect
-                        const signinUrl = ccParam ? `signin.html?cc=${encodeURIComponent(ccParam)}` : 'signin.html';
-                        window.location.href = signinUrl;
+            // Close sidebar on mobile when clicking outside
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth < 992) {
+                    if (!sidebar.contains(e.target) && !sidebarToggleMobile.contains(e.target)) {
+                        sidebar.classList.remove('show');
                     }
                 }
             });
         }
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('sidebarToggle').querySelector('i');
+            
+            sidebar.classList.toggle('collapsed');
+            navigationState.sidebarCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarCollapsed', navigationState.sidebarCollapsed);
+            
+            if (icon) {
+                if (navigationState.sidebarCollapsed) {
+                    icon.classList.replace('fa-chevron-left', 'fa-chevron-right');
+                    } else {
+                    icon.classList.replace('fa-chevron-right', 'fa-chevron-left');
+                }
+            }
+        }
+
+        // Set Active Menu Item
+        function setActiveMenuItem(itemId) {
+            navigationState.activeMenuItem = itemId;
+            document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const activeItem = document.querySelector(`[data-route="${itemId}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+        }
+
+        // Update Current Date
+        function updateCurrentDate() {
+            const dateEl = document.getElementById('currentDate');
+            if (dateEl) {
+                const now = new Date();
+                const options = { 
+                    weekday: 'short', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                dateEl.textContent = now.toLocaleDateString('en-ZA', options);
+            }
+        }
+
+        // Keyboard Shortcuts
+        function setupKeyboardShortcuts() {
+            // Global search (Ctrl+K)
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    const searchInput = document.getElementById('globalSearch');
+                    if (searchInput) {
+                        searchInput.focus();
+                        searchInput.select();
+                    }
+                }
+
+                // Escape to close modals
+                if (e.key === 'Escape') {
+                    const modals = document.querySelectorAll('.modal.show');
+                    modals.forEach(modal => {
+                        const bsModal = bootstrap.Modal.getInstance(modal);
+                        if (bsModal) bsModal.hide();
+                    });
+                }
+            });
+
+            // Global search functionality
+            const searchInput = document.getElementById('globalSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const query = e.target.value;
+                    if (query.length > 2) {
+                        // Perform search
+                        console.log('Searching for:', query);
+                    }
+                });
+            }
+        }
+
+        // Route Handler
+        function handleRoute(route) {
+            console.log('=== handleRoute called with:', route, '===');
+            const dashboardContent = document.getElementById('dashboardContent');
+            const breadcrumbNav = document.querySelector('.breadcrumb-nav');
+            
+            if (!dashboardContent) {
+                console.error('ERROR: dashboardContent element not found');
+                return;
+            }
+            
+            if (!route) {
+                console.warn('WARNING: handleRoute called with empty route');
+                return;
+            }
+            
+            console.log('Processing route:', route);
+            
+            switch(route) {
+                case 'cpd':
+                case 'cpd-management':
+                    console.log('Loading CPD module...');
+                    loadCPDModule(dashboardContent, breadcrumbNav);
+                    break;
+                case 'documents':
+                case 'document-management':
+                    console.log('Loading Documents module...');
+                    loadDocumentsModule(dashboardContent, breadcrumbNav);
+                    break;
+                case 'fit-proper':
+                case 'fit-and-proper':
+                    console.log('Loading Fit & Proper module...');
+                    loadFitProperModule(dashboardContent, breadcrumbNav);
+                    break;
+                case 'complaints':
+                case 'complaints-management':
+                    console.log('Loading Complaints module...');
+                    loadComplaintsModule(dashboardContent, breadcrumbNav);
+                    break;
+                case 'representatives':
+                case 'representatives-management':
+                    console.log('Loading Representatives module...');
+                    loadRepresentativesModule(dashboardContent, breadcrumbNav);
+                    break;
+                case 'compliance':
+                case 'compliance-management':
+                    console.log('Loading Compliance module...');
+                    loadComplianceModule(dashboardContent, breadcrumbNav);
+                    break;
+                case 'clients':
+                case 'clients-fica':
+                case 'clients-and-fica':
+                case 'fica':
+                    console.log('Loading Clients & FICA module...');
+                    loadClientsFICAModule(dashboardContent, breadcrumbNav);
+                    break;
+                case 'alerts':
+                case 'alerts-notifications':
+                case 'notifications':
+                    console.log('Loading Alerts & Notifications module...');
+                    loadAlertsModule(dashboardContent, breadcrumbNav);
+                    break;
+                case 'dashboard':
+                case 'executive':
+                case 'executive-dashboard':
+                    console.log('Loading Executive Dashboard...');
+                    loadExecutiveDashboard(dashboardContent, breadcrumbNav);
+                    break;
+                default:
+                    // If route not recognized, try to restore dashboard
+                    console.warn('Unknown route:', route, '- loading dashboard');
+                    if (dashboardContent && !dashboardContent.querySelector('iframe')) {
+                        console.log('Unknown route, loading dashboard...');
+                        loadExecutiveDashboard(dashboardContent, breadcrumbNav);
+                    }
+                    break;
+            }
+            
+            console.log('=== handleRoute completed for:', route, '===');
+        }
+        
+        // Make handleRoute globally accessible for debugging
+        window.handleRoute = handleRoute;
+        window.setActiveMenuItem = setActiveMenuItem;
+        
+        // Load CPD Module
+        function loadCPDModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">CPD Management</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load CPD module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/cpd/html/cpd_management.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="CPD Management"
+                            id="cpdModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#cpd';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Documents Module
+        function loadDocumentsModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Document Management</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Documents module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/documents/html/document_management.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Document Management"
+                            id="documentsModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#documents';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Fit & Proper Module
+        function loadFitProperModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Fit & Proper Management</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Fit & Proper module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/fit-and-proper/html/fit_and_proper.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Fit & Proper Management"
+                            id="fitProperModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#fit-proper';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Complaints Module
+        function loadComplaintsModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Complaints Management</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Complaints module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/complaints/html/complaints_management.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Complaints Management"
+                            id="complaintsModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#complaints';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Representatives Module
+        function loadRepresentativesModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Representatives Management</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Representatives module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/representatives/html/representatives_management.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Representatives Management"
+                            id="representativesModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#representatives';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Compliance Module
+        function loadComplianceModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Compliance Management</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Compliance module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/compliance/html/compliance_management.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Compliance Management"
+                            id="complianceModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#compliance';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Clients & FICA Module
+        function loadClientsFICAModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Clients & FICA Management</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Clients & FICA module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/clients-fica/html/clients_fica_management.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Clients & FICA Management"
+                            id="clientsFicaModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#clients-fica';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Alerts & Notifications Module
+        function loadAlertsModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Alerts & Notifications</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Alerts & Notifications module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/alerts-notifications/html/alerts_notifications.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Alerts & Notifications"
+                            id="alertsModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#alerts';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Executive Dashboard
+        function loadExecutiveDashboard(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active" aria-current="page"><i class="fas fa-home"></i> Executive Dashboard</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Executive Dashboard via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/executive-dashboard/html/executive_dashboard.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Executive Dashboard"
+                            id="executiveDashboardFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#dashboard';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Restore Dashboard (now loads Executive Dashboard)
+        function restoreDashboard(dashboardContent, breadcrumbNav) {
+            loadExecutiveDashboard(dashboardContent, breadcrumbNav);
+        }
+        
+        // Navigation Functions
+        function goToDashboard() {
+            console.log('goToDashboard called');
+            const dashboardContent = document.getElementById('dashboardContent');
+            const breadcrumbNav = document.querySelector('.breadcrumb-nav');
+            restoreDashboard(dashboardContent, breadcrumbNav);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth >= 992) {
+                sidebar.classList.remove('show');
+            }
+        });
     </script>
 </body>
-
 </html>
+

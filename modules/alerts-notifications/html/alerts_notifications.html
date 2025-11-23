@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alerts & Notifications - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/alerts-styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="alerts-container">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="alertsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                    <i class="fas fa-tachometer-alt me-2"></i>Alerts Dashboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab">
+                    <i class="fas fa-bell me-2"></i>Active Alerts <span class="badge bg-danger ms-1" id="activeCount">17</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="rules-tab" data-bs-toggle="tab" data-bs-target="#rules" type="button" role="tab">
+                    <i class="fas fa-cog me-2"></i>Alert Rules
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                    <i class="fas fa-history me-2"></i>Alert History
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
+                    <i class="fas fa-sliders-h me-2"></i>Notification Settings
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="alertsTabContent">
+            <!-- TAB 1: ALERTS DASHBOARD -->
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                <div class="dashboard-header mb-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h2 class="mb-1">Alerts & Notifications</h2>
+                            <p class="text-muted mb-0">Proactive compliance monitoring and escalation</p>
+                            <small class="text-muted">Last Updated: <span id="lastUpdated">15/12/2024 14:30</span> <i class="fas fa-sync-alt ms-2" id="refreshIcon" style="cursor: pointer;"></i></small>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-danger" id="createAlertBtn">
+                                <i class="fas fa-plus me-1"></i> Create Custom Alert
+                            </button>
+                            <button class="btn btn-secondary" id="configureRulesBtn">
+                                <i class="fas fa-cog me-1"></i> Configure Alert Rules
+                            </button>
+                            <button class="btn btn-info" id="alertAnalyticsBtn">
+                                <i class="fas fa-chart-bar me-1"></i> Alert Analytics
+                            </button>
+                            <button class="btn btn-secondary" id="notificationSettingsBtn">
+                                <i class="fas fa-envelope me-1"></i> Notification Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Cards Row -->
+                <div class="row g-3 mb-4">
+                    <!-- Card 1: Total Active Alerts -->
+                    <div class="col-md-6 col-lg-2">
+                        <div class="alert-summary-card" data-filter="all">
+                            <div class="summary-number">17</div>
+                            <div class="summary-label">Active Alerts</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-success">+4 since yesterday <i class="fas fa-arrow-up"></i></small>
+                                <i class="fas fa-bell fa-2x text-primary"></i>
+                            </div>
+                            <div class="mt-2">
+                                <span class="badge bg-primary">Monitoring</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Critical Alerts -->
+                    <div class="col-md-6 col-lg-2">
+                        <div class="alert-summary-card critical" data-filter="critical">
+                            <div class="summary-number text-danger pulse">1</div>
+                            <div class="summary-label">CRITICAL</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-danger">Requires immediate action</small>
+                                <i class="fas fa-exclamation-triangle fa-2x text-danger pulse"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: High Priority -->
+                    <div class="col-md-6 col-lg-2">
+                        <div class="alert-summary-card high" data-filter="high">
+                            <div class="summary-number text-warning">3</div>
+                            <div class="summary-label">HIGH PRIORITY</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-warning">Action within 7 days</small>
+                                <i class="fas fa-exclamation-circle fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Medium Priority -->
+                    <div class="col-md-6 col-lg-2">
+                        <div class="alert-summary-card medium" data-filter="medium">
+                            <div class="summary-number text-info">5</div>
+                            <div class="summary-label">MEDIUM PRIORITY</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-info">Action within 30 days</small>
+                                <i class="fas fa-info-circle fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Overdue -->
+                    <div class="col-md-6 col-lg-2">
+                        <div class="alert-summary-card overdue" data-filter="overdue">
+                            <div class="summary-number text-danger pulse">1</div>
+                            <div class="summary-label">OVERDUE</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-danger">Past due date</small>
+                                <i class="fas fa-clock fa-2x text-danger pulse"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 6: Acknowledged -->
+                    <div class="col-md-6 col-lg-2">
+                        <div class="alert-summary-card acknowledged" data-filter="acknowledged">
+                            <div class="summary-number text-success">8</div>
+                            <div class="summary-label">ACKNOWLEDGED</div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small class="text-success">Awaiting completion</small>
+                                <i class="fas fa-check-circle fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Statistics Row -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number">4</div>
+                                <div class="stat-label">Alerts Today</div>
+                                <small class="text-muted">Same as yesterday</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-stopwatch"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number">2.5 hrs</div>
+                                <div class="stat-label">Avg Response Time</div>
+                                <small class="text-success">-0.5 hrs <i class="fas fa-arrow-down"></i></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-check"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number">12</div>
+                                <div class="stat-label">Dismissed (7 Days)</div>
+                                <small class="text-success">+2 vs previous week</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-arrow-up"></i></div>
+                            <div class="stat-content">
+                                <div class="stat-number">3</div>
+                                <div class="stat-label">Escalated (30 Days)</div>
+                                <small class="text-warning">+1 vs previous month</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Heatmap -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">7-Day Alert Activity Heatmap</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="alertHeatmap">
+                            <!-- Heatmap will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: ACTIVE ALERTS -->
+            <div class="tab-pane fade" id="active" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>Active Alerts</h3>
+                    <button class="btn btn-danger" id="createAlertBtn2">
+                        <i class="fas fa-plus me-1"></i> Create Alert
+                    </button>
+                </div>
+
+                <!-- Filters & Search -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Search -->
+                            <div class="col-md-12 col-lg-4">
+                                <label class="form-label small">Search Alerts</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control" id="alertSearch" placeholder="Search by keyword, representative, or category...">
+                                    <button class="btn btn-outline-secondary" type="button" id="clearSearch" style="display: none;">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Priority Filter -->
+                            <div class="col-md-6 col-lg-2">
+                                <label class="form-label small">Priority</label>
+                                <select class="form-select form-select-sm" id="priorityFilter">
+                                    <option value="all">All</option>
+                                    <option value="critical">Critical</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+
+                            <!-- Category Filter -->
+                            <div class="col-md-6 col-lg-2">
+                                <label class="form-label small">Category</label>
+                                <select class="form-select form-select-sm" id="categoryFilter">
+                                    <option value="all">All Categories</option>
+                                    <option value="fit-proper">Fit & Proper (4)</option>
+                                    <option value="cpd">CPD (5)</option>
+                                    <option value="fica">FICA (3)</option>
+                                    <option value="documents">Documents (2)</option>
+                                    <option value="insurance">Insurance (1)</option>
+                                    <option value="complaints">Complaints (0)</option>
+                                    <option value="system">System (2)</option>
+                                </select>
+                            </div>
+
+                            <!-- Status Filter -->
+                            <div class="col-md-6 col-lg-2">
+                                <label class="form-label small">Status</label>
+                                <select class="form-select form-select-sm" id="statusFilter">
+                                    <option value="all">All Status</option>
+                                    <option value="active">Active (17)</option>
+                                    <option value="acknowledged">Acknowledged (8)</option>
+                                    <option value="in-progress">In Progress (6)</option>
+                                    <option value="dismissed">Dismissed (0)</option>
+                                    <option value="escalated">Escalated (2)</option>
+                                </select>
+                            </div>
+
+                            <!-- Sort -->
+                            <div class="col-md-6 col-lg-2">
+                                <label class="form-label small">Sort By</label>
+                                <select class="form-select form-select-sm" id="sortFilter">
+                                    <option value="priority">Priority (High to Low)</option>
+                                    <option value="date-newest">Date Created (Newest First)</option>
+                                    <option value="date-oldest">Date Created (Oldest First)</option>
+                                    <option value="due-date">Due Date (Soonest First)</option>
+                                    <option value="status">Status</option>
+                                    <option value="category">Category</option>
+                                    <option value="representative">Representative Name</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-secondary" id="clearFiltersBtn">
+                                        <i class="fas fa-filter me-1"></i> Clear All Filters
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="savePresetBtn">
+                                        <i class="fas fa-save me-1"></i> Save Filter Preset
+                                    </button>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Bulk Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" id="bulkAcknowledge">Acknowledge Selected</a></li>
+                                            <li><a class="dropdown-item" href="#" id="bulkAssign">Assign To...</a></li>
+                                            <li><a class="dropdown-item" href="#" id="bulkChangePriority">Change Priority...</a></li>
+                                            <li><a class="dropdown-item" href="#" id="bulkAddNote">Add Note to All</a></li>
+                                            <li><a class="dropdown-item" href="#" id="bulkSetDueDate">Set Due Date</a></li>
+                                            <li><a class="dropdown-item" href="#" id="bulkSendReminder">Send Reminder</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item" href="#" id="bulkDismiss">Dismiss Selected</a></li>
+                                            <li><a class="dropdown-item" href="#" id="bulkExport">Export Selected</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Alerts Table -->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="alertsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 40px;">
+                                            <input type="checkbox" class="form-check-input" id="selectAllAlerts">
+                                        </th>
+                                        <th style="width: 120px;">Priority</th>
+                                        <th>Alert</th>
+                                        <th style="width: 120px;">Category</th>
+                                        <th style="width: 150px;">Created</th>
+                                        <th style="width: 150px;">Due Date</th>
+                                        <th style="width: 150px;">Assigned To</th>
+                                        <th style="width: 120px;">Status</th>
+                                        <th style="width: 150px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alertsTableBody">
+                                    <!-- Alerts will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Actions Bar -->
+                <div class="bulk-actions-bar" id="bulkActionsBar" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center p-3 bg-light border-top">
+                        <div>
+                            <strong id="selectedAlertsCount">0</strong> alerts selected
+                            <a href="#" class="ms-2" id="selectAllAlertsLink">Select All</a>
+                            <a href="#" class="ms-2" id="deselectAllAlertsLink">Deselect All</a>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-primary" id="bulkAcknowledgeBtn">Acknowledge</button>
+                            <button class="btn btn-sm btn-secondary" id="bulkAssignBtn2">Assign To...</button>
+                            <button class="btn btn-sm btn-warning" id="bulkChangePriorityBtn">Change Priority</button>
+                            <button class="btn btn-sm btn-danger" id="bulkDismissBtn">Dismiss</button>
+                            <button class="btn btn-sm btn-outline-secondary" id="cancelSelectionBtn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: ALERT RULES -->
+            <div class="tab-pane fade" id="rules" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3>Automated Alert Rules</h3>
+                        <p class="text-muted mb-0">Configure rules for automatic alert generation</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-danger" id="createRuleBtn">
+                            <i class="fas fa-plus me-1"></i> Create New Rule
+                        </button>
+                        <button class="btn btn-info" id="ruleAnalyticsBtn">
+                            <i class="fas fa-chart-bar me-1"></i> Rule Analytics
+                        </button>
+                        <button class="btn btn-secondary" id="importRulesBtn">
+                            <i class="fas fa-download me-1"></i> Import Rules
+                        </button>
+                        <button class="btn btn-secondary" id="exportRulesBtn">
+                            <i class="fas fa-upload me-1"></i> Export Rules
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Rules Summary Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="rule-summary-card">
+                            <div class="summary-number text-success">15</div>
+                            <div class="summary-label">Active Rules</div>
+                            <div class="mt-2">
+                                <span class="badge bg-success">Running</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="rule-summary-card">
+                            <div class="summary-number text-secondary">2</div>
+                            <div class="summary-label">Disabled</div>
+                            <div class="mt-2">
+                                <span class="badge bg-secondary">Not monitoring</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="rule-summary-card">
+                            <div class="summary-number">127</div>
+                            <div class="summary-label">Alerts Created (30 Days)</div>
+                            <small class="text-success">+15 vs previous month</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="rule-summary-card">
+                            <div class="summary-number">4.2</div>
+                            <div class="summary-label">Avg Alerts/Day</div>
+                            <small class="text-muted">Stable</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Rules Table -->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="rulesTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 80px;">Status</th>
+                                        <th>Rule Name</th>
+                                        <th>Trigger Condition</th>
+                                        <th style="width: 120px;">Priority</th>
+                                        <th>Recipients</th>
+                                        <th style="width: 150px;">Alerts Generated</th>
+                                        <th style="width: 150px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rulesTableBody">
+                                    <!-- Rules will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: ALERT HISTORY -->
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3>Alert History</h3>
+                        <p class="text-muted mb-0">All alerts (active, resolved, dismissed)</p>
+                    </div>
+                    <div>
+                        <select class="form-select form-select-sm" id="historyDateRange" style="width: auto; display: inline-block;">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 30 Days</option>
+                            <option value="90" selected>Last 90 Days</option>
+                            <option value="180">Last 180 Days</option>
+                            <option value="365">Last 12 Months</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- History Statistics -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number">247</div>
+                            <div class="stat-label">Total Alerts</div>
+                            <small class="text-muted">Last 90 days</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number">2.5 days</div>
+                            <div class="stat-label">Avg Resolution Time</div>
+                            <small class="text-success">Improving</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number">12</div>
+                            <div class="stat-label">Dismissed (5%)</div>
+                            <small class="text-muted">Last 90 days</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Escalated (3%)</div>
+                            <small class="text-muted">Last 90 days</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Table (Same structure as Active Alerts but with additional columns) -->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="historyTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Priority</th>
+                                        <th>Alert</th>
+                                        <th>Category</th>
+                                        <th>Created</th>
+                                        <th>Resolved Date</th>
+                                        <th>Resolved By</th>
+                                        <th>Resolution Time</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                    <!-- History will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: NOTIFICATION SETTINGS -->
+            <div class="tab-pane fade" id="settings" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3>Notification Settings</h3>
+                        <p class="text-muted mb-0">Configure how you receive alerts and notifications</p>
+                    </div>
+                </div>
+
+                <!-- User Notification Preferences -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Email Notifications</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enableEmail" checked>
+                                <label class="form-check-label" for="enableEmail">Enable email notifications</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="emailAddress" value="thabo.mokoena@abcfinancial.co.za">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Delivery Format</label>
+                            <div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="emailFormat" id="emailIndividual" value="individual" checked>
+                                    <label class="form-check-label" for="emailIndividual">Individual emails (real-time)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="emailFormat" id="emailDaily" value="daily">
+                                    <label class="form-check-label" for="emailDaily">Daily digest (08:00 SAST)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="emailFormat" id="emailWeekly" value="weekly">
+                                    <label class="form-check-label" for="emailWeekly">Weekly digest (Monday 08:00)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Priority Filter</label>
+                            <div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="emailCritical" checked>
+                                    <label class="form-check-label" for="emailCritical">Critical</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="emailHigh" checked>
+                                    <label class="form-check-label" for="emailHigh">High</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="emailMedium" checked>
+                                    <label class="form-check-label" for="emailMedium">Medium</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="emailLow">
+                                    <label class="form-check-label" for="emailLow">Low</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SMS Notifications -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">SMS Notifications</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enableSMS" checked>
+                                <label class="form-check-label" for="enableSMS">Enable SMS notifications</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mobile Number</label>
+                            <div class="input-group">
+                                <input type="tel" class="form-control" id="mobileNumber" value="+27 82 555 7890">
+                                <button class="btn btn-outline-secondary" type="button" id="verifyNumberBtn">Verify Number</button>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            SMS notifications are sent for Critical alerts only. Character limit: 160 chars. Max 10 SMS per day.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In-App Notifications -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">In-App Notifications</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enableInApp" checked disabled>
+                                <label class="form-check-label" for="enableInApp">Enable in-app notifications (always enabled)</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="showBadge" checked>
+                                <label class="form-check-label" for="showBadge">Show count on bell icon</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="desktopNotifications" checked>
+                                <label class="form-check-label" for="desktopNotifications">Enable browser notifications</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="notificationSound" checked>
+                                <label class="form-check-label" for="notificationSound">Play notification sound</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="notificationPopup" checked>
+                                <label class="form-check-label" for="notificationPopup">Show notification popup</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiet Hours -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Quiet Hours</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enableQuietHours" checked>
+                                <label class="form-check-label" for="enableQuietHours">Enable quiet hours (no notifications)</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">From</label>
+                                <input type="time" class="form-control" id="quietHoursFrom" value="22:00">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">To</label>
+                                <input type="time" class="form-control" id="quietHoursTo" value="06:00">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="criticalOverrideQuiet" checked>
+                                <label class="form-check-label" for="criticalOverrideQuiet">Critical alerts override quiet hours</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary" id="saveNotificationSettings">
+                        <i class="fas fa-save me-1"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Custom Alert Modal -->
+    <div class="modal fade" id="createAlertModal" tabindex="-1" aria-labelledby="createAlertModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createAlertModalLabel">Create Custom Alert</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="createAlertForm">
+                    <!-- Form will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Detail Modal -->
+    <div class="modal fade" id="alertDetailModal" tabindex="-1" aria-labelledby="alertDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="alertDetailModalLabel">Alert Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="alertDetailContent">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/alerts-notifications.js"></script>
+</body>
+</html>
+

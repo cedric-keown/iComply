@@ -1,0 +1,822 @@
+CURSOR PROMPT: FIT & PROPER MANAGEMENT MODULE
+==============================================
+
+Create a fully functional, realistic HTML mockup for the Fit & Proper Management module of a South African FAIS broker compliance portal. This module tracks qualifications, regulatory exams (RE1/RE5), Class of Business (COB) training, experience, and good standing requirements.
+
+## BRAND & DESIGN REQUIREMENTS
+
+**Brand Colors:**
+- Primary (Teal/Turquoise): #5CBDB4
+- Text (Charcoal Grey): #4A4A4A
+- Background: #FFFFFF
+- Light Grey: #F8F9FA
+- Success: #28A745
+- Warning: #FFC107
+- Danger: #DC3545
+- Info: #17A2B8
+
+**Framework & Theme:**
+- Use Bootstrap 5+ with Phoenix v1.23.0 theme: https://prium.github.io/phoenix/v1.23.0/index.html
+- Fully responsive design (mobile-first)
+- Vanilla JavaScript only (no frameworks)
+- South African locale (ZAR currency, DD/MM/YYYY dates)
+
+## MODULE STRUCTURE
+
+### Page Layout: Tabbed Interface with Side Navigation
+
+**Left Sidebar (Fixed on desktop, hamburger on mobile):**
+- Overview Dashboard (icon: grid)
+- Qualifications & Credentials (icon: graduation cap)
+- Regulatory Examinations (icon: file-text)
+- Class of Business Training (icon: book)
+- Experience & Employment (icon: briefcase)
+- Good Standing (icon: shield-check)
+
+**Main Content Area:**
+Each section has its own view with consistent header pattern:
+- Section title
+- Status badge (Compliant/Non-compliant/Pending)
+- Last updated date
+- Quick action buttons
+
+---
+
+## 1. OVERVIEW DASHBOARD
+
+### Hero Section: Status Summary Cards (3 cards)
+
+**Card 1: Overall Fit & Proper Status**
+- Large status indicator: âœ“ COMPLIANT (green) or âœ— NON-COMPLIANT (red)
+- Score: 90/100
+- Last assessment: 15/12/2024
+- Next review: 15/06/2025
+- Progress bar showing completion
+
+**Card 2: Outstanding Requirements**
+- Number: 2 (amber badge)
+- List of outstanding items:
+  - COB Training: Long-term Insurance Cat A
+  - Reference Letter: Management experience
+- "View Details" button
+
+**Card 3: Expiring Soon**
+- Number: 1 (warning badge)
+- Items expiring in next 90 days:
+  - Criminal Clearance: Expires 15/03/2025 (76 days)
+- "Renew Now" button
+
+### Requirements Checklist (Visual Checklist with Status)
+
+Table layout with columns:
+| Requirement | Status | Last Updated | Expiry Date | Action |
+
+Rows:
+1. Qualifications
+   - âœ“ Compliant | 12/11/2024 | N/A | View Details
+2. RE1 Certificate
+   - âœ“ Compliant | 15/08/2023 | N/A | Download
+3. RE5 Certificate
+   - âœ“ Compliant | 20/08/2023 | N/A | Download
+4. COB Training
+   - âš  Incomplete | 05/12/2024 | Various | View Details
+5. Management Experience
+   - â³ Pending | 10/12/2024 | N/A | Upload Document
+6. Criminal Clearance
+   - âœ“ Valid | 15/03/2023 | 15/03/2025 | View
+7. Credit Check
+   - âœ“ Clear | 01/11/2024 | N/A | Refresh
+8. Debarment Check
+   - âœ“ Clear | 01/12/2024 | N/A | Refresh
+
+Each row should be clickable to navigate to detailed section.
+
+### Quick Actions Panel
+- Upload Qualification
+- Upload RE Certificate
+- Add COB Training
+- Update Experience
+- Request Status Report
+
+---
+
+## 2. QUALIFICATIONS & CREDENTIALS
+
+### Page Header
+- Title: "Qualifications & Credentials"
+- Status: âœ“ Compliant (green badge)
+- Last verified: 12/11/2024
+- Button: "Upload New Qualification"
+
+### Current Qualifications Section
+
+**Display as Cards (expandable accordions):**
+
+**Qualification Card 1:**
+- Header: Bachelor of Commerce (Finance) | âœ“ FSCA Approved
+- University of Cape Town | 2018
+- SAQA Verification: âœ“ Verified (15/11/2024)
+- Status: Active
+- Qualification ID: Q-12345-UCT
+- Documents:
+  - Certificate.pdf (2.1 MB) - Download | View
+  - SAQA Verification.pdf (450 KB) - Download | View
+- Actions: Edit | Archive
+
+**Qualification Card 2:**
+- Header: Certificate in Financial Planning | âœ“ FSCA Approved
+- FPI (Financial Planning Institute) | 2019
+- SAQA Verification: âœ“ Verified (20/11/2024)
+- Status: Active
+- Qualification ID: Q-67890-FPI
+- Documents: [similar to above]
+
+### Upload New Qualification Form (Modal/Slide-in Panel)
+
+**Form Fields:**
+1. Qualification Type (dropdown):
+   - Degree
+   - Diploma
+   - Certificate
+   - Other
+2. Qualification Name (text)
+3. Institution (text with autocomplete for SA institutions)
+4. Year Obtained (date picker)
+5. Qualification Level (dropdown based on SAQA levels)
+6. SAQA Verification Status:
+   - â—‹ Not Yet Verified
+   - â—‹ Verification in Progress
+   - â—‹ Verified
+7. Upload Documents:
+   - Certificate (required) - PDF/JPG/PNG, max 5MB
+   - Transcript (optional)
+   - SAQA Verification (if available)
+   - Drag & drop zone with progress bar
+8. Notes (textarea)
+
+**Buttons:**
+- Save & Submit for Verification
+- Save as Draft
+- Cancel
+
+### SAQA Verification Tracker
+
+**If not verified:**
+- Status: â³ Verification Pending
+- Submitted: 12/12/2024
+- Expected completion: 7-10 business days
+- Tracking number: SAQA-2024-12345
+- Progress indicator (3 steps):
+  1. âœ“ Submitted
+  2. â³ Under Review
+  3. â—‹ Verification Complete
+- Link: "Check SAQA Status"
+
+---
+
+## 3. REGULATORY EXAMINATIONS (RE1 & RE5)
+
+### Page Header
+- Title: "Regulatory Examinations"
+- Status: âœ“ Both Complete (green badge)
+- Button: "Schedule Exam" | "Upload Results"
+
+### Exam Status Cards (Side by side on desktop)
+
+**RE1 (Regulatory Exam 1) Card:**
+- Header: RE1 - FAIS Act & Legislation
+- Status: âœ“ PASSED (green badge)
+- Score: 72% (Pass mark: 65%)
+- Exam Date: 15/08/2023
+- Certificate Number: RE1-2023-45678
+- Exam Provider: Moonstone Business School of Excellence
+- Validity: Lifetime
+- Documents:
+  - RE1_Certificate.pdf - Download | View
+- Actions: View Details | Retake Exam
+
+**RE5 (Regulatory Exam 5) Card:**
+- Header: RE5 - FICA & Anti-Money Laundering
+- Status: âœ“ PASSED (green badge)
+- Score: 78% (Pass mark: 65%)
+- Exam Date: 20/08/2023
+- Certificate Number: RE5-2023-45679
+- Exam Provider: Moonstone Business School of Excellence
+- Validity: Lifetime
+- Documents:
+  - RE5_Certificate.pdf - Download | View
+- Actions: View Details | Retake Exam
+
+### Exam Information & Resources Section
+
+**Accordion/Tabs:**
+
+**Tab 1: About RE1**
+- Purpose: Tests knowledge of FAIS Act and related legislation
+- Topics covered:
+  - FAIS Act 37 of 2002
+  - General Code of Conduct
+  - Fit and Proper Requirements
+  - FSCA regulations
+- Duration: 2 hours
+- Pass mark: 65%
+- Cost: R1,226.00
+- Provider: Moonstone BSE
+
+**Tab 2: About RE5**
+- Purpose: Tests knowledge of FICA and AML/CFT
+- Topics covered:
+  - FICA 38 of 2001
+  - Money laundering prevention
+  - Terrorist financing
+  - Customer due diligence
+- Duration: 2 hours
+- Pass mark: 65%
+- Cost: R1,226.00
+- Provider: Moonstone BSE
+
+**Tab 3: Study Resources**
+- Official Study Guides (links)
+- Practice Exams (links)
+- Video Tutorials
+- FAQs
+
+### Schedule Exam Section (Collapsible)
+
+**Exam Booking Form:**
+1. Select Exam: â—‹ RE1 | â—‹ RE5 | â—‹ Both
+2. Preferred Date (calendar picker)
+3. Exam Centre (dropdown with SA locations):
+   - Cape Town
+   - Johannesburg
+   - Durban
+   - Pretoria
+   - Port Elizabeth
+   - Online Proctored
+4. Contact Details (pre-filled from profile)
+5. Special Requirements (textarea)
+
+**Payment Summary:**
+- Exam Fee: R1,226.00 (per exam)
+- Admin Fee: R50.00
+- Total: R1,276.00
+- Payment Method: â—‹ EFT | â—‹ Credit Card
+
+**Buttons:**
+- Confirm Booking
+- Save for Later
+- Cancel
+
+### Upload Exam Results (If pending)
+
+**Upload Form:**
+1. Exam Type: â—‹ RE1 | â—‹ RE5
+2. Exam Date (date picker)
+3. Score (%) - number input
+4. Certificate Number (text)
+5. Upload Certificate (PDF, max 5MB)
+6. Upload Official Results (optional)
+
+**Buttons:**
+- Submit for Verification
+- Cancel
+
+---
+
+## 4. CLASS OF BUSINESS (COB) TRAINING
+
+### Page Header
+- Title: "Class of Business Training"
+- Status: âš  2 Categories Pending (amber badge)
+- Last updated: 05/12/2024
+- Button: "Add Training Certificate"
+
+### Authorised Categories Overview
+
+**Visual Grid/Table:**
+
+| Category | Sub-category | Status | Training Date | Certificate | Expiry | Action |
+
+**Row 1: Long-term Insurance**
+- Cat A: âœ“ Complete | 15/09/2023 | View Cert | N/A | Refresh
+- Cat B1: âš  Pending | - | - | - | Upload
+- Cat B2: âœ“ Complete | 20/09/2023 | View Cert | N/A | Refresh
+- Cat C: âœ“ Complete | 25/09/2023 | View Cert | N/A | Refresh
+
+**Row 2: Short-term Insurance**
+- Personal Lines: âœ“ Complete | 10/08/2023 | View Cert | N/A | Refresh
+- Commercial Lines: Not Authorised | - | - | - | Apply
+
+**Row 3: Investment Products**
+- Securities & Instruments: âœ“ Complete | 05/11/2023 | View Cert | N/A | Refresh
+- Participatory Interests: âœ“ Complete | 10/11/2023 | View Cert | N/A | Refresh
+- Pension Funds: âš  Pending | - | - | - | Upload
+
+**Row 4: Derivatives**
+- Not Authorised | - | - | - | Apply for Authorisation
+
+### COB Training Details (Expandable Cards)
+
+**Example Card: Long-term Insurance - Cat A**
+- Header: Long-term Insurance - Category A
+- Status: âœ“ Complete (green badge)
+- Training Provider: Moonstone BSE
+- Training Date: 15/09/2023
+- Certificate Number: COB-LTI-A-2023-12345
+- Topics Covered:
+  - Product knowledge
+  - Regulatory requirements
+  - Client needs analysis
+  - Disclosure requirements
+- Documents:
+  - COB_Training_Certificate_LTI_A.pdf - Download | View
+  - Training Completion Report.pdf - Download | View
+- Actions: View Details | Retake Training
+
+### Upload COB Training Certificate (Modal)
+
+**Form:**
+1. Class of Business (dropdown):
+   - Long-term Insurance
+   - Short-term Insurance
+   - Investment Products
+   - Derivatives
+2. Sub-category (dynamic based on class selected)
+3. Training Provider (text with autocomplete)
+4. Training Date (date picker)
+5. Certificate Number (text)
+6. Upload Certificate (PDF, max 5MB)
+   - Drag & drop zone
+7. Upload Supporting Documents (optional)
+8. Notes (textarea)
+
+**Buttons:**
+- Submit for Verification
+- Save as Draft
+- Cancel
+
+### Training Provider Directory
+
+**Searchable list of accredited providers:**
+- Moonstone Business School of Excellence
+- Masthead Training
+- FPI Training Centre
+- IISA Training
+
+Each with:
+- Provider name
+- Accreditation status
+- Classes offered
+- Contact details
+- Website link
+- "Book Training" button
+
+---
+
+## 5. EXPERIENCE & EMPLOYMENT
+
+### Page Header
+- Title: "Experience & Employment History"
+- Status: â³ 1 Item Pending Verification
+- Last updated: 10/12/2024
+- Button: "Add Employment Record"
+
+### Key Individual (KI) Role Section
+
+**If user is a KI:**
+- Badge: ðŸ† Key Individual
+- Appointment Date: 01/03/2020
+- FSP: CustomApp Financial Services (Pty) Ltd
+- FSP Number: 12345
+- Categories Authorised: Long-term Insurance, Investments
+- Responsibilities:
+  - Oversee compliance
+  - Manage representatives
+  - Client oversight
+- Documents:
+  - KI Appointment Letter.pdf - Download
+  - Role Description.pdf - Download
+
+### Management Experience Summary
+
+**Visual Timeline:**
+- Total Management Experience: 8 years, 3 months
+- FSP Management: 5 years, 2 months
+- FSCA Requirement: âœ“ Meets minimum (3 years)
+- Status: âœ“ Verified
+
+### Employment History (Timeline View)
+
+**Entry 1 (Current):**
+- Position: Senior Financial Advisor & Key Individual
+- Company: CustomApp Financial Services (Pty) Ltd
+- FSP Number: 12345
+- Location: Cape Town, Western Cape
+- Period: 01/03/2020 - Present (4 years, 10 months)
+- Management Role: Yes
+- Responsibilities:
+  - Lead team of 12 representatives
+  - Compliance oversight
+  - Client portfolio management
+  - Training and mentorship
+- Reference Contact:
+  - Name: Johan van der Merwe
+  - Position: CEO
+  - Phone: +27 21 555 1234
+  - Email: johan@customapp.co.za
+- Documents:
+  - Employment Contract.pdf - Download
+  - Reference Letter.pdf - Download
+- Status: âœ“ Verified
+- Actions: Edit | View Details
+
+**Entry 2:**
+- Position: Financial Advisor
+- Company: Old Mutual Wealth (Pty) Ltd
+- FSP Number: 67890
+- Location: Cape Town, Western Cape
+- Period: 15/06/2017 - 28/02/2020 (2 years, 8 months)
+- Management Role: No
+- Responsibilities: [similar structure]
+- Status: âœ“ Verified
+
+**Entry 3:**
+- Position: Junior Financial Advisor
+- Company: Discovery Life Ltd
+- FSP Number: 45678
+- Location: Johannesburg, Gauteng
+- Period: 01/01/2015 - 14/06/2017 (2 years, 5 months)
+- Management Role: No
+- Status: âœ“ Verified
+
+### Add Employment Record (Modal/Slide-in)
+
+**Form Fields:**
+1. Position/Job Title (text)
+2. Company Name (text)
+3. FSP Number (text with validation)
+4. Location (text)
+5. Start Date (date picker)
+6. End Date (date picker or checkbox "Currently employed")
+7. Management Role: â˜ Yes â˜ No
+8. Number of direct reports (if management)
+9. Key Responsibilities (textarea)
+10. Reference Contact Details:
+    - Name
+    - Position
+    - Phone
+    - Email
+11. Upload Documents:
+    - Employment Contract
+    - Reference Letter (required for management roles)
+    - Payslip or Proof of Employment
+12. Notes (textarea)
+
+**Buttons:**
+- Save & Submit for Verification
+- Save as Draft
+- Cancel
+
+### Reference Letters Section
+
+**List of uploaded reference letters:**
+
+**Reference 1:**
+- From: Johan van der Merwe, CEO - CustomApp Financial Services
+- Date: 25/02/2020
+- Purpose: Management experience verification
+- Status: âœ“ Verified by Compliance Officer
+- Document: Reference_Letter_CustomApp.pdf - Download | View
+
+**Reference 2:**
+- From: Sarah Naidoo, Manager - Old Mutual Wealth
+- Date: 10/06/2017
+- Purpose: General experience verification
+- Status: âœ“ Verified by Compliance Officer
+- Document: Reference_Letter_OldMutual.pdf - Download | View
+
+**Upload New Reference Letter:**
+- Button: "Request Reference Letter"
+- Template generator available
+- Email request function
+
+---
+
+## 6. GOOD STANDING
+
+### Page Header
+- Title: "Good Standing Requirements"
+- Status: âœ“ All Clear (green badge)
+- Last checked: 01/12/2024
+- Button: "Run All Checks"
+
+### Good Standing Checklist (Cards Grid)
+
+**Card 1: Criminal Clearance**
+- Status: âœ“ Valid (green badge)
+- Certificate Number: CC-2023-12345
+- Issue Date: 15/03/2023
+- Expiry Date: 15/03/2025 (76 days remaining)
+- Status Indicator: Yellow (expiring soon)
+- Document: Criminal_Clearance_Certificate.pdf - Download | View
+- Actions:
+  - Request Renewal
+  - Update Certificate
+  - View History
+
+**Card 2: Credit Check**
+- Status: âœ“ Clear (green badge)
+- Last Checked: 01/11/2024
+- Next Check: 01/02/2025
+- Credit Bureau: TransUnion
+- Score: Good standing
+- No adverse findings
+- Documents:
+  - Credit_Report_Nov2024.pdf - Download | View
+- Actions:
+  - Run New Check
+  - View Detailed Report
+  - View History
+
+**Card 3: Debarment Register Check**
+- Status: âœ“ Not Listed (green badge)
+- Last Checked: 01/12/2024
+- Next Check: 01/03/2025
+- Register: FSCA Debarment Register
+- Result: No matches found
+- Documents:
+  - Debarment_Check_Dec2024.pdf - Download | View
+- Actions:
+  - Run New Check
+  - View Certificate
+  - View History
+
+**Card 4: Conflict of Interest Register**
+- Status: âœ“ Up to Date (green badge)
+- Last Updated: 15/11/2024
+- Number of Entries: 0
+- Next Review: 15/11/2025
+- Documents:
+  - COI_Declaration_2024.pdf - Download | View
+- Actions:
+  - Add New Entry
+  - Update Declaration
+  - View Register
+
+**Card 5: Regulatory Compliance**
+- Status: âœ“ Compliant (green badge)
+- FSCA License: Valid
+- License Number: FSP-12345
+- Valid Until: 31/12/2025
+- Outstanding Reports: 0
+- Outstanding Fees: R0.00
+- Actions:
+  - View License
+  - Check Status
+  - View Compliance History
+
+### Criminal Clearance Section (Detailed)
+
+**Current Certificate:**
+- Certificate displayed as card/thumbnail
+- Details shown in table format
+- QR code for verification (if available)
+- Link to SAPS verification portal
+
+**Renewal Process Tracker (if renewal initiated):**
+- Step 1: âœ“ Application Submitted (15/01/2025)
+- Step 2: â³ Payment Confirmed (Pending)
+- Step 3: â—‹ Processing
+- Step 4: â—‹ Certificate Issued
+- Estimated completion: 6-8 weeks
+
+**Upload New Certificate:**
+- Button opens upload modal
+- Form fields:
+  - Certificate Number
+  - Issue Date
+  - Expiry Date
+  - Upload Document (PDF)
+- Buttons: Submit | Cancel
+
+### Credit Check Section
+
+**Credit Status Dashboard:**
+- Overall Status: âœ“ Good Standing
+- Last Check Date: 01/11/2024
+- Credit Bureau: TransUnion
+- Next Scheduled Check: 01/02/2025
+
+**Key Indicators:**
+- Payment History: âœ“ No late payments
+- Outstanding Debt: âœ“ Within acceptable limits
+- Legal Judgments: âœ“ None found
+- Debt Review: âœ“ Not under review
+- Insolvency: âœ“ Not insolvent
+
+**Actions:**
+- Run New Credit Check (button)
+- Download Report
+- Dispute Findings (if any)
+- View Historical Checks
+
+### Debarment Check Section
+
+**Check History Table:**
+| Check Date | Result | Register | Reference | Document |
+|------------|--------|----------|-----------|----------|
+| 01/12/2024 | âœ“ Clear | FSCA | DBR-2024-12345 | Download |
+| 01/09/2024 | âœ“ Clear | FSCA | DBR-2024-09876 | Download |
+| 01/06/2024 | âœ“ Clear | FSCA | DBR-2024-06543 | Download |
+
+**Auto-Check Schedule:**
+- Frequency: Every 3 months
+- Next Check: 01/03/2025
+- Email notification: â˜‘ Enabled
+
+**Manual Check:**
+- Button: "Run Debarment Check Now"
+- Instant results
+- Certificate generated automatically
+
+### Conflict of Interest Register
+
+**Introduction:**
+"As a financial services provider, you are required to declare any conflicts of interest that may affect your ability to provide impartial advice to clients."
+
+**Current Entries:**
+- No conflicts of interest declared âœ“
+
+**OR if there are entries:**
+
+**Entry 1:**
+- Type: Business Interest
+- Description: Director of XYZ Properties (Pty) Ltd
+- Declared Date: 15/06/2023
+- Review Date: 15/06/2024
+- Status: Active
+- Mitigation Measures:
+  - Full disclosure to clients
+  - No property investments recommended without disclosure
+- Documents:
+  - COI_Declaration_XYZ_Properties.pdf - Download
+- Actions: Edit | Review | Remove
+
+**Add New Conflict of Interest:**
+Form with:
+1. Type (dropdown):
+   - Business Interest
+   - Financial Interest
+   - Personal Relationship
+   - Other
+2. Description (textarea)
+3. Parties Involved (text)
+4. Start Date (date picker)
+5. Mitigation Measures (textarea)
+6. Upload Supporting Documents
+7. Buttons: Save | Cancel
+
+### Declaration Forms Section
+
+**Annual Declarations:**
+- 2024 Good Standing Declaration - Signed 01/01/2024 - Download
+- 2023 Good Standing Declaration - Signed 01/01/2023 - Download
+
+**Sign New Declaration:**
+- Button opens declaration form
+- Pre-filled with current status
+- Electronic signature capture
+- Submit to Compliance Officer
+
+---
+
+## TECHNICAL FEATURES
+
+### Responsive Design
+- Mobile: Single column, collapsible sections
+- Tablet: 2 columns where appropriate
+- Desktop: Full layout with sidebars
+
+### Interactive Elements
+1. **Status Indicators:**
+   - âœ“ Compliant (green)
+   - âš  Pending (amber)
+   - âœ— Non-compliant (red)
+   - â³ In Progress (blue)
+
+2. **Progress Tracking:**
+   - Visual progress bars
+   - Percentage completion
+   - Step indicators
+
+3. **Document Handling:**
+   - Drag & drop upload
+   - Preview thumbnails
+   - Download/view options
+   - Version control
+
+4. **Form Validation:**
+   - Real-time validation
+   - Error messages
+   - Required field indicators
+   - Success confirmations
+
+5. **Notifications:**
+   - Success toasts
+   - Error alerts
+   - Warning messages
+   - Info banners
+
+6. **Search & Filter:**
+   - Search within sections
+   - Filter by status
+   - Sort by date/name
+   - Quick filters
+
+### JavaScript Functionality
+1. Auto-save drafts every 30 seconds
+2. File upload with progress bars
+3. Form validation
+4. Modal/slide-in panels
+5. Accordion expand/collapse
+6. Sortable tables
+7. Date pickers
+8. Document preview
+9. Print functionality
+10. Export to PDF
+
+### Data Persistence
+- Use localStorage for drafts
+- Simulate API calls with setTimeout
+- Form data recovery
+- Session management
+
+### Accessibility
+- ARIA labels
+- Keyboard navigation
+- Screen reader support
+- High contrast mode option
+- Focus indicators
+
+---
+
+## SAMPLE DATA
+
+**User Profile:**
+- Name: Thabo Mokoena
+- Role: Senior Financial Advisor & Key Individual
+- FSP: CustomApp Financial Services (Pty) Ltd
+- FSP Number: 12345
+- Location: Cape Town, Western Cape
+- Join Date: 01/03/2020
+
+**Qualifications:**
+1. BCom Finance - University of Cape Town (2018)
+2. Certificate in Financial Planning - FPI (2019)
+3. Advanced Certificate in Wealth Management - Milpark (2021)
+
+**Exams:**
+- RE1: Passed 72% - 15/08/2023
+- RE5: Passed 78% - 20/08/2023
+
+**COB Training:**
+- Long-term Cat A, B2, C: Complete
+- Long-term Cat B1: Pending
+- Investments: Complete
+- Pension Funds: Pending
+
+**Experience:**
+- Total: 10 years
+- Current: 4 years 10 months at CustomApp
+- Previous: Old Mutual (2 years 8 months), Discovery (2 years 5 months)
+
+**Good Standing:**
+- Criminal Clearance: Valid until 15/03/2025
+- Credit: Clear
+- Debarment: Not listed
+- Conflicts: None declared
+
+---
+
+## FILE STRUCTURE
+
+```
+fit-and-proper/
+â”œâ”€â”€ index.html
+â”œâ”€â”€ css/
+â”‚   â”œâ”€â”€ fit-and-proper.css
+â”‚   â””â”€â”€ responsive.css
+â”œâ”€â”€ js/
+â”‚   â”œâ”€â”€ main.js
+â”‚   â”œâ”€â”€ qualifications.js
+â”‚   â”œâ”€â”€ exams.js
+â”‚   â”œâ”€â”€ cob-training.js
+â”‚   â”œâ”€â”€ experience.js
+â”‚   â”œâ”€â”€ good-standing.js
+â”‚   â”œâ”€â”€ forms.js
+â”‚   â””â”€â”€ data.js
+â””â”€â”€ assets/
+    â””â”€â”€ sample-documents/
+```
+
+Generate a complete, production-ready implementation that can be used immediately for user testing and feedback. Include all forms, validations, and interactive features described above.

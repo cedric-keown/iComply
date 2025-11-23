@@ -1,0 +1,1649 @@
+CURSOR PROMPT: DOCUMENT MANAGEMENT & 5-YEAR RETENTION MODULE
+============================================================
+
+Create a fully functional, realistic HTML mockup for the Document Management module of a South African FAIS broker compliance portal. This module manages all compliance documents with mandatory 5-year retention as per FAIS Act requirements, version control, secure storage, and comprehensive audit trails.
+
+## BRAND & DESIGN REQUIREMENTS
+
+**Brand Colors:**
+- Primary (Teal/Turquoise): #5CBDB4
+- Text (Charcoal Grey): #4A4A4A
+- Background: #FFFFFF
+- Light Grey: #F8F9FA
+- Success: #28A745
+- Warning: #FFC107
+- Danger: #DC3545
+- Info: #17A2B8
+
+**Framework & Theme:**
+- Use Bootstrap 5+ with Phoenix v1.23.0 theme: https://prium.github.io/phoenix/v1.23.0/index.html
+- Fully responsive design (mobile-first)
+- Vanilla JavaScript only (no frameworks)
+- South African locale (dates: DD/MM/YYYY, file sizes in MB/GB)
+
+## MODULE STRUCTURE
+
+### Top Navigation Tabs
+- Document Library (default)
+- Upload Documents
+- Retention Management
+- Search & Filter
+- Audit Trail
+- Storage Analytics
+
+### Left Sidebar: Quick Navigation (Collapsible on mobile)
+- **By Category**
+  - All Documents (count)
+  - FICA Documentation (count)
+  - Client Agreements (count)
+  - CPD Certificates (count)
+  - Qualifications & Training (count)
+  - Compliance Reports (count)
+  - Risk Management (count)
+  - Insurance Policies (count)
+  - Financial Statements (count)
+  - Correspondence (count)
+  - Other (count)
+- **By Status**
+  - Active (count)
+  - Expiring Soon (count)
+  - Expired (count)
+  - Archived (count)
+  - Pending Deletion (count)
+- **My Documents**
+- **Shared with Me**
+- **Recent**
+- **Favorites**
+
+---
+
+## 1. DOCUMENT LIBRARY TAB
+
+### Overview Stats (4 Cards)
+
+**Card 1: Total Documents**
+- Large number: 1,847
+- Icon: File-text
+- Subtitle: "In library"
+- Trend: +45 this month
+- Link: View all
+
+**Card 2: Storage Used**
+- Large progress circle: 2.4 GB / 10 GB (24%)
+- Icon: Hard-drive
+- Subtitle: "Storage capacity"
+- Color: Green (< 50%)
+- Link: View analytics
+
+**Card 3: Expiring Soon**
+- Large number: 12
+- Icon: Clock
+- Subtitle: "Next 30 days"
+- Status: Warning (amber)
+- Link: View expiring
+
+**Card 4: Pending Review**
+- Large number: 8
+- Icon: Eye
+- Subtitle: "Require attention"
+- Status: Info (blue)
+- Link: Review now
+
+### Toolbar (Action Bar)
+
+**Left Side:**
+- [Primary Button] Upload Documents
+- [Secondary Button] Create Folder
+- [Secondary Button] Bulk Actions â–¼ (dropdown)
+  - Move to folder
+  - Add tags
+  - Download selected
+  - Delete selected
+
+**Right Side:**
+- View Toggle: [Grid View] | [List View] | [Table View]
+- Sort By: (dropdown)
+  - Date uploaded (newest)
+  - Date uploaded (oldest)
+  - Name (A-Z)
+  - Name (Z-A)
+  - Size (largest)
+  - Size (smallest)
+  - Retention date
+- [Button] Filters (toggle sidebar)
+- [Button] Search
+
+### Search Bar (Expandable)
+
+**Search input with autocomplete:**
+- Placeholder: "Search by name, client, tags, or content..."
+- Search icon
+- Advanced search link
+
+**Advanced Search Panel (Expandable):**
+- Document name (text)
+- Document type (dropdown)
+- Category (dropdown)
+- Client/Representative (autocomplete)
+- Tags (multi-select)
+- Date range:
+  - Uploaded from: (date picker)
+  - Uploaded to: (date picker)
+- File type: PDF | Word | Excel | Image | Other
+- File size: Min ___ MB to Max ___ MB
+- Status: Active | Expired | Archived
+- Retention status: Within 5 years | Eligible for deletion
+- Modified by: (dropdown of users)
+- [Search Button] [Clear Filters]
+
+### Filter Sidebar (Toggle on/off)
+
+**Filters:**
+
+**Document Category:**
+- â˜ FICA Documentation (235)
+- â˜ Client Agreements (186)
+- â˜ CPD Certificates (124)
+- â˜ Qualifications (45)
+- â˜ Compliance Reports (67)
+- â˜ Risk Management (34)
+- â˜ Insurance Policies (12)
+- â˜ Financial Statements (24)
+- â˜ Correspondence (892)
+- â˜ Other (228)
+
+**File Type:**
+- â˜ PDF (1,234)
+- â˜ Word Document (345)
+- â˜ Excel Spreadsheet (156)
+- â˜ Image (89)
+- â˜ Other (23)
+
+**Date Uploaded:**
+- â—‹ Today
+- â—‹ Last 7 days
+- â—‹ Last 30 days
+- â—‹ Last 90 days
+- â—‹ Last year
+- â—‹ Custom range
+
+**Retention Status:**
+- â—‹ Active (< 5 years old)
+- â—‹ Expiring Soon (30 days to 5 years)
+- â—‹ Eligible for Deletion (> 5 years)
+- â—‹ Pending Deletion
+- â—‹ Deletion Hold
+
+**Uploaded By:**
+- â˜ Me
+- â˜ Sarah Naidoo
+- â˜ Thabo Mokoena
+- â˜ System Upload
+- â˜ Others
+
+**Tags:**
+- Search tags input
+- Popular tags:
+  - #urgent (23)
+  - #client-onboarding (156)
+  - #annual-review (78)
+  - #fica (235)
+  - #cpd-2024 (89)
+
+**Apply Filters** | **Clear All**
+
+---
+
+### GRID VIEW Layout
+
+**Document Cards (Responsive Grid):**
+
+**Card Layout:**
+- Document icon/thumbnail (top)
+  - File type icon for non-images
+  - Preview thumbnail for images/PDFs
+  - Visual indicator for status (corner badge)
+- Document name (truncated with tooltip)
+- Category badge
+- File size & type
+- Upload date
+- Uploaded by (avatar + name)
+- Tags (chips)
+- Retention countdown (if < 60 days to 5 years)
+- Action buttons (hover): ðŸ‘ View | â¬‡ Download | â‹¯ More
+
+**Sample Card 1:**
+- [PDF Icon Thumbnail]
+- "FICA_Verification_Thabo_Mokoena.pdf"
+- Badge: FICA Documentation (blue)
+- 2.4 MB | PDF
+- Uploaded: 15/12/2024
+- By: Sarah Naidoo
+- Tags: #fica #client-verification
+- Retention: 4 years, 365 days remaining
+- Status: âœ“ Active (green corner badge)
+- Actions: [View] [Download] [More â–¼]
+
+**Sample Card 2:**
+- [Certificate Thumbnail]
+- "CPD_Certificate_Ethics_Workshop.pdf"
+- Badge: CPD Certificates (purple)
+- 856 KB | PDF
+- Uploaded: 05/12/2024
+- By: Thabo Mokoena
+- Tags: #cpd #ethics #2024-cycle
+- Retention: 4 years, 355 days remaining
+- Status: âœ“ Active
+- Favorite: â­ (star icon)
+
+**Sample Card 3:**
+- [Excel Icon]
+- "Client_Portfolio_Summary_Q4_2024.xlsx"
+- Badge: Financial Statements (green)
+- 1.2 MB | Excel
+- Uploaded: 01/12/2024
+- By: System Upload
+- Tags: #financial #q4 #portfolio
+- âš  Expiring: 15 days remaining (amber badge)
+- Status: âš  Review Required
+
+**Sample Card 4:**
+- [Word Icon]
+- "Professional_Indemnity_Policy_2025.docx"
+- Badge: Insurance Policies (orange)
+- 456 KB | Word
+- Uploaded: 20/11/2024
+- By: Sarah Naidoo
+- Tags: #insurance #policy #2025
+- Retention: 4 years, 345 days remaining
+- Status: âœ“ Active
+- ðŸ”’ Sensitive (lock icon)
+
+**Pagination:**
+- Showing 1-20 of 1,847 documents
+- << Previous | 1 | 2 | 3 | ... | 93 | Next >>
+- Items per page: 20 â–¼ (dropdown: 10, 20, 50, 100)
+
+---
+
+### LIST VIEW Layout
+
+**Compact list with icons:**
+
+**List Item Structure:**
+- [File icon] Document name | Category badge | Size | Upload date | Uploaded by | Tags | [Actions]
+
+**Sample Row 1:**
+- [PDF] FICA_Verification_Thabo_Mokoena.pdf | FICA | 2.4 MB | 15/12/2024 | Sarah Naidoo | #fica #verification | [ðŸ‘] [â¬‡] [â‹¯]
+
+**Sample Row 2:**
+- [PDF] CPD_Certificate_Ethics_Workshop.pdf â­ | CPD | 856 KB | 05/12/2024 | Thabo Mokoena | #cpd #ethics | [ðŸ‘] [â¬‡] [â‹¯]
+
+**Alternating row colors for readability**
+
+---
+
+### TABLE VIEW Layout
+
+**Full-featured data table:**
+
+**Columns:**
+| â˜ | Type | Name | Category | Size | Upload Date | Uploaded By | Tags | Retention | Status | Actions |
+
+**Features:**
+- Select all checkbox in header
+- Sortable columns (click header)
+- Column resize
+- Show/hide columns option
+- Fixed header on scroll
+- Row hover highlight
+
+**Sample Rows:**
+
+**Row 1:**
+- â˜ | [PDF] | FICA_Verification_Thabo_Mokoena.pdf | FICA Documentation | 2.4 MB | 15/12/2024 | S. Naidoo | #fica | 1,825 days | âœ“ Active | [ðŸ‘] [â¬‡] [ðŸ“] [ðŸ—‘]
+
+**Row 2:**
+- â˜ | [PDF] | CPD_Certificate_Ethics.pdf â­ | CPD Certificates | 856 KB | 05/12/2024 | T. Mokoena | #cpd #ethics | 1,815 days | âœ“ Active | [ðŸ‘] [â¬‡] [ðŸ“] [ðŸ—‘]
+
+**Row 3:**
+- â˜ | [Excel] | Portfolio_Summary_Q4.xlsx | Financial | 1.2 MB | 01/12/2024 | System | #financial #q4 | âš  15 days | âš  Review | [ðŸ‘] [â¬‡] [ðŸ“] [ðŸ—‘]
+
+**Bulk Actions (when rows selected):**
+- With [X] selected:
+- [Download All] [Move to...] [Add Tags] [Delete]
+
+**Context Menu (Right-click on row):**
+- Open
+- Download
+- Rename
+- Move to folder
+- Add tags
+- Share
+- View details
+- View versions
+- Add to favorites
+- Delete
+
+---
+
+### FOLDER STRUCTURE (Tree view in sidebar)
+
+**Expandable folder tree:**
+
+**Root Folders:**
+- ðŸ“ **My Documents** (expand/collapse icon)
+  - ðŸ“ FICA (235)
+    - ðŸ“ ID Documents (248)
+    - ðŸ“ Proof of Residence (235)
+    - ðŸ“ Source of Funds (89)
+  - ðŸ“ Client Files (186)
+    - ðŸ“ Agreements (186)
+    - ðŸ“ Correspondence (456)
+    - ðŸ“ Risk Assessments (186)
+  - ðŸ“ Compliance (245)
+    - ðŸ“ CPD Certificates (124)
+    - ðŸ“ Qualifications (45)
+    - ðŸ“ RE Exams (25)
+    - ðŸ“ COB Training (51)
+  - ðŸ“ Corporate (78)
+    - ðŸ“ Insurance (12)
+    - ðŸ“ Financial Statements (24)
+    - ðŸ“ Policies (42)
+  - ðŸ“ Archive (892)
+
+**Folder Actions (hover or right-click):**
+- Rename
+- Move
+- Delete
+- New subfolder
+- Share
+- Download all
+
+**Drag & Drop:**
+- Drag documents between folders
+- Visual feedback during drag
+- Drop zone highlights
+
+---
+
+## 2. UPLOAD DOCUMENTS TAB
+
+### Upload Methods (Selection Cards)
+
+**Method 1: Single File Upload (Default)**
+- Icon: File-plus
+- Description: "Upload one document at a time"
+- [Select] button
+
+**Method 2: Bulk Upload**
+- Icon: Files
+- Description: "Upload multiple documents simultaneously"
+- [Select] button
+
+**Method 3: Scan Document**
+- Icon: Scanner
+- Description: "Scan document directly from scanner/camera"
+- [Select] button
+
+### Single File Upload Interface
+
+**Upload Zone (Large, centered):**
+- Drag & drop area with dashed border
+- Icon: Upload-cloud (large)
+- Text: "Drag & drop your file here"
+- "or"
+- [Browse Files] button
+- Supported formats: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Max 50MB)
+
+**After File Selected:**
+
+**File Preview Card:**
+- Thumbnail/icon
+- Filename
+- File size
+- File type
+- [Remove] button | [Replace] button
+
+**Document Details Form:**
+
+**Required Fields:**
+1. Document Name (pre-filled from filename, editable)
+2. Document Category (dropdown with icons): *REQUIRED*
+   - FICA Documentation
+   - Client Agreements
+   - CPD Certificates
+   - Qualifications & Training
+   - Compliance Reports
+   - Risk Management Policies
+   - Insurance Policies
+   - Financial Statements
+   - Audit Reports
+   - Correspondence
+   - Other (specify)
+3. Upload Date (date picker) - default: today
+4. Document Date (date picker) *REQUIRED*
+   - "Date the document was created or issued"
+   - Affects retention calculation
+
+**Optional Fields:**
+5. Related Client (autocomplete search)
+   - Search client by name or ID
+   - Can select multiple clients
+6. Related Representative (autocomplete)
+   - Select from active representatives
+7. Description (textarea)
+   - Brief description of document content
+8. Tags (multi-select with add new)
+   - Suggested tags based on category
+   - Add custom tags
+   - Popular tags shown
+9. Document Type (dropdown within category)
+   - e.g., for FICA: ID Document | Proof of Residence | Bank Statement | etc.
+10. Access Level (dropdown):
+    - â—‹ Private (Only me)
+    - â—‹ Team (All representatives)
+    - â—‹ Compliance Officers only
+    - â—‹ Custom (select users)
+11. Is Sensitive Document?
+    - â˜ Contains sensitive personal information
+    - If checked, adds extra security layer
+12. Expiry Date (date picker - optional)
+    - For documents with expiration (e.g., insurance policies)
+    - Auto-creates reminder
+13. Reference Number (text - optional)
+    - Document reference/certificate number
+
+**Retention Information Display:**
+- Auto-calculated based on document date
+- "This document will be retained until: [date] (5 years from document date)"
+- "Retention period: 1,825 days remaining"
+- "Eligible for deletion after: [date]"
+
+**Upload Progress:**
+- Progress bar showing upload %
+- Upload speed
+- Time remaining
+- [Cancel Upload] button
+
+**Buttons:**
+- [Primary - Large] Upload Document
+- [Secondary] Save as Draft
+- [Link] Cancel
+
+**After Upload Success:**
+- Success message with green checkmark
+- "Document uploaded successfully!"
+- Document reference number: DOC-2024-12345
+- Options:
+  - [View Document]
+  - [Upload Another Document]
+  - [Return to Library]
+
+---
+
+### Bulk Upload Interface
+
+**Bulk Upload Zone:**
+- Large drag & drop area
+- "Drop multiple files here"
+- [Browse Multiple Files] button
+- "Supported formats: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG"
+- "Maximum: 20 files at once, 50MB each"
+
+**After Files Selected:**
+
+**File List Table:**
+
+**Columns:**
+| Status | Filename | Size | Category | Tags | Client | Actions |
+
+**Sample Rows:**
+
+**Row 1:**
+- â³ Pending | FICA_Client_A.pdf | 2.4 MB | [Dropdown: FICA] | [Input: tags] | [Search: Client A] | [âœ Edit] [ðŸ—‘ Remove]
+
+**Row 2:**
+- â³ Pending | CPD_Cert_1.pdf | 856 KB | [Dropdown: CPD] | [Input: #cpd] | [Search: -] | [âœ Edit] [ðŸ—‘ Remove]
+
+**Row 3:**
+- â³ Pending | Agreement_Client_B.docx | 1.1 MB | [Dropdown: Agreements] | [Input: tags] | [Search: Client B] | [âœ Edit] [ðŸ—‘ Remove]
+
+**Bulk Actions:**
+- Apply to all:
+  - Set category for all: [Dropdown]
+  - Add tags to all: [Input]
+  - Set document date for all: [Date picker]
+  - Set access level for all: [Dropdown]
+
+**Individual Edit Modal:**
+- Opens when clicking [Edit]
+- Same form fields as single upload
+- Pre-filled with filename-based suggestions
+- [Save] [Cancel]
+
+**Upload Progress (During upload):**
+- Overall progress bar: "Uploading 3 of 20 files (15%)"
+- Individual file progress:
+  - âœ“ FICA_Client_A.pdf - Complete
+  - â³ CPD_Cert_1.pdf - 67%
+  - â³ Agreement_Client_B.docx - 23%
+  - â—‹ Insurance_Policy.pdf - Queued
+- [Pause All] [Cancel All] buttons
+
+**Upload Summary (After completion):**
+- "18 files uploaded successfully âœ“"
+- "2 files failed âœ—"
+- Failed files list with retry option
+- [View All Documents] [Upload More]
+
+---
+
+### Scan Document Interface
+
+**Scanner Selection:**
+- Detect connected scanners/cameras
+- Select source: Scanner | Camera | Mobile Camera (QR code)
+
+**Scan Settings:**
+- Color mode: Color | Grayscale | Black & White
+- Resolution: 150 DPI | 300 DPI | 600 DPI
+- Page size: A4 | Legal | Letter | Custom
+- Duplex: Single-sided | Double-sided
+
+**Scan Preview:**
+- Live preview of scanned page
+- Crop/rotate tools
+- Adjust brightness/contrast
+- [Scan] [Rescan] [Add Page] buttons
+
+**Multi-page scanning:**
+- Scan multiple pages into one PDF
+- Reorder pages (drag & drop)
+- Delete pages
+- Rotate individual pages
+
+**After Scanning:**
+- Same document details form as single upload
+- Auto-convert to PDF option
+- OCR text extraction option
+
+---
+
+## 3. RETENTION MANAGEMENT TAB
+
+### Retention Policy Overview
+
+**Policy Summary Card:**
+- **Retention Period:** 5 years (1,825 days)
+- **Legislation:** FAIS Act 37 of 2002 - Section 17
+- **Calculation:** From document creation/transaction date
+- **Auto-Deletion:** â˜ Enabled (disabled by default for safety)
+- **Archive Before Deletion:** â˜‘ Enabled
+- **Compliance Status:** âœ“ All documents within policy
+
+### Retention Status Dashboard
+
+**Stats Cards:**
+
+**Card 1: Active Documents**
+- Number: 1,792
+- Subtitle: "Within 5-year retention"
+- Status: Green
+- Percentage: 97%
+
+**Card 2: Expiring Soon**
+- Number: 12
+- Subtitle: "< 30 days to 5 years"
+- Status: Amber warning
+- Action: Review & extend if needed
+
+**Card 3: Eligible for Deletion**
+- Number: 43
+- Subtitle: "> 5 years old"
+- Status: Blue info
+- Action: Review & delete
+
+**Card 4: Deletion Hold**
+- Number: 5
+- Subtitle: "Legal hold/dispute"
+- Status: Red
+- Action: Under review
+
+### Retention Timeline (Visual)
+
+**Interactive timeline chart:**
+- X-axis: Time (years)
+- Y-axis: Number of documents
+- Bars showing documents by retention date
+- Color-coded:
+  - Green: Years 0-4
+  - Amber: Year 4-5 (expiring soon zone)
+  - Red: Year 5+ (eligible for deletion)
+- Hover shows exact numbers
+- Click to filter documents in that range
+
+### Documents by Retention Status
+
+**Tabbed Interface:**
+
+**Tab 1: Expiring Soon (30-60 days)**
+
+**Table:**
+| Document Name | Category | Document Date | Retention Expires | Days Remaining | Client | Actions |
+
+**Sample Row:**
+- Client_Agreement_JohnSmit.pdf
+- Client Agreements
+- 20/01/2020
+- 20/01/2025
+- 36 days
+- John Smit
+- [Review] [Extend Hold] [Archive Now]
+
+**Bulk Actions:**
+- Select multiple
+- [Extend Hold for All] [Archive Selected] [Download Selected]
+
+**Tab 2: Eligible for Deletion (> 5 years)**
+
+**Review Checklist:**
+Before deleting documents, confirm:
+- â˜‘ No active legal proceedings involving these documents
+- â˜‘ No ongoing disputes with clients
+- â˜‘ No regulatory investigation requiring these records
+- â˜‘ All related transactions closed
+- â˜‘ Compliance officer approval obtained
+
+**Table:**
+| â˜ | Document Name | Category | Document Date | Days Over Retention | Status | Actions |
+
+**Sample Rows:**
+
+**Row 1:**
+- â˜ | Old_Client_Agreement_2018.pdf | Agreements | 15/11/2018 | 423 days over | âœ“ Ready for deletion | [Review] [Delete] [Hold]
+
+**Row 2:**
+- â˜ | FICA_Docs_Client_X_2019.pdf | FICA | 10/03/2019 | 287 days over | â¸ On hold (dispute) | [View Hold Reason] [Review]
+
+**Row 3:**
+- â˜ | CPD_Certificate_2018.pdf | CPD | 01/06/2018 | 562 days over | âœ“ Ready for deletion | [Review] [Delete]
+
+**Filters:**
+- Category filter
+- Days over retention filter
+- Status filter (ready/on hold)
+
+**Bulk Actions:**
+- Select all ready for deletion
+- [Review Selected] (opens review interface)
+- [Delete Selected] (requires confirmation)
+- [Place Hold on Selected]
+- [Archive & Delete Selected]
+
+**Deletion Process:**
+1. Select documents
+2. Click [Delete Selected]
+3. Confirmation modal:
+   - "You are about to permanently delete X documents"
+   - List of documents
+   - Warning: "This action cannot be undone"
+   - Require secondary approval: â˜‘ Yes (for large batches)
+   - Checkbox: â˜‘ I confirm these documents meet deletion criteria
+   - Checkbox: â˜‘ Archive copies have been created
+   - [Confirm Deletion] [Cancel]
+4. Generate deletion certificate
+5. Audit log entry created
+6. Email notification to compliance officer
+
+**Tab 3: Deletion Hold**
+
+**Documents on legal/compliance hold:**
+
+**Table:**
+| Document Name | Hold Reason | Hold Date | Hold By | Expected Release | Actions |
+
+**Sample Row:**
+- Client_File_Dispute_Case.pdf
+- Client dispute pending resolution
+- 15/10/2024
+- Sarah Naidoo (Compliance Officer)
+- 30/03/2025 (estimated)
+- [View Details] [Release Hold] [Extend Hold]
+
+**Place New Hold:**
+- Select document
+- [Place Hold] button
+- Modal:
+  - Reason (dropdown): Legal proceeding | Client dispute | Regulatory investigation | Other
+  - Detailed explanation (textarea)
+  - Expected duration (date picker or text)
+  - Notify: (select users)
+  - [Confirm] [Cancel]
+
+**Tab 4: Archived Documents**
+
+**Documents archived before deletion:**
+- Stored in separate archive system
+- Read-only access
+- Searchable but not editable
+- Can be restored if needed (within 30 days)
+- Auto-deleted after 30 days in archive
+
+**Table:**
+| Document Name | Original Location | Archived Date | Archive Expires | Actions |
+
+**Sample Row:**
+- Old_Agreement_2017.pdf
+- /Client Files/Agreements/
+- 01/12/2024
+- 31/12/2024 (30 days)
+- [View] [Restore] [Download] [Delete Now]
+
+### Retention Reports
+
+**Available Reports:**
+
+**Report 1: Retention Compliance Report**
+- Overall compliance status
+- Documents by retention category
+- Upcoming expirations
+- Overdue deletions
+- Format: PDF | Excel
+- [Generate Report]
+
+**Report 2: Deletion Log**
+- All deletions in date range
+- Who deleted what and when
+- Reason for deletion
+- Approvals obtained
+- Format: PDF | Excel
+- [Generate Report]
+
+**Report 3: Archive Report**
+- Documents currently in archive
+- Archive statistics
+- Projected deletions
+- Format: PDF | Excel
+- [Generate Report]
+
+### Automated Retention Reminders
+
+**Reminder Configuration:**
+
+**Email Reminders:**
+- â˜‘ 90 days before retention expires
+- â˜‘ 60 days before retention expires
+- â˜‘ 30 days before retention expires
+- â˜‘ 7 days before retention expires
+- â˜‘ On retention expiry date
+
+**Recipients:**
+- Document owner
+- Compliance officer
+- Custom email list
+
+**Reminder Content:**
+- List of expiring documents
+- Action required
+- Direct links to review
+
+**Reminder History:**
+- Log of all sent reminders
+- Delivery status
+- Click-through rates
+
+---
+
+## 4. DOCUMENT DETAIL VIEW (Modal/Side Panel)
+
+**Opens when viewing a document:**
+
+### Header Section
+- Document name (large, editable with [âœ] icon)
+- Category badge
+- Status indicator
+- Favorite star (toggle)
+- Share button
+- Download button
+- More actions dropdown (â‹¯)
+
+### Document Preview
+- PDF viewer embedded
+- Image viewer
+- Office document preview (if available)
+- Zoom in/out controls
+- Page navigation (for multi-page docs)
+- Full screen option
+- Print button
+- Download button
+
+**If preview not available:**
+- File type icon
+- File information
+- [Download to View] button
+
+### Tabs in Detail Panel
+
+**Tab 1: Information**
+
+**Document Metadata:**
+- **Filename:** [editable]
+- **Category:** [dropdown]
+- **Document Type:** [dropdown]
+- **File Size:** 2.4 MB
+- **File Type:** PDF
+- **Document Date:** 15/12/2024 [editable]
+- **Upload Date:** 15/12/2024 10:30
+- **Uploaded By:** Sarah Naidoo
+- **Last Modified:** 15/12/2024 14:20
+- **Modified By:** Sarah Naidoo
+- **Version:** 1.0 (current)
+
+**Retention Information:**
+- **Retention Period:** 5 years (1,825 days)
+- **Retention Starts:** 15/12/2024 (document date)
+- **Retention Expires:** 15/12/2029
+- **Days Remaining:** 1,825 days
+- **Status:** âœ“ Active
+- Progress bar showing retention timeline
+
+**Expiry Information (if applicable):**
+- **Expiry Date:** 31/12/2025
+- **Days Until Expiry:** 381 days
+- **Renewal Required:** Yes
+- **Renewal Reminder:** â˜‘ Enabled (60 days before)
+
+**Related Information:**
+- **Related Client(s):** Thabo Mokoena [link]
+- **Related Representative:** Sarah Naidoo [link]
+- **Folder Location:** /FICA/ID Documents/
+- **Reference Number:** DOC-2024-12345
+- **Tags:** #fica #id-document #client-verification
+  - [Edit Tags] button
+
+**Description:**
+- Textarea showing document description
+- [Edit] [Save] [Cancel] buttons
+
+**Access Control:**
+- **Access Level:** Team (All representatives)
+- **Shared With:** 
+  - Sarah Naidoo (Owner)
+  - Thabo Mokoena (Can edit)
+  - Pieter Vermeulen (Can view)
+- **Sensitive Document:** No
+- [Manage Access] button
+
+**Custom Fields (if any):**
+- Client ID: 8506155800083
+- Document Subtype: Green ID
+- Verification Status: âœ“ Verified
+
+**Actions:**
+- [Edit Information]
+- [Move to Folder]
+- [Add to Favorites]
+- [Place Retention Hold]
+- [Archive Document]
+- [Delete Document]
+
+**Tab 2: Versions**
+
+**Version History Table:**
+
+| Version | Date | Uploaded By | Changes | Size | Actions |
+
+**Sample Rows:**
+
+**Row 1 (Current):**
+- v1.0 (Current) [badge]
+- 15/12/2024 10:30
+- Sarah Naidoo
+- Initial upload
+- 2.4 MB
+- [View] [Download]
+
+**If multiple versions:**
+
+**Row 2:**
+- v0.9
+- 14/12/2024 16:45
+- Sarah Naidoo
+- Updated client information
+- 2.3 MB
+- [View] [Download] [Restore] [Compare]
+
+**Row 3:**
+- v0.8
+- 14/12/2024 09:15
+- Thabo Mokoena
+- Initial draft
+- 2.1 MB
+- [View] [Download] [Restore]
+
+**Version Actions:**
+- [Upload New Version] button
+  - Opens upload dialog
+  - Asks for change description
+  - Creates new version
+- [Compare Versions] button
+  - Select two versions
+  - Shows diff/comparison
+- [Restore Version] button
+  - Restores selected version as current
+  - Previous current becomes historical version
+
+**Version Settings:**
+- â˜‘ Keep all versions
+- â—‹ Keep last X versions (number input)
+- â—‹ Keep versions for X days
+- Auto-delete old versions: â˜ Enabled
+
+**Tab 3: Activity Log**
+
+**Timeline of all activities:**
+
+**Activity Entry 1:**
+- ðŸ”µ Document created
+- Sarah Naidoo
+- 15/12/2024 10:30
+- Details: Uploaded to /FICA/ID Documents/
+
+**Activity Entry 2:**
+- ðŸŸ¢ Document modified
+- Sarah Naidoo
+- 15/12/2024 14:20
+- Details: Updated tags, added client reference
+
+**Activity Entry 3:**
+- ðŸŸ¡ Document accessed
+- Thabo Mokoena
+- 15/12/2024 15:45
+- Details: Viewed document, downloaded copy
+
+**Activity Entry 4:**
+- ðŸŸ  Document shared
+- Sarah Naidoo
+- 15/12/2024 16:00
+- Details: Shared with Pieter Vermeulen (view access)
+
+**Activity Entry 5:**
+- ðŸ”´ Document flagged
+- System
+- 15/12/2024 18:00
+- Details: Document approaching retention review (4 years 11 months)
+
+**Filter Activities:**
+- By type: All | Uploads | Modifications | Access | Sharing | System
+- By user: All | Specific user
+- Date range
+
+**Export Activity Log:**
+- [Export to PDF] [Export to Excel]
+
+**Tab 4: Comments & Notes**
+
+**Internal Comments Section:**
+
+**Comment Thread:**
+
+**Comment 1:**
+- Sarah Naidoo (avatar)
+- 15/12/2024 10:35
+- "Client verification complete. ID validated against Home Affairs database. âœ“"
+- [Reply] [Edit] [Delete]
+
+**Reply to Comment 1:**
+- Thabo Mokoena (avatar)
+- 15/12/2024 11:20
+- "Thanks! Added to client file."
+- [Edit] [Delete]
+
+**Comment 2:**
+- Pieter Vermeulen (avatar)
+- 15/12/2024 14:30
+- "@SarahNaidoo - Can you confirm expiry date on this ID?"
+- [Reply] [Edit] [Delete]
+
+**Reply to Comment 2:**
+- Sarah Naidoo (avatar)
+- 15/12/2024 14:45
+- "@PieterVermeulen - ID does not expire (SA green ID). Marked as perpetual."
+- [Edit] [Delete]
+
+**Add New Comment:**
+- Textarea with rich text editor
+- @ mention autocomplete
+- Attach files
+- Mark as important checkbox
+- [Post Comment] [Cancel]
+
+**Comment Settings:**
+- â˜‘ Email notifications for new comments
+- â˜‘ Email notifications when mentioned
+- â˜‘ Show resolved comments
+
+**Resolve Comments:**
+- Mark comment as resolved (checkmark)
+- Filter: Show all | Show unresolved
+
+**Tab 5: Related Documents**
+
+**Documents related to this one:**
+
+**Automatic Relationships (Based on):**
+- Same client
+- Same category
+- Same tags
+- Same date range
+
+**Related Documents List:**
+
+**Document 1:**
+- Proof_of_Residence_Thabo_Mokoena.pdf
+- FICA Documentation
+- 1.8 MB | 15/12/2024
+- [View] [Download]
+- Relationship: Same client
+
+**Document 2:**
+- Client_Agreement_Thabo_Mokoena.pdf
+- Client Agreements
+- 1.2 MB | 15/12/2024
+- [View] [Download]
+- Relationship: Same client
+
+**Document 3:**
+- FICA_Checklist_2024.xlsx
+- FICA Documentation
+- 245 KB | 10/12/2024
+- [View] [Download]
+- Relationship: Same category
+
+**Manual Relationships:**
+- [Add Related Document] button
+- Search and link documents manually
+- Specify relationship type
+
+---
+
+## 5. AUDIT TRAIL TAB
+
+### Audit Overview
+
+**Purpose:**
+"Complete audit trail of all document activities for compliance and regulatory inspections."
+
+**Stats Cards:**
+
+**Card 1: Total Activities**
+- Number: 15,234
+- Subtitle: "All time"
+- This month: 1,245
+
+**Card 2: Document Access**
+- Number: 8,456
+- Subtitle: "Views this month"
+- Trend: â†‘ 12% vs last month
+
+**Card 3: Modifications**
+- Number: 234
+- Subtitle: "This month"
+- Trend: â†’ Stable
+
+**Card 4: Deletions**
+- Number: 43
+- Subtitle: "This month"
+- All approved: âœ“
+
+### Audit Log Table
+
+**Advanced Filters:**
+
+**Filter Panel:**
+- Activity Type (multi-select):
+  - â˜ Upload (2,345)
+  - â˜ View/Access (8,456)
+  - â˜ Download (1,789)
+  - â˜ Modification (234)
+  - â˜ Deletion (43)
+  - â˜ Share (156)
+  - â˜ Permission change (67)
+  - â˜ System action (1,144)
+- Date Range:
+  - From: [date picker]
+  - To: [date picker]
+  - Quick filters: Today | Last 7 days | Last 30 days | Last 90 days | Custom
+- User (multi-select):
+  - â˜ Sarah Naidoo
+  - â˜ Thabo Mokoena
+  - â˜ Pieter Vermeulen
+  - â˜ System
+  - â˜ Others
+- Document Category:
+  - â˜ FICA
+  - â˜ CPD
+  - â˜ Compliance
+  - â˜ Financial
+  - â˜ Other
+- Document Name:
+  - Text search input
+- Client/Representative:
+  - Autocomplete search
+- IP Address:
+  - Text input (for security audits)
+
+**Apply Filters** | **Clear All** | **Save Filter** | **Export**
+
+### Audit Log Table
+
+**Columns:**
+| Timestamp | User | Activity Type | Document Name | Category | Details | IP Address | Actions |
+
+**Sample Rows:**
+
+**Row 1:**
+- 15/12/2024 16:45:23
+- Sarah Naidoo (avatar)
+- ðŸ“¥ Upload
+- FICA_Verification_Client_A.pdf
+- FICA Documentation
+- Uploaded to /FICA/ID Documents/
+- 196.201.XXX.XXX
+- [View Details] [View Document]
+
+**Row 2:**
+- 15/12/2024 16:30:15
+- Thabo Mokoena
+- ðŸ‘ View
+- CPD_Certificate_Ethics.pdf
+- CPD Certificates
+- Viewed document (3:45 duration)
+- 196.201.XXX.XXX
+- [View Details]
+
+**Row 3:**
+- 15/12/2024 15:20:08
+- Sarah Naidoo
+- ðŸ“ Modification
+- Client_Agreement_Smith.docx
+- Client Agreements
+- Modified: Updated expiry date from 31/12/2024 to 31/12/2025
+- 196.201.XXX.XXX
+- [View Details] [View Changes]
+
+**Row 4:**
+- 15/12/2024 14:10:45
+- Pieter Vermeulen
+- â¬‡ Download
+- Financial_Statement_Q4.xlsx
+- Financial Statements
+- Downloaded (original file)
+- 196.201.XXX.XXX
+- [View Details]
+
+**Row 5:**
+- 15/12/2024 13:05:30
+- System
+- ðŸ—‘ Deletion
+- Old_Agreement_2018.pdf
+- Client Agreements
+- Deleted after retention period (5 years + 120 days). Approved by: S. Naidoo
+- System
+- [View Details] [View Deletion Certificate]
+
+**Row 6:**
+- 15/12/2024 12:00:00
+- System
+- ðŸ”” Alert
+- Insurance_Policy_2024.pdf
+- Insurance Policies
+- Document expiring in 30 days - email notification sent
+- System
+- [View Details]
+
+**Row 7:**
+- 15/12/2024 11:30:22
+- Sarah Naidoo
+- ðŸ” Permission Change
+- Sensitive_Client_Data.pdf
+- FICA Documentation
+- Access granted to Thabo Mokoena (View only)
+- 196.201.XXX.XXX
+- [View Details] [View Permissions]
+
+**Pagination:**
+- Showing 1-50 of 15,234 activities
+- << Previous | 1 | 2 | 3 | ... | 305 | Next >>
+- Items per page: 50 â–¼
+
+### Audit Detail View (Modal)
+
+**When clicking "View Details":**
+
+**Activity Details:**
+- **Activity ID:** AUD-2024-123456
+- **Timestamp:** 15/12/2024 16:45:23 SAST
+- **User:** Sarah Naidoo (sarah.naidoo@customapp.co.za)
+- **User Role:** Compliance Officer
+- **Activity Type:** Document Upload
+- **Document:** FICA_Verification_Client_A.pdf
+- **Document ID:** DOC-2024-12345
+- **Category:** FICA Documentation
+- **Folder:** /FICA/ID Documents/
+
+**Action Details:**
+- **Action:** Uploaded new document
+- **File Size:** 2.4 MB
+- **File Type:** PDF
+- **Pages:** 2
+- **Document Date:** 15/12/2024
+- **Retention Until:** 15/12/2029
+
+**System Information:**
+- **IP Address:** 196.201.XXX.XXX
+- **Location:** Cape Town, Western Cape, ZA (approximate)
+- **Device:** Desktop - Windows 10
+- **Browser:** Chrome 120.0
+- **Session ID:** SESS-2024-78901
+
+**Related Client:**
+- **Client Name:** Thabo Mokoena
+- **Client ID:** 8506155800083
+- **Client Link:** [View Client Profile]
+
+**Tags Added:**
+- #fica
+- #id-document
+- #client-verification
+
+**Security Checks:**
+- âœ“ User authenticated
+- âœ“ User has upload permission
+- âœ“ Document scanned for viruses
+- âœ“ File type validated
+- âœ“ File size within limits
+
+**Compliance Checks:**
+- âœ“ Document meets naming standards
+- âœ“ Retention period calculated
+- âœ“ Category selected
+- âœ“ Required metadata provided
+
+**Actions:**
+- [View Document]
+- [View User Profile]
+- [View All User Activities]
+- [Export Activity Details]
+- [Flag for Review] (if suspicious)
+- [Close]
+
+### Suspicious Activity Monitoring
+
+**Automated Alerts:**
+
+**Alert Types:**
+- Multiple download attempts
+- Access from unusual location
+- Access outside business hours
+- Bulk document downloads
+- Repeated failed access attempts
+- Permission changes by non-admin
+- Mass deletions
+
+**Active Alerts Table:**
+
+| Alert | Date/Time | User | Details | Risk Level | Status | Actions |
+
+**Sample Alert:**
+- ðŸš¨ Unusual activity detected
+- 14/12/2024 23:45
+- Unknown User
+- 5 failed login attempts from IP 102.xxx.xxx.xxx
+- High
+- â³ Under Investigation
+- [Investigate] [Block IP] [Dismiss]
+
+### Audit Reports
+
+**Generate Compliance Audit Report:**
+
+**Report Options:**
+- Report Period:
+  - â—‹ Last 7 days
+  - â—‹ Last 30 days
+  - â—‹ Last 90 days
+  - â—‹ Custom range
+- Include:
+  - â˜‘ All document activities
+  - â˜‘ User access logs
+  - â˜‘ Permission changes
+  - â˜‘ Deletions with approvals
+  - â˜‘ System activities
+  - â˜‘ Security alerts
+- Filter by:
+  - User (optional)
+  - Document category (optional)
+  - Activity type (optional)
+- Format:
+  - â—‹ PDF (recommended for FSCA)
+  - â—‹ Excel (for analysis)
+  - â—‹ Both
+- [Generate Report] button
+
+**Scheduled Reports:**
+- Set up automatic monthly/quarterly audit reports
+- Email to compliance officers
+- Archive copies
+
+---
+
+## 6. STORAGE ANALYTICS TAB
+
+### Storage Overview
+
+**Storage Usage Card (Large):**
+- Circular progress chart: 2.4 GB / 10 GB (24%)
+- Color: Green (< 50%)
+- Status: âœ“ Sufficient storage
+- Projected full date: Based on growth rate
+
+**Growth Trend Chart:**
+- Line chart showing storage usage over time
+- Last 12 months
+- Projection for next 6 months
+- Average monthly growth: 145 MB
+
+### Storage Breakdown
+
+**By Category (Pie Chart):**
+- FICA Documentation: 856 MB (36%)
+- Correspondence: 534 MB (22%)
+- Client Agreements: 412 MB (17%)
+- CPD Certificates: 278 MB (12%)
+- Financial Statements: 189 MB (8%)
+- Other: 131 MB (5%)
+
+**By File Type (Bar Chart):**
+- PDF: 1,567 MB (65%)
+- Images: 445 MB (19%)
+- Word Documents: 267 MB (11%)
+- Excel Spreadsheets: 89 MB (4%)
+- Other: 32 MB (1%)
+
+**By User (Table):**
+| User | Documents | Storage Used | % of Total | Actions |
+|------|-----------|--------------|------------|---------|
+| Sarah Naidoo | 678 | 1.1 GB | 46% | [View Docs] |
+| Thabo Mokoena | 456 | 734 MB | 31% | [View Docs] |
+| System Upload | 389 | 398 MB | 17% | [View Docs] |
+| Pieter Vermeulen | 234 | 145 MB | 6% | [View Docs] |
+
+### Storage Optimization
+
+**Recommendations:**
+
+**Optimization Opportunities:**
+1. **Large Files:** 45 files > 5 MB
+   - Total: 456 MB
+   - Action: Review and compress if possible
+   - [View Large Files]
+
+2. **Duplicate Files:** 12 potential duplicates detected
+   - Total: 89 MB
+   - Action: Review and remove duplicates
+   - [View Duplicates]
+
+3. **Old Archived Files:** 43 files eligible for deletion
+   - Total: 234 MB
+   - Action: Review retention and delete
+   - [View Eligible]
+
+4. **Unused Files:** 78 files not accessed in 12+ months
+   - Total: 156 MB
+   - Action: Archive or review
+   - [View Unused]
+
+**Optimization Actions:**
+- [Run Duplicate Finder]
+- [Compress Large Images]
+- [Archive Old Files]
+- [Delete Eligible Documents]
+
+### Storage Alerts
+
+**Configure Storage Alerts:**
+- Alert when storage reaches:
+  - â˜‘ 50% (5 GB)
+  - â˜‘ 75% (7.5 GB)
+  - â˜‘ 90% (9 GB)
+- Email notifications to:
+  - Compliance Officers
+  - System Administrators
+- Weekly storage reports: â˜‘ Enabled
+
+### Storage Expansion
+
+**Current Plan:**
+- Storage Limit: 10 GB
+- Additional storage available: Yes
+- Cost per GB: R50.00 per month
+
+**Upgrade Options:**
+- 20 GB: R500.00/month
+- 50 GB: R1,000.00/month
+- 100 GB: R1,800.00/month
+- [Request Upgrade]
+
+---
+
+## TECHNICAL FEATURES
+
+### File Upload
+- Drag & drop with visual feedback
+- Multiple file selection
+- Progress bars for uploads
+- Pause/resume uploads
+- Retry failed uploads
+- Virus scanning on upload
+- File type validation
+- File size limits (50MB per file)
+- Bulk upload (max 20 files)
+
+### Document Preview
+- Embedded PDF viewer
+- Image viewer with zoom
+- Office document preview (limited)
+- Multi-page navigation
+- Full-screen mode
+- Print from preview
+- Download from preview
+
+### Search Functionality
+- Full-text search in document contents (OCR)
+- Metadata search
+- Tag search
+- Client/representative search
+- Date range search
+- Advanced search with multiple criteria
+- Search suggestions/autocomplete
+- Recent searches
+- Saved searches
+
+### Version Control
+- Automatic version numbering
+- Version comparison (diff view)
+- Restore previous versions
+- Version comments/notes
+- Version retention policy
+- Version download
+
+### Access Control
+- Role-based permissions
+- Document-level permissions
+- Folder-level permissions
+- User/group sharing
+- Permission inheritance
+- Permission audit trail
+- Sensitive document flag
+
+### Retention Management
+- Automatic retention calculation
+- Retention countdown
+- Expiry alerts (30, 60, 90 days)
+- Retention hold mechanism
+- Automatic archiving
+- Deletion approval workflow
+- Deletion certificates
+- Audit trail for deletions
+
+### Document Organization
+- Hierarchical folder structure
+- Drag & drop to move
+- Bulk operations
+- Tags and labels
+- Favorites
+- Recent documents
+- Custom metadata fields
+
+### Notifications
+- Upload complete
+- Expiry reminders
+- Retention alerts
+- Sharing notifications
+- Comment replies
+- Access requests
+- Storage alerts
+
+### Security
+- Encryption at rest
+- Encryption in transit (HTTPS)
+- Virus scanning
+- Access logging
+- IP address tracking
+- Session management
+- Auto-logout
+- Failed login attempts tracking
+
+### Performance
+- Lazy loading of thumbnails
+- Pagination for large lists
+- Caching of previews
+- Optimized file uploads
+- Background processing
+- Search indexing
+
+### Mobile Support
+- Responsive design
+- Touch gestures
+- Mobile document upload
+- Camera integration
+- Mobile preview
+- Offline access (view only)
+
+### Integration
+- Email notifications
+- Calendar integration (expiry dates)
+- Client management system link
+- Compliance system link
+- Export to external systems
+
+### Reporting
+- Usage reports
+- Compliance reports
+- Audit reports
+- Storage reports
+- User activity reports
+- Scheduled reports
+- Custom report builder
+
+---
+
+## SAMPLE DATA
+
+**Document Statistics:**
+- Total Documents: 1,847
+- Active Documents: 1,792
+- Archived Documents: 43
+- On Retention Hold: 5
+- Expiring Soon (30 days): 12
+
+**Storage:**
+- Used: 2.4 GB
+- Available: 10 GB
+- Utilization: 24%
+- Growth Rate: 145 MB/month
+
+**Document Categories:**
+- FICA Documentation: 235 documents (856 MB)
+- Client Agreements: 186 documents (412 MB)
+- CPD Certificates: 124 documents (278 MB)
+- Qualifications: 45 documents (134 MB)
+- Compliance Reports: 67 documents (189 MB)
+- Risk Management: 34 documents (98 MB)
+- Insurance Policies: 12 documents (67 MB)
+- Financial Statements: 24 documents (189 MB)
+- Correspondence: 892 documents (534 MB)
+- Other: 228 documents (131 MB)
+
+**Users:**
+- Sarah Naidoo (Compliance Officer): 678 documents, 1.1 GB
+- Thabo Mokoena (Senior Advisor): 456 documents, 734 MB
+- Pieter Vermeulen (MLRO): 234 documents, 145 MB
+- System Upload: 389 documents, 398 MB
+
+**Sample Documents:**
+1. FICA_Verification_Thabo_Mokoena.pdf (2.4 MB, 15/12/2024, FICA)
+2. CPD_Certificate_Ethics_Workshop.pdf (856 KB, 05/12/2024, CPD)
+3. Client_Agreement_JohnSmit.docx (1.2 MB, 20/01/2020, Agreements - Expiring Soon)
+4. Professional_Indemnity_Policy_2025.pdf (456 KB, 20/11/2024, Insurance)
+5. Financial_Statement_Q4_2024.xlsx (1.2 MB, 01/12/2024, Financial)
+
+**Retention Status:**
+- Documents expiring in 30 days: 12
+- Documents eligible for deletion (> 5 years): 43
+- Documents on legal hold: 5
+- Average retention remaining: 3.2 years
+
+**Recent Activities:**
+- Uploads this week: 45
+- Views this week: 234
+- Downloads this week: 89
+- Modifications this week: 23
+- Deletions this week: 5 (all approved)
+
+**Current Date:** 15/12/2024
+
+---
+
+## FILE STRUCTURE
+
+```
+document-management/
+â”œâ”€â”€ index.html
+â”œâ”€â”€ css/
+â”‚   â”œâ”€â”€ document-styles.css
+â”‚   â”œâ”€â”€ grid-layout.css
+â”‚   â”œâ”€â”€ pdf-viewer.css
+â”‚   â”œâ”€â”€ charts.css
+â”‚   â””â”€â”€ responsive.css
+â”œâ”€â”€ js/
+â”‚   â”œâ”€â”€ document-library.js
+â”‚   â”œâ”€â”€ upload-handler.js
+â”‚   â”œâ”€â”€ retention-manager.js
+â”‚   â”œâ”€â”€ search-filter.js
+â”‚   â”œâ”€â”€ version-control.js
+â”‚   â”œâ”€â”€ audit-trail.js
+â”‚   â”œâ”€â”€ storage-analytics.js
+â”‚   â”œâ”€â”€ pdf-viewer.js
+â”‚   â”œâ”€â”€ charts.js
+â”‚   â””â”€â”€ data.js
+â””â”€â”€ assets/
+    â”œâ”€â”€ icons/
+    â”‚   â”œâ”€â”€ file-types/
+    â”‚   â””â”€â”€ actions/
+    â””â”€â”€ sample-documents/
+```
+
+Generate a complete, production-ready document management system that handles the full document lifecycle from upload to deletion, with strict 5-year retention compliance, comprehensive audit trails, and all features described. The system should meet FAIS Act requirements and be immediately usable for document compliance management in a South African broker environment.

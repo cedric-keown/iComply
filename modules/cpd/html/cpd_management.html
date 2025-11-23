@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CPD Management - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/cpd-styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Tabs -->
+    <div class="cpd-tabs-container">
+        <ul class="nav nav-tabs cpd-tabs" id="cpdTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                    <i class="fas fa-home me-2"></i>My CPD Dashboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab">
+                    <i class="fas fa-upload me-2"></i>Upload Activity
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="log-tab" data-bs-toggle="tab" data-bs-target="#log" type="button" role="tab">
+                    <i class="fas fa-list me-2"></i>Activity Log
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="calculator-tab" data-bs-toggle="tab" data-bs-target="#calculator" type="button" role="tab">
+                    <i class="fas fa-calculator me-2"></i>Requirements Calculator
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="providers-tab" data-bs-toggle="tab" data-bs-target="#providers" type="button" role="tab">
+                    <i class="fas fa-building me-2"></i>CPD Providers
+                </button>
+            </li>
+            <li class="nav-item" role="presentation" id="team-view-tab-container" style="display: none;">
+                <button class="nav-link" id="team-tab" data-bs-toggle="tab" data-bs-target="#team" type="button" role="tab">
+                    <i class="fas fa-users me-2"></i>Team View
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button" role="tab">
+                    <i class="fas fa-file-alt me-2"></i>Reports
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content cpd-content" id="cpdTabContent">
+        <!-- 1. MY CPD DASHBOARD -->
+        <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+            <div class="container-fluid py-4">
+                <!-- Hero Section: CPD Cycle Status -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="cpd-hero-card">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 text-center">
+                                    <div class="progress-circle-container">
+                                        <svg class="progress-circle" width="200" height="200">
+                                            <circle class="progress-circle-bg" cx="100" cy="100" r="85"></circle>
+                                            <circle class="progress-circle-progress progress-amber" cx="100" cy="100" r="85" 
+                                                    stroke-dasharray="534" stroke-dashoffset="117"></circle>
+                                        </svg>
+                                        <div class="progress-circle-content">
+                                            <div class="progress-value">14 / 18</div>
+                                            <div class="progress-label">Hours</div>
+                                            <div class="progress-percentage">78%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <h2 class="mb-3">CPD Progress</h2>
+                                    <p class="lead mb-2">2024/2025 Cycle</p>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><strong>Cycle Period:</strong> 1 June 2024 - 31 May 2025</p>
+                                            <p class="mb-1"><strong>Days Remaining:</strong> <span class="text-warning">188 days</span></p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <span class="badge bg-warning fs-6">⚠️ IN PROGRESS</span>
+                                            <p class="mt-2 mb-0"><small>188 days until deadline</small></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-primary">
+                                <i class="fas fa-clock fa-3x"></i>
+                            </div>
+                            <div class="stat-value">14</div>
+                            <div class="stat-label">Total Hours</div>
+                            <div class="stat-sublabel">of 18 required</div>
+                            <div class="progress mt-3" style="height: 8px;">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-success">
+                                <i class="fas fa-shield-check fa-3x"></i>
+                            </div>
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Ethics Hours</div>
+                            <div class="stat-sublabel">
+                                <span class="badge bg-success">✅ Minimum met (3 required)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-info">
+                                <i class="fas fa-certificate fa-3x"></i>
+                            </div>
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Verifiable Hours</div>
+                            <div class="stat-sublabel">of 14 total</div>
+                            <div class="progress mt-3" style="height: 8px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: 86%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon text-warning">
+                                <i class="fas fa-list fa-3x"></i>
+                            </div>
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Activities</div>
+                            <div class="stat-sublabel">This cycle</div>
+                            <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchTab('log-tab')">View all</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requirements Breakdown -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Requirements Breakdown</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span><strong>Technical CPD: 11 hours</strong></span>
+                                        <span class="text-warning">79%</span>
+                                    </div>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 79%">11 / 14</div>
+                                    </div>
+                                    <small class="text-muted">3 hours remaining</small>
+                                </div>
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span><strong>Ethics: 3 hours ✅</strong></span>
+                                        <span class="text-success">100%</span>
+                                    </div>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%">3 / 3</div>
+                                    </div>
+                                    <small class="text-success">Requirement met</small>
+                                </div>
+                                <div class="accordion" id="classOfBusinessAccordion">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#classOfBusiness">
+                                                By Class of Business
+                                            </button>
+                                        </h2>
+                                        <div id="classOfBusiness" class="accordion-collapse collapse" data-bs-parent="#classOfBusinessAccordion">
+                                            <div class="accordion-body">
+                                                <ul class="list-unstyled mb-0">
+                                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Long-term Insurance: 6 hours</li>
+                                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Investments: 5 hours</li>
+                                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>General: 3 hours</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Verifiable Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="verifiableChart" height="200"></canvas>
+                                <div class="mt-3 text-center">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <span class="badge bg-info me-2" style="width: 20px; height: 20px;"></span>
+                                                <span>Verifiable: 12 hours (86%)</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <span class="badge bg-secondary me-2" style="width: 20px; height: 20px;"></span>
+                                                <span>Non-verifiable: 2 hours (14%)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Recent Activity</h5>
+                                <button class="btn btn-sm btn-outline-primary" onclick="switchTab('log-tab')">View All Activities</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-list">
+                                    <div class="activity-item">
+                                        <div class="activity-icon bg-success">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h6 class="mb-1">FICA Compliance Workshop</h6>
+                                                    <p class="mb-1 small text-muted">
+                                                        <span class="badge bg-primary">Masthead Training</span>
+                                                        <span class="badge bg-success">Accredited</span>
+                                                        | 05/12/2024 | 2.0 hrs (Verifiable) | Ethics & Practice Standards
+                                                    </p>
+                                                    <p class="mb-0 small">
+                                                        <span class="badge bg-success">✅ Verified</span>
+                                                        <a href="#" class="ms-2">FICA_Workshop_Cert.pdf - Download</a>
+                                                    </p>
+                                                </div>
+                                                <div class="activity-actions">
+                                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon bg-success">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h6 class="mb-1">Investment Portfolio Management</h6>
+                                                    <p class="mb-1 small text-muted">
+                                                        <span class="badge bg-primary">FPI Online Learning</span>
+                                                        | 20/11/2024 | 3.0 hrs (Verifiable) | Technical - Investments
+                                                    </p>
+                                                    <p class="mb-0 small">
+                                                        <span class="badge bg-success">✅ Verified</span>
+                                                        <a href="#" class="ms-2">Investment_CPD.pdf - Download</a>
+                                                    </p>
+                                                </div>
+                                                <div class="activity-actions">
+                                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon bg-warning">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h6 class="mb-1">Industry Conference - FinTech Summit</h6>
+                                                    <p class="mb-1 small text-muted">
+                                                        <span class="badge bg-secondary">Self-logged</span>
+                                                        | 10/11/2024 | 4.0 hrs (Non-verifiable) | Technical - General
+                                                    </p>
+                                                    <p class="mb-0 small">
+                                                        <span class="badge bg-warning">⏳ Awaiting approval</span>
+                                                        <span class="ms-2 text-muted">Attended 2-day conference on digital transformation</span>
+                                                    </p>
+                                                </div>
+                                                <div class="activity-actions">
+                                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                                    <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts & Reminders -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Alerts & Reminders</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-warning d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">CPD Deadline Approaching</h6>
+                                        <p class="mb-0">You have 188 days remaining to complete 4 CPD hours</p>
+                                    </div>
+                                    <button class="btn btn-warning" onclick="switchTab('upload-tab')">Upload Activity</button>
+                                </div>
+                                <div class="alert alert-success d-flex align-items-center">
+                                    <i class="fas fa-info-circle fa-2x me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Ethics Requirement Met</h6>
+                                        <p class="mb-0">You've completed the minimum 3 hours of Ethics CPD ✅</p>
+                                    </div>
+                                    <button class="btn-close" aria-label="Close"></button>
+                                </div>
+                                <div class="alert alert-info d-flex align-items-center">
+                                    <i class="fas fa-bell fa-2x me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">Awaiting Approval</h6>
+                                        <p class="mb-0">1 activity is pending verification by Compliance Officer</p>
+                                    </div>
+                                    <button class="btn btn-info" onclick="switchTab('log-tab')">View Activity</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="mb-4">Quick Actions</h5>
+                                <div class="d-flex flex-wrap justify-content-center gap-3">
+                                    <button class="btn btn-primary btn-lg" onclick="switchTab('upload-tab')">
+                                        <i class="fas fa-upload me-2"></i>Upload CPD Certificate
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-lg" onclick="switchTab('upload-tab')">
+                                        <i class="fas fa-edit me-2"></i>Log Non-Verifiable Activity
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-lg" onclick="switchTab('calculator-tab')">
+                                        <i class="fas fa-calculator me-2"></i>Calculate My Requirements
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-lg" onclick="switchTab('providers-tab')">
+                                        <i class="fas fa-building me-2"></i>Find CPD Providers
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. UPLOAD ACTIVITY TAB -->
+        <div class="tab-pane fade" id="upload" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Upload CPD Activity</h2>
+                
+                <!-- Upload Method Selection -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Select Upload Method</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="upload-method-card active" data-method="certificate">
+                                            <div class="text-center">
+                                                <i class="fas fa-file-upload fa-3x text-primary mb-3"></i>
+                                                <h5>Upload Certificate</h5>
+                                                <p class="text-muted">For verifiable CPD from accredited providers</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="upload-method-card" data-method="manual">
+                                            <div class="text-center">
+                                                <i class="fas fa-edit fa-3x text-secondary mb-3"></i>
+                                                <h5>Manual Entry</h5>
+                                                <p class="text-muted">For non-verifiable activities or manual logging</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certificate Upload Form -->
+                <div id="certificateUploadForm">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Step 1: Upload Certificate</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="upload-zone" id="uploadZone">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-cloud-upload-alt fa-4x text-muted mb-3"></i>
+                                            <p class="mb-2"><strong>Drag & drop your certificate here</strong></p>
+                                            <p class="text-muted mb-3">or</p>
+                                            <button class="btn btn-primary">Browse Files</button>
+                                            <p class="mt-3 small text-muted">PDF, JPG, PNG - Max 5MB</p>
+                                        </div>
+                                    </div>
+                                    <input type="file" id="certificateFile" class="d-none" accept=".pdf,.jpg,.jpeg,.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Details Form -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Step 2: Activity Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="cpdActivityForm">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Activity Title *</label>
+                                                <input type="text" class="form-control" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">CPD Provider *</label>
+                                                <select class="form-select" required>
+                                                    <option value="">Select provider...</option>
+                                                    <option>Masthead Training</option>
+                                                    <option>FPI (Financial Planning Institute)</option>
+                                                    <option>IOBSA (Institute of Bankers SA)</option>
+                                                    <option>SAIFM (SA Institute of Financial Markets)</option>
+                                                    <option>Moonstone BSE</option>
+                                                    <option value="custom">Custom...</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Activity Date *</label>
+                                                <input type="date" class="form-control" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">CPD Hours *</label>
+                                                <input type="number" class="form-control" step="0.5" min="0.5" max="8" required>
+                                                <small class="text-muted">Maximum 8 hours per day</small>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Activity Type *</label>
+                                                <select class="form-select" required>
+                                                    <option>Course/Training</option>
+                                                    <option>Webinar</option>
+                                                    <option>Workshop</option>
+                                                    <option>Conference</option>
+                                                    <option>Seminar</option>
+                                                    <option>Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Category *</label>
+                                                <select class="form-select" required>
+                                                    <option>Ethics & Practice Standards</option>
+                                                    <option>Technical - Long-term Insurance</option>
+                                                    <option>Technical - Short-term Insurance</option>
+                                                    <option>Technical - Investments</option>
+                                                    <option>Technical - General</option>
+                                                    <option>Technical - FICA/AML</option>
+                                                    <option>Product-specific</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="verifiableCheck" checked>
+                                                    <label class="form-check-label" for="verifiableCheck">
+                                                        This is verifiable CPD
+                                                    </label>
+                                                    <small class="text-muted d-block">Verifiable CPD must be from an accredited provider</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Certificate Number</label>
+                                                <input type="text" class="form-control">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Class of Business Relevance</label>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="cob1">
+                                                    <label class="form-check-label" for="cob1">Long-term Insurance</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="cob2">
+                                                    <label class="form-check-label" for="cob2">Short-term Insurance</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="cob3">
+                                                    <label class="form-check-label" for="cob3">Investments</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="cob4">
+                                                    <label class="form-check-label" for="cob4">General</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label class="form-label">Topics Covered</label>
+                                                <textarea class="form-control" rows="3"></textarea>
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label class="form-label">Additional Notes</label>
+                                                <textarea class="form-control" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary">Save & Submit</button>
+                                            <button type="button" class="btn btn-outline-secondary">Save as Draft</button>
+                                            <button type="button" class="btn btn-link">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ACTIVITY LOG TAB -->
+        <div class="tab-pane fade" id="log" role="tabpanel">
+            <div class="container-fluid py-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Activity Log</h2>
+                    <div>
+                        <button class="btn btn-outline-primary me-2" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel me-1"></i>Export to Excel
+                        </button>
+                        <button class="btn btn-outline-secondary">
+                            <i class="fas fa-print me-1"></i>Print
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Search</label>
+                                <input type="text" class="form-control" placeholder="Search by title, provider...">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Cycle Year</label>
+                                <select class="form-select">
+                                    <option>2024/2025 (current)</option>
+                                    <option>2023/2024</option>
+                                    <option>2022/2023</option>
+                                    <option>All cycles</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Status</label>
+                                <select class="form-select">
+                                    <option>All</option>
+                                    <option>Verified</option>
+                                    <option>Pending Verification</option>
+                                    <option>Rejected</option>
+                                    <option>Draft</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Category</label>
+                                <select class="form-select">
+                                    <option>All</option>
+                                    <option>Ethics</option>
+                                    <option>Technical</option>
+                                    <option>Product-specific</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Verification Type</label>
+                                <select class="form-select">
+                                    <option>All</option>
+                                    <option>Verifiable</option>
+                                    <option>Non-verifiable</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <button class="btn btn-outline-secondary w-100">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Table -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Activity Title</th>
+                                        <th>Provider</th>
+                                        <th>Hours</th>
+                                        <th>Category</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>05/12/2024</td>
+                                        <td>FICA Compliance Workshop</td>
+                                        <td>Masthead Training <span class="badge bg-success">✅ Accredited</span></td>
+                                        <td>2.0 hrs</td>
+                                        <td>Ethics</td>
+                                        <td>Verifiable</td>
+                                        <td><span class="badge bg-success">✅ Verified</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                            <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                            <button class="btn btn-sm btn-outline-info">Download</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>20/11/2024</td>
+                                        <td>Investment Portfolio Management</td>
+                                        <td>FPI Online</td>
+                                        <td>3.0 hrs</td>
+                                        <td>Technical - Investments</td>
+                                        <td>Verifiable</td>
+                                        <td><span class="badge bg-success">✅ Verified</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                            <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                            <button class="btn btn-sm btn-outline-info">Download</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>10/11/2024</td>
+                                        <td>FinTech Summit Conference</td>
+                                        <td>Self-logged</td>
+                                        <td>4.0 hrs</td>
+                                        <td>Technical - General</td>
+                                        <td>Non-verifiable</td>
+                                        <td><span class="badge bg-warning">⏳ Pending</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                            <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mt-3">
+                                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. REQUIREMENTS CALCULATOR TAB -->
+        <div class="tab-pane fade" id="calculator" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">CPD Requirements Calculator</h2>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <p class="lead">Calculate your CPD requirements based on your authorisations and role. Requirements are determined by Board Notice 194 of 2017.</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Your Authorisation Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Your Role:</strong> Senior Financial Advisor & Key Individual</p>
+                                <p><strong>FSP:</strong> CustomApp Financial Services (Pty) Ltd</p>
+                                <p><strong>Authorised Categories:</strong></p>
+                                <ul>
+                                    <li>Long-term Insurance (Cat A, B2, C)</li>
+                                    <li>Investment Products (Securities, Participatory Interests)</li>
+                                </ul>
+                                <button class="btn btn-sm btn-outline-primary">Edit Authorisations</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Your CPD Requirement</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="display-4 text-primary mb-3">18 hours</div>
+                                <p class="mb-2"><strong>per cycle</strong></p>
+                                <hr>
+                                <p class="mb-1"><strong>Mandatory Ethics:</strong> Minimum 3 hours</p>
+                                <p class="mb-1"><strong>Cycle Period:</strong> 1 June - 31 May annually</p>
+                                <p class="mb-0"><strong>Your Status:</strong> 14 / 18 hours completed (78%)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Breakdown</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="text-center p-3 border rounded">
+                                    <h6>Technical CPD</h6>
+                                    <div class="h4">11 hours</div>
+                                    <small class="text-muted">minimum (14 hours recommended)</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3 border rounded">
+                                    <h6>Ethics & Practice Standards</h6>
+                                    <div class="h4">3 hours</div>
+                                    <small class="text-muted">MANDATORY</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3 border rounded">
+                                    <h6>Remaining</h6>
+                                    <div class="h4">4 hours</div>
+                                    <small class="text-muted">any category</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. CPD PROVIDERS TAB -->
+        <div class="tab-pane fade" id="providers" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">CPD Providers</h2>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" placeholder="Search providers by name, location, or speciality...">
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select">
+                                    <option>All Accreditation</option>
+                                    <option>FPI Accredited</option>
+                                    <option>IOBSA Accredited</option>
+                                    <option>SAIFM Accredited</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select">
+                                    <option>All Delivery Methods</option>
+                                    <option>Online</option>
+                                    <option>In-person</option>
+                                    <option>Hybrid</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select">
+                                    <option>All Locations</option>
+                                    <option>Cape Town</option>
+                                    <option>Johannesburg</option>
+                                    <option>Durban</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5>Masthead Training</h5>
+                                        <div class="mb-2">
+                                            <span class="badge bg-primary me-1">FPI</span>
+                                            <span class="badge bg-info">IOBSA</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <span class="text-warning">★★★★★</span>
+                                            <small class="text-muted">(4.8/5) - 234 reviews</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>Nationwide (Online & In-person)</p>
+                                <p class="small">Leading provider of FAIS compliance and CPD training across South Africa. Over 200 courses available.</p>
+                                <div class="mt-3">
+                                    <button class="btn btn-primary btn-sm me-2">View Courses</button>
+                                    <button class="btn btn-outline-primary btn-sm">Contact Provider</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5>FPI (Financial Planning Institute)</h5>
+                                        <div class="mb-2">
+                                            <span class="badge bg-primary">FPI Official</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <span class="text-warning">★★★★★</span>
+                                            <small class="text-muted">(4.9/5) - 567 reviews</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>Online & Regional offices</p>
+                                <p class="small">Professional body for financial planners offering accredited CPD.</p>
+                                <div class="mt-3">
+                                    <button class="btn btn-primary btn-sm me-2">View Courses</button>
+                                    <button class="btn btn-outline-primary btn-sm">Contact Provider</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. TEAM VIEW TAB -->
+        <div class="tab-pane fade" id="team" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">Team CPD View</h2>
+                <p class="text-muted">This view is available for Key Individuals and Compliance Officers only.</p>
+            </div>
+        </div>
+
+        <!-- 7. REPORTS TAB -->
+        <div class="tab-pane fade" id="reports" role="tabpanel">
+            <div class="container-fluid py-4">
+                <h2 class="mb-4">CPD Reports</h2>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-user fa-3x text-primary mb-3"></i>
+                                <h5>Personal CPD Summary</h5>
+                                <p class="text-muted">Your CPD summary for current or past cycles</p>
+                                <button class="btn btn-primary">Generate Report</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-certificate fa-3x text-success mb-3"></i>
+                                <h5>CPD Compliance Certificate</h5>
+                                <p class="text-muted">Official certificate of CPD compliance</p>
+                                <button class="btn btn-success">Generate Certificate</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-list fa-3x text-info mb-3"></i>
+                                <h5>Activity History</h5>
+                                <p class="text-muted">Detailed log of all CPD activities</p>
+                                <button class="btn btn-info">Generate Report</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/cpd-dashboard.js"></script>
+    <script src="../js/upload-activity.js"></script>
+    <script src="../js/activity-log.js"></script>
+    
+    <script>
+        // Fix for form reference in upload-activity.js
+        const form = document.getElementById('cpdActivityForm');
+    </script>
+</body>
+</html>
+

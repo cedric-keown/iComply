@@ -1,0 +1,969 @@
+CURSOR PROMPT: CPD MANAGEMENT & TRACKING MODULE
+===============================================
+
+Create a fully functional, realistic HTML mockup for the CPD (Continuous Professional Development) Management module of a South African FAIS broker compliance portal. This module tracks CPD hours, manages certificates, calculates requirements, and ensures compliance with FSCA Board Notice 194 of 2017 regulations.
+
+## BRAND & DESIGN REQUIREMENTS
+
+**Brand Colors:**
+- Primary (Teal/Turquoise): #5CBDB4
+- Text (Charcoal Grey): #4A4A4A
+- Background: #FFFFFF
+- Light Grey: #F8F9FA
+- Success: #28A745
+- Warning: #FFC107
+- Danger: #DC3545
+- Info: #17A2B8
+
+**Framework & Theme:**
+- Use Bootstrap 5+ with Phoenix v1.23.0 theme: https://prium.github.io/phoenix/v1.23.0/index.html
+- Fully responsive design (mobile-first)
+- Vanilla JavaScript only (no frameworks)
+- South African locale (dates: DD/MM/YYYY)
+
+## MODULE STRUCTURE
+
+### Navigation Tabs (Top of page)
+- My CPD Dashboard (default view)
+- Upload Activity
+- Activity Log
+- Requirements Calculator
+- CPD Providers
+- Team View (if Key Individual/Compliance Officer)
+- Reports
+
+---
+
+## 1. MY CPD DASHBOARD
+
+### Hero Section: CPD Cycle Status
+
+**Large Progress Circle (Center of page):**
+- Circular progress indicator showing: 14 / 18 hours
+- Percentage: 78% (color-coded: <60% red, 60-80% amber, >80% green)
+- Label: "CPD Progress"
+- Sublabel: "2024/2025 Cycle"
+
+**Cycle Information (Below circle):**
+- Cycle Period: 1 June 2024 - 31 May 2025
+- Days Remaining: 188 days
+- Status Badge: âš  IN PROGRESS (amber)
+- Countdown: "188 days until deadline"
+
+### Quick Stats Cards (4 cards in row)
+
+**Card 1: Total Hours**
+- Large number: 14
+- Icon: Clock
+- Label: "Total Hours"
+- Sublabel: "of 18 required"
+- Progress bar underneath
+
+**Card 2: Ethics Hours**
+- Large number: 3
+- Icon: Shield-check
+- Label: "Ethics Hours"
+- Sublabel: "âœ“ Minimum met (3 required)"
+- Green badge
+
+**Card 3: Verifiable Hours**
+- Large number: 12
+- Icon: Certificate
+- Label: "Verifiable Hours"
+- Sublabel: "of 14 total"
+- Progress indicator
+
+**Card 4: Activities Logged**
+- Large number: 8
+- Icon: List
+- Label: "Activities"
+- Sublabel: "This cycle"
+- Link: "View all"
+
+### Requirements Breakdown Section
+
+**Visual breakdown using progress bars:**
+
+**Technical CPD:**
+- Progress bar: 11 / 14 hours (79%)
+- Color: Amber
+- Label: "Technical CPD: 11 hours"
+- Sublabel: "3 hours remaining"
+
+**Ethics & Practice Standards:**
+- Progress bar: 3 / 3 hours (100%)
+- Color: Green
+- Label: "Ethics: 3 hours âœ“"
+- Sublabel: "Requirement met"
+
+**By Class of Business (expandable section):**
+- Long-term Insurance: 6 hours
+- Investments: 5 hours
+- General: 3 hours
+
+**Verifiable Status:**
+- Verifiable: 12 hours (86%)
+- Non-verifiable: 2 hours (14%)
+- Pie chart showing split
+
+### Recent Activity (Last 5 activities)
+
+**List with cards:**
+
+**Activity 1:**
+- Title: "FICA Compliance Workshop"
+- Provider: Masthead Training (accredited badge)
+- Date: 05/12/2024
+- Hours: 2.0 (Verifiable)
+- Category: Ethics & Practice Standards
+- Status: âœ“ Verified
+- Certificate: FICA_Workshop_Cert.pdf - Download
+- Actions: View | Edit | Delete
+
+**Activity 2:**
+- Title: "Investment Portfolio Management"
+- Provider: FPI Online Learning
+- Date: 20/11/2024
+- Hours: 3.0 (Verifiable)
+- Category: Technical - Investments
+- Status: âœ“ Verified
+- Certificate: Investment_CPD.pdf - Download
+
+**Activity 3:**
+- Title: "Industry Conference - FinTech Summit"
+- Provider: Self-logged (Non-verifiable)
+- Date: 10/11/2024
+- Hours: 4.0 (Non-verifiable)
+- Category: Technical - General
+- Status: â³ Awaiting approval
+- Notes: "Attended 2-day conference on digital transformation"
+
+**Activity 4:**
+- Title: "Regulatory Update: TCF & RDR"
+- Provider: IOBSA Webinar
+- Date: 28/10/2024
+- Hours: 1.5 (Verifiable)
+- Category: Ethics & Practice Standards
+- Status: âœ“ Verified
+
+**Activity 5:**
+- Title: "Long-term Insurance Product Training"
+- Provider: Moonstone BSE
+- Date: 15/10/2024
+- Hours: 2.5 (Verifiable)
+- Category: Technical - Long-term Insurance
+- Status: âœ“ Verified
+
+**Button at bottom:** "View All Activities" (links to Activity Log tab)
+
+### Alerts & Reminders Section
+
+**Alert Cards:**
+
+**Alert 1:** (Amber warning)
+- Icon: Warning triangle
+- Title: "CPD Deadline Approaching"
+- Message: "You have 188 days remaining to complete 4 CPD hours"
+- Action: "Upload Activity"
+
+**Alert 2:** (Info)
+- Icon: Info circle
+- Title: "Ethics Requirement Met"
+- Message: "You've completed the minimum 3 hours of Ethics CPD âœ“"
+- Dismiss button
+
+**Alert 3:** (Warning if applicable)
+- Icon: Alert
+- Title: "Awaiting Approval"
+- Message: "1 activity is pending verification by Compliance Officer"
+- Action: "View Activity"
+
+### Quick Action Buttons (Prominent)
+- [Primary Button] Upload CPD Certificate
+- [Secondary Button] Log Non-Verifiable Activity
+- [Link] Calculate My Requirements
+- [Link] Find CPD Providers
+
+---
+
+## 2. UPLOAD ACTIVITY TAB
+
+### Upload Method Selection (Radio cards)
+
+**Option 1: Upload Certificate (Most common)**
+- Icon: File-upload
+- Description: "For verifiable CPD from accredited providers"
+- Selected by default
+
+**Option 2: Manual Entry**
+- Icon: Edit
+- Description: "For non-verifiable activities or manual logging"
+
+### Certificate Upload Form (If Option 1 selected)
+
+**Step 1: Upload Certificate**
+- Drag & drop zone
+- File requirements: PDF, JPG, PNG - Max 5MB
+- Preview thumbnail after upload
+- Multiple file upload option
+- Progress bar during upload
+
+**Step 2: Activity Details (Auto-populated where possible with OCR)**
+
+**Form Fields:**
+1. Activity Title (text) - Auto-filled from certificate if possible
+2. CPD Provider (dropdown with autocomplete):
+   - Masthead Training
+   - FPI (Financial Planning Institute)
+   - IOBSA (Institute of Bankers SA)
+   - SAIFM (SA Institute of Financial Markets)
+   - Moonstone BSE
+   - Custom... (allows text entry)
+3. Provider Accreditation Status:
+   - â—‹ FPI Accredited
+   - â—‹ IOBSA Accredited
+   - â—‹ SAIFM Accredited
+   - â—‹ Other Professional Body
+   - Display: âœ“ Verified Accreditation (if recognized)
+4. Activity Date (date picker) - required
+5. CPD Hours (number input with 0.5 increments):
+   - Spin buttons for 0.5, 1, 1.5, 2, etc.
+   - Validation: Maximum 8 hours per day
+6. Activity Type (dropdown):
+   - Course/Training
+   - Webinar
+   - Workshop
+   - Conference
+   - Seminar
+   - Other
+7. Category (dropdown):
+   - Ethics & Practice Standards
+   - Technical - Long-term Insurance
+   - Technical - Short-term Insurance
+   - Technical - Investments
+   - Technical - General
+   - Technical - FICA/AML
+   - Product-specific
+8. Verifiable Status:
+   - â˜‘ This is verifiable CPD (checked by default)
+   - Info tooltip: "Verifiable CPD must be from an accredited provider"
+9. Certificate Number (text - optional)
+10. Topics Covered (textarea - optional)
+11. Additional Notes (textarea - optional)
+12. Class of Business Relevance (checkboxes):
+    - â˜ Long-term Insurance
+    - â˜ Short-term Insurance
+    - â˜ Investments
+    - â˜ General
+
+**Certificate Preview:**
+- Thumbnail of uploaded certificate
+- "View Full Certificate" link
+- "Replace Certificate" button
+
+**Validation Messages:**
+- "âœ“ Provider is FPI accredited - This will count as verifiable CPD"
+- "âš  Maximum 8 hours per day"
+- "âš  Ethics hours: This activity will contribute to your ethics requirement"
+
+**Buttons:**
+- [Primary] Save & Submit
+- [Secondary] Save as Draft
+- [Link] Cancel
+
+### Manual Entry Form (If Option 2 selected)
+
+**Same fields as above, but:**
+- No certificate upload section
+- Verifiable checkbox unchecked by default with warning:
+  "âš  Non-verifiable activities may require approval from Compliance Officer"
+- Additional field: "Reason for Manual Entry" (textarea)
+- Evidence upload (optional): "Upload supporting documents"
+
+**Examples of non-verifiable activities:**
+- Industry conferences (without CPD certificates)
+- Self-study
+- Internal training
+- Mentoring activities
+- Industry reading
+
+**Buttons:**
+- [Primary] Submit for Approval
+- [Secondary] Save as Draft
+- [Link] Cancel
+
+### Bulk Upload Option
+
+**For users with multiple certificates:**
+- Button: "Upload Multiple Certificates"
+- Drag & drop zone accepting multiple files
+- After upload, shows list of files
+- Each file has "Fill Details" button
+- Can save all at once or individually
+
+---
+
+## 3. ACTIVITY LOG TAB
+
+### Filters & Search Bar (Top section)
+
+**Search:**
+- Search box: "Search by title, provider, or category..."
+- Real-time filtering
+
+**Filter Options (Collapsible sidebar or top bar):**
+1. Cycle Year:
+   - 2024/2025 (current) - selected
+   - 2023/2024
+   - 2022/2023
+   - All cycles
+2. Status:
+   - â˜ Verified
+   - â˜ Pending Verification
+   - â˜ Rejected
+   - â˜ Draft
+3. Category:
+   - â˜ Ethics
+   - â˜ Technical
+   - â˜ Product-specific
+4. Verification Type:
+   - â˜ Verifiable
+   - â˜ Non-verifiable
+5. Date Range:
+   - From: (date picker)
+   - To: (date picker)
+6. Provider:
+   - Dropdown with all used providers
+
+**Sort By:**
+- Dropdown: Date (newest first) | Date (oldest first) | Hours (high to low) | Title (A-Z)
+
+**Actions:**
+- Export to Excel
+- Export to PDF
+- Print
+- Clear Filters
+
+### Activity Table/Cards
+
+**Toggle View:** [Table View] | [Card View]
+
+**Table View Columns:**
+| Date | Activity Title | Provider | Hours | Category | Type | Status | Actions |
+
+**Sample Rows:**
+
+**Row 1:**
+- 05/12/2024
+- FICA Compliance Workshop
+- Masthead Training (âœ“ Accredited badge)
+- 2.0 hrs
+- Ethics
+- Verifiable
+- âœ“ Verified (green badge)
+- Actions: [ðŸ‘ View] [ðŸ“ Edit] [ðŸ—‘ Delete] [â¬‡ Download Cert]
+
+**Row 2:**
+- 20/11/2024
+- Investment Portfolio Management
+- FPI Online
+- 3.0 hrs
+- Technical - Investments
+- Verifiable
+- âœ“ Verified
+- Actions: [View] [Edit] [Delete] [Download]
+
+**Row 3:**
+- 10/11/2024
+- FinTech Summit Conference
+- Self-logged
+- 4.0 hrs
+- Technical - General
+- Non-verifiable
+- â³ Pending (amber badge)
+- Actions: [View] [Edit] [Delete]
+
+**Row 4:**
+- 28/10/2024
+- Regulatory Update: TCF & RDR
+- IOBSA Webinar
+- 1.5 hrs
+- Ethics
+- Verifiable
+- âœ“ Verified
+- Actions: [View] [Edit] [Delete] [Download]
+
+**Pagination:**
+- Showing 1-10 of 45 activities
+- << Previous | 1 | 2 | 3 | 4 | 5 | Next >>
+
+### Activity Detail Modal/Slide Panel
+
+**When clicking "View" on an activity:**
+
+**Header:**
+- Activity Title
+- Status badge
+- Edit | Delete buttons
+
+**Details Section:**
+- Provider: Masthead Training (âœ“ FPI Accredited)
+- Date: 05/12/2024
+- Hours: 2.0 (Verifiable)
+- Category: Ethics & Practice Standards
+- Activity Type: Workshop
+- Certificate Number: CPD-2024-12345
+
+**Description/Topics:**
+- Topics Covered: FICA regulations, Customer due diligence, Risk assessments, Suspicious transaction reporting
+
+**Certificate:**
+- Thumbnail preview
+- "Download Certificate" button
+- "View Full Size" button
+
+**Verification Details:**
+- Submitted: 05/12/2024 14:30
+- Verified by: Sarah Naidoo (Compliance Officer)
+- Verified on: 05/12/2024 16:45
+- Verification Notes: "Certificate verified. Counts towards ethics requirement."
+
+**Audit Trail:**
+- Created: 05/12/2024 14:30 by Thabo Mokoena
+- Modified: 05/12/2024 14:35 by Thabo Mokoena
+- Verified: 05/12/2024 16:45 by Sarah Naidoo
+
+**Actions:**
+- Edit Activity
+- Download Certificate
+- Delete Activity
+- Print Details
+- Close
+
+---
+
+## 4. REQUIREMENTS CALCULATOR TAB
+
+### Introduction Section
+"Calculate your CPD requirements based on your authorisations and role. Requirements are determined by Board Notice 194 of 2017."
+
+### Your Authorisation Details (Pre-filled from profile)
+
+**Display Card:**
+- Your Role: Senior Financial Advisor & Key Individual
+- FSP: CustomApp Financial Services (Pty) Ltd
+- Authorised Categories:
+  - Long-term Insurance (Cat A, B2, C)
+  - Investment Products (Securities, Participatory Interests)
+
+**Edit Authorisations Button** (if needed)
+
+### Requirements Calculation
+
+**Step 1: Select Your Situation**
+
+**Question 1:** How many classes of business are you authorised in?
+- â—‹ Single subclass within a single class â†’ 6 hours
+- â—‹ Multiple subclasses within a single class â†’ 12 hours
+- â—‹ Single class of business â†’ 6-12 hours
+- â—‹ Multiple classes of business â†’ 18 hours
+- â—‹ Long-term insurance, health insurance, or investments â†’ 20 hours
+
+**Auto-selected based on profile:** Multiple classes of business
+
+**Question 2:** Are you a Key Individual?
+- â˜‘ Yes (affects oversight responsibilities)
+- â˜ No
+
+**Question 3:** Do you work with multiple product categories?
+- â˜‘ Yes - Long-term Insurance & Investments
+- â˜ No
+
+### Your CPD Requirement (Calculated Result)
+
+**Large Display Card:**
+- **Total Required:** 18 hours per cycle
+- **Mandatory Ethics:** Minimum 3 hours
+- **Cycle Period:** 1 June - 31 May annually
+- **Your Status:** 14 / 18 hours completed (78%)
+
+**Breakdown:**
+- Technical CPD: Minimum 11 hours (14 hours recommended)
+- Ethics & Practice Standards: Minimum 3 hours (MANDATORY)
+- Remaining: 4 hours
+
+**Visual Pie Chart:**
+- Technical: 11 hours minimum
+- Ethics: 3 hours minimum
+- Flexible: 4 hours (any category)
+
+### Pro-Rata Calculator (Collapsible Section)
+
+"Calculate pro-rated requirements for partial year situations (e.g., maternity leave, new representatives)"
+
+**Form:**
+1. Reason for Pro-Rata:
+   - â—‹ New appointment (started after cycle start)
+   - â—‹ Maternity/Paternity leave
+   - â—‹ Extended illness
+   - â—‹ Other approved leave
+2. Start Date / Return Date: (date picker)
+3. Full Annual Requirement: 18 hours (auto-filled)
+4. Calculate Button
+
+**Result:**
+- Months in cycle: 4 months (Feb-May)
+- Pro-rata calculation: (18 Ã· 12) Ã— 4 = 6 hours
+- Your adjusted requirement: 6 hours for this cycle
+- Ethics requirement: Still 3 hours (not pro-rated)
+
+### CPD Planning Tool
+
+**Monthly planner:**
+- Shows months remaining in cycle
+- Suggests hours per month to stay on track
+- "You need approximately 0.7 hours per month to meet your requirement"
+
+**Suggested Activities:**
+- Based on your gap, here are recommended activities:
+  - 1Ã— 2-hour webinar
+  - 1Ã— 1-hour online course
+  - 1Ã— 1-hour reading/podcast
+
+### Historical Requirements (Expandable)
+
+**Table showing previous cycles:**
+| Cycle | Required | Completed | Status | Certificate |
+|-------|----------|-----------|--------|-------------|
+| 2024/2025 | 18 hrs | 14 hrs (current) | In Progress | - |
+| 2023/2024 | 18 hrs | 20 hrs | âœ“ Compliant | Download |
+| 2022/2023 | 18 hrs | 18 hrs | âœ“ Compliant | Download |
+| 2021/2022 | 18 hrs | 19 hrs | âœ“ Compliant | Download |
+
+---
+
+## 5. CPD PROVIDERS TAB
+
+### Introduction
+"Find accredited CPD providers approved by professional bodies (FPI, IOBSA, SAIFM)"
+
+### Search & Filter
+
+**Search Bar:**
+- "Search providers by name, location, or speciality..."
+
+**Filters:**
+1. Accreditation:
+   - â˜ FPI Accredited
+   - â˜ IOBSA Accredited
+   - â˜ SAIFM Accredited
+   - â˜ Other Professional Bodies
+2. Delivery Method:
+   - â˜ Online
+   - â˜ In-person
+   - â˜ Hybrid
+   - â˜ Self-paced
+3. Location (if in-person):
+   - â˜ Cape Town
+   - â˜ Johannesburg
+   - â˜ Durban
+   - â˜ Pretoria
+   - â˜ Port Elizabeth
+   - â˜ Other
+4. Category Offered:
+   - â˜ Ethics & Practice Standards
+   - â˜ Technical Training
+   - â˜ Product-specific
+5. Price Range:
+   - â—‹ Free
+   - â—‹ R0 - R500
+   - â—‹ R500 - R1,000
+   - â—‹ R1,000+
+
+### Provider Directory (Cards/List)
+
+**Provider Card 1: Masthead Training**
+- Logo/Icon
+- Accreditation Badges: [FPI] [IOBSA]
+- Rating: â˜…â˜…â˜…â˜…â˜… (4.8/5) - 234 reviews
+- Location: Nationwide (Online & In-person)
+- Specialties: Compliance, FICA, Ethics, Technical
+- Delivery: Online, Face-to-face, Webinars
+- Website: www.masthead.co.za
+- Contact: info@masthead.co.za | +27 11 555 1234
+- Description: "Leading provider of FAIS compliance and CPD training across South Africa. Over 200 courses available."
+- Popular Courses:
+  - FICA Compliance Workshop (2 hrs) - R495
+  - Ethics in Financial Planning (3 hrs) - R650
+  - Regulatory Updates Webinar (1.5 hrs) - Free
+- Actions:
+  - [Primary Button] View Courses
+  - [Secondary Button] Contact Provider
+  - [Link] Read Reviews
+
+**Provider Card 2: FPI (Financial Planning Institute)**
+- Accreditation: [FPI] Official
+- Rating: â˜…â˜…â˜…â˜…â˜… (4.9/5) - 567 reviews
+- Location: Online & Regional offices
+- Specialties: Financial Planning, Ethics, Professional Development
+- Delivery: Online courses, Webinars, Events
+- Website: www.fpi.co.za
+- Contact: cpd@fpi.co.za | +27 21 555 5678
+- Description: "Professional body for financial planners offering accredited CPD."
+- Popular Courses: [similar format]
+
+**Provider Card 3: IOBSA (Institute of Bankers SA)**
+- Similar card structure
+
+**Provider Card 4: SAIFM**
+- Similar card structure
+
+**Provider Card 5: Moonstone Business School of Excellence**
+- Similar card structure
+
+**Pagination:** 1-5 of 23 providers
+
+### Provider Detail Page (When clicking "View Courses")
+
+**Header:**
+- Provider name & logo
+- Accreditation badges
+- Rating & reviews
+- Contact info
+- "Add to Favourites" button
+
+**Available Courses Table:**
+| Course Name | Hours | Category | Format | Price | Next Date | Action |
+
+**Sample Row:**
+- FICA Compliance Workshop
+- 2.0 hrs
+- Ethics
+- Webinar
+- R495.00
+- 15/01/2025
+- [Book Now] [Details]
+
+**Filter courses:**
+- By category
+- By date
+- By format
+- By price
+
+**Reviews Section:**
+- Display recent reviews from other advisors
+- Star ratings
+- Comments
+- "Write a Review" button
+
+---
+
+## 6. TEAM VIEW TAB (For Key Individuals/Compliance Officers)
+
+### Team Overview Dashboard
+
+**Summary Cards:**
+
+**Card 1: Team Compliance**
+- Compliant: 9 / 12 representatives (75%)
+- Visual: 9 green dots, 3 red dots
+- Donut chart
+
+**Card 2: Total Hours**
+- Team Total: 165 hours
+- Average: 13.75 hours per person
+- Target: 18 hours per person
+
+**Card 3: At Risk**
+- 3 representatives (red badge)
+- Names: J. Smith, M. Botha, P. Nel
+- "Take Action" button
+
+**Card 4: Deadline**
+- Days Remaining: 188 days
+- Progress indicator
+- Projected completion: 95%
+
+### Representative Status Table
+
+**Columns:**
+| Name | Role | Required | Completed | Ethics | Status | Last Activity | Actions |
+
+**Sample Rows:**
+
+**Row 1:**
+- Sarah Naidoo
+- Senior Advisor
+- 18 hrs
+- 20 hrs (111%)
+- 4 hrs âœ“
+- âœ“ Compliant (green)
+- 2 days ago
+- [View Details] [Download Report]
+
+**Row 2:**
+- Thabo Mokoena
+- Financial Advisor
+- 18 hrs
+- 14 hrs (78%)
+- 3 hrs âœ“
+- âš  In Progress (amber)
+- 5 days ago
+- [View Details] [Send Reminder]
+
+**Row 3:**
+- Johan Smith
+- Junior Advisor
+- 18 hrs
+- 0 hrs (0%)
+- 0 hrs âœ—
+- âœ— Non-Compliant (red)
+- Never
+- [View Details] [Send Alert] [Escalate]
+
+**Filters:**
+- Status: All | Compliant | In Progress | Non-Compliant
+- Sort by: Name | Hours | Status | Last Activity
+
+**Bulk Actions:**
+- Send reminder to selected
+- Export team report
+- Download certificates (all compliant)
+
+### Team Analytics
+
+**Charts:**
+
+**Chart 1: Completion Rate Trend**
+- Line chart showing team progress over time
+- Monthly breakdown
+- Target line at 100%
+
+**Chart 2: Hours Distribution**
+- Bar chart showing hours by representative
+- Target line at 18 hours
+- Color-coded by status
+
+**Chart 3: Category Breakdown**
+- Stacked bar chart
+- Shows technical vs ethics hours
+- By representative
+
+**Chart 4: Compliance Forecast**
+- Projection based on current rate
+- "At current pace, 95% will be compliant by deadline"
+
+### Action Items
+
+**For Compliance Officers:**
+1. Representatives needing attention (list)
+2. Pending verifications (list)
+3. Overdue reminders
+4. Upcoming deadline alerts
+
+**Quick Actions:**
+- Send team reminder
+- Schedule CPD session
+- Generate team report
+- Export to Excel
+
+### Individual Representative Drill-Down
+
+**When clicking "View Details" on a representative:**
+- Shows same dashboard as "My CPD Dashboard"
+- But for that representative
+- Compliance officer can:
+  - View all activities
+  - Verify/reject activities
+  - Add notes
+  - Send reminders
+  - Download reports
+
+---
+
+## 7. REPORTS TAB
+
+### Report Types (Cards to select)
+
+**Report 1: Personal CPD Summary**
+- Icon: User
+- Description: "Your CPD summary for current or past cycles"
+- Options:
+  - Select cycle
+  - Include certificates
+  - Format: PDF | Excel
+- [Generate Report] button
+
+**Report 2: CPD Compliance Certificate**
+- Icon: Certificate
+- Description: "Official certificate of CPD compliance"
+- Requirements: Must be 100% compliant
+- Preview sample certificate
+- [Generate Certificate] button
+
+**Report 3: Activity History**
+- Icon: List
+- Description: "Detailed log of all CPD activities"
+- Options:
+  - Date range
+  - Include drafts
+  - Format: PDF | Excel
+- [Generate Report] button
+
+**Report 4: Team Report (KI/Compliance Officer only)**
+- Icon: Users
+- Description: "Team-wide CPD compliance status"
+- Options:
+  - Select cycle
+  - Select representatives
+  - Include individual summaries
+  - Format: PDF | Excel
+- [Generate Report] button
+
+**Report 5: Audit Report**
+- Icon: Check-square
+- Description: "Compliance audit trail for FSCA"
+- Includes:
+  - All verifications
+  - Supporting documents
+  - Compliance officer notes
+  - Format: PDF
+- [Generate Report] button
+
+### Report Preview & Download
+
+**After generating report:**
+- PDF preview in browser
+- Download button
+- Email button
+- Print button
+- Save to document library checkbox
+
+### Report History
+
+**Table of previously generated reports:**
+| Report Type | Generated Date | Cycle | Status | Actions |
+|-------------|----------------|-------|--------|---------|
+| Personal Summary | 15/12/2024 | 2024/2025 | Current | Download |
+| Compliance Certificate | 01/06/2024 | 2023/2024 | Archived | Download |
+| Activity History | 20/11/2024 | 2024/2025 | Current | Download |
+
+**Auto-archive after 6 months**
+
+---
+
+## TECHNICAL FEATURES
+
+### Real-Time Calculations
+- Auto-calculate hours as activities are added
+- Update progress bars dynamically
+- Recalculate requirements based on authorisations
+
+### Notifications
+- Toast notifications for success/error
+- Email notifications (simulate)
+- In-app notifications badge
+- Reminder system
+
+### Data Validation
+- Date validation (must be within cycle)
+- Hours validation (max 8 per day)
+- Ethics hours tracking
+- Duplicate detection
+
+### File Handling
+- Drag & drop upload
+- File size validation
+- File type checking
+- Preview generation
+- Secure download links
+
+### Charts & Visualizations
+- Use Chart.js for all charts
+- Interactive tooltips
+- Responsive charts
+- Print-friendly versions
+
+### Export Functions
+- Export to PDF (use jsPDF)
+- Export to Excel (use SheetJS)
+- Print views
+- Email reports
+
+### Search & Filter
+- Real-time search
+- Multiple filter combinations
+- Save filter preferences
+- Quick filters
+
+### Responsive Design
+- Mobile-friendly tables (convert to cards)
+- Touch-friendly controls
+- Hamburger menu for tabs
+- Swipe gestures on mobile
+
+### Accessibility
+- ARIA labels
+- Keyboard shortcuts
+- Screen reader support
+- High contrast mode
+- Focus indicators
+
+---
+
+## SAMPLE DATA
+
+**Current User: Thabo Mokoena**
+- Role: Senior Financial Advisor & Key Individual
+- Authorisations: Long-term Insurance, Investments
+- Required Hours: 18
+- Completed: 14 hours (78%)
+- Ethics: 3 hours (minimum met)
+
+**Activities (Current Cycle):**
+1. FICA Compliance Workshop - Masthead - 2.0 hrs - Ethics - 05/12/2024
+2. Investment Portfolio Mgmt - FPI Online - 3.0 hrs - Technical - 20/11/2024
+3. FinTech Summit Conference - Self-logged - 4.0 hrs - Technical - 10/11/2024 (Pending)
+4. Regulatory Update: TCF - IOBSA - 1.5 hrs - Ethics - 28/10/2024
+5. LT Insurance Product Training - Moonstone - 2.5 hrs - Technical - 15/10/2024
+6. Risk Management Webinar - SAIFM - 1.0 hrs - Technical - 05/10/2024
+7. Client Needs Analysis - FPI - 0.5 hrs - Ethics - 20/09/2024
+8. Market Update Seminar - Self-logged - 1.5 hrs - Technical - 10/09/2024 (Verified)
+
+**Team Data (if KI):**
+- Total Representatives: 12
+- Compliant: 9 (75%)
+- In Progress: 2
+- Non-Compliant: 1 (Johan Smith - 0 hours)
+
+**Cycle:**
+- Period: 1 June 2024 - 31 May 2025
+- Days Remaining: 188 days
+- Current Date: 15/12/2024
+
+---
+
+## FILE STRUCTURE
+
+```
+cpd-management/
+â”œâ”€â”€ index.html
+â”œâ”€â”€ css/
+â”‚   â”œâ”€â”€ cpd-styles.css
+â”‚   â”œâ”€â”€ charts.css
+â”‚   â””â”€â”€ responsive.css
+â”œâ”€â”€ js/
+â”‚   â”œâ”€â”€ cpd-dashboard.js
+â”‚   â”œâ”€â”€ upload-activity.js
+â”‚   â”œâ”€â”€ activity-log.js
+â”‚   â”œâ”€â”€ calculator.js
+â”‚   â”œâ”€â”€ providers.js
+â”‚   â”œâ”€â”€ team-view.js
+â”‚   â”œâ”€â”€ reports.js
+â”‚   â”œâ”€â”€ charts.js
+â”‚   â””â”€â”€ data.js
+â””â”€â”€ assets/
+    â””â”€â”€ sample-certificates/
+```
+
+Generate a complete, production-ready implementation with all interactive features, calculations, and responsive design. The module should handle all CPD tracking requirements according to FSCA regulations and provide an excellent user experience for both individual advisors and compliance officers.

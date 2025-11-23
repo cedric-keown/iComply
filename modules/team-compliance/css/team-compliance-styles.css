@@ -1,0 +1,493 @@
+/* Team Compliance Matrix Styles */
+
+:root {
+    --primary-color: #5CBDB4;
+    --text-color: #4A4A4A;
+    --bg-color: #FFFFFF;
+    --light-grey: #F8F9FA;
+    --success: #28A745;
+    --warning: #FFC107;
+    --danger: #DC3545;
+    --info: #17A2B8;
+}
+
+.team-compliance-container {
+    padding: 20px;
+    background-color: var(--light-grey);
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.compliance-header h2 {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+/* Summary Cards */
+.summary-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    height: 100%;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.summary-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.summary-label {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.avatar-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+}
+
+.avatar-sm {
+    width: 24px;
+    height: 24px;
+    font-size: 0.65rem;
+}
+
+/* Score Gauge */
+.score-gauge {
+    display: flex;
+    justify-content: center;
+}
+
+.gauge-circle {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.gauge-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.gauge-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+/* Pulse Animation */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Filters Section */
+.filters-section .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Matrix Table */
+.matrix-section .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#complianceMatrix {
+    font-size: 0.9rem;
+}
+
+#complianceMatrix thead th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 12px 8px;
+    white-space: nowrap;
+}
+
+#complianceMatrix tbody td {
+    padding: 12px 8px;
+    vertical-align: middle;
+}
+
+.sort-icon {
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.sort-icon:hover {
+    opacity: 1;
+}
+
+/* Representative Column */
+.rep-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rep-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.rep-avatar.border-danger {
+    border: 3px solid var(--danger) !important;
+}
+
+.rep-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.rep-name {
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+
+.rep-name:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.rep-name.text-danger {
+    color: var(--danger);
+}
+
+.rep-meta {
+    font-size: 0.75rem;
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+.rep-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.badge-role {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.badge-ki {
+    background-color: #fff3e0;
+    color: #f57c00;
+}
+
+.badge-suspended {
+    background-color: #ffebee;
+    color: var(--danger);
+    animation: pulse 2s infinite;
+}
+
+/* Status Icons */
+.status-icon {
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.status-icon .fa-check-circle {
+    color: var(--success);
+}
+
+.status-icon .fa-exclamation-triangle {
+    color: var(--warning);
+}
+
+.status-icon .fa-times-circle {
+    color: var(--danger);
+    animation: pulse 2s infinite;
+}
+
+/* CPD Column */
+.cpd-progress {
+    min-width: 100px;
+}
+
+.cpd-hours {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.cpd-bar {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.cpd-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+.cpd-bar-fill.bg-success {
+    background-color: var(--success);
+}
+
+.cpd-bar-fill.bg-warning {
+    background-color: var(--warning);
+}
+
+.cpd-bar-fill.bg-danger {
+    background-color: var(--danger);
+}
+
+.cpd-meta {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.cpd-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.compliant {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-badge.at-risk {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.non-compliant {
+    background-color: #f8d7da;
+    color: #721c24;
+    animation: pulse 2s infinite;
+}
+
+/* Overall Status Column */
+.overall-score {
+    text-align: center;
+}
+
+.score-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.score-value.text-success {
+    color: var(--success);
+}
+
+.score-value.text-warning {
+    color: var(--warning);
+}
+
+.score-value.text-danger {
+    color: var(--danger);
+}
+
+.score-trend {
+    font-size: 0.75rem;
+    margin-top: 4px;
+}
+
+/* Actions Column */
+.action-buttons {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+}
+
+.btn-urgent {
+    background-color: var(--danger);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+/* Bulk Actions Bar */
+.bulk-actions-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .team-compliance-container {
+        padding: 10px;
+    }
+
+    .compliance-header .d-flex {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .compliance-header .btn {
+        width: 100%;
+    }
+
+    .summary-card {
+        margin-bottom: 15px;
+    }
+
+    #complianceMatrix {
+        font-size: 0.8rem;
+    }
+
+    #complianceMatrix thead th,
+    #complianceMatrix tbody td {
+        padding: 8px 4px;
+    }
+
+    .rep-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .compliance-header .btn,
+    .filters-section,
+    .bulk-actions-bar,
+    .action-buttons {
+        display: none !important;
+    }
+
+    .team-compliance-container {
+        padding: 0;
+        background: white;
+    }
+
+    .summary-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    #complianceMatrix {
+        font-size: 0.8rem;
+    }
+}
+
+/* Custom Column Width for 5 Cards */
+@media (min-width: 992px) {
+    .col-lg-2-4 {
+        flex: 0 0 auto;
+        width: 20%;
+    }
+}
+
+/* Tooltip Styles */
+[data-bs-toggle="tooltip"] {
+    cursor: help;
+}
+
+/* Loading State */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Expand/Collapse Rows */
+.matrix-row-expanded {
+    background-color: #f8f9fa;
+}
+
+.matrix-row-expanded td {
+    border-top: 2px solid var(--primary-color);
+}
+
+.expanded-details {
+    display: none;
+    padding: 20px;
+    background-color: white;
+    border-top: 1px solid #dee2e6;
+}
+
+.expanded-details.show {
+    display: block;
+}
+

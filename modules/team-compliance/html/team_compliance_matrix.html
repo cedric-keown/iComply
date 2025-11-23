@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Team Compliance Matrix - iComply</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Phoenix Theme CSS -->
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/phoenix.min.css" rel="stylesheet">
+    <link href="https://prium.github.io/phoenix/v1.23.0/assets/css/theme.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link href="../../../css/main.css" rel="stylesheet">
+    <link href="../css/team-compliance-styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="team-compliance-container">
+        <!-- 1. PAGE HEADER & SUMMARY CARDS -->
+        <div class="compliance-header mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h2 class="mb-1">Team Compliance Matrix</h2>
+                    <p class="text-muted mb-0">Real-time compliance status for all representatives</p>
+                    <small class="text-muted">Last Updated: <span id="lastUpdated">15/12/2024 14:30</span> <i class="fas fa-sync-alt ms-2" id="refreshIcon" style="cursor: pointer;"></i></small>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-primary" id="generateReportBtn">
+                        <i class="fas fa-file-pdf me-1"></i> Generate Team Report
+                    </button>
+                    <button class="btn btn-success" id="bulkReminderBtn">
+                        <i class="fas fa-envelope me-1"></i> Send Bulk Reminder
+                    </button>
+                    <button class="btn btn-info" id="exportExcelBtn">
+                        <i class="fas fa-file-excel me-1"></i> Export to Excel
+                    </button>
+                    <button class="btn btn-secondary" id="printMatrixBtn">
+                        <i class="fas fa-print me-1"></i> Print Matrix
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Cards Row -->
+            <div class="row g-3 mb-4">
+                <!-- Card 1: Total Representatives -->
+                <div class="col-md-6 col-lg-2-4">
+                    <div class="summary-card" data-filter="all">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="summary-number">12</div>
+                                <div class="summary-label">Active Representatives</div>
+                                <small class="text-success">+1 this month</small>
+                            </div>
+                            <div class="avatar-group">
+                                <div class="avatar avatar-sm bg-success">SN</div>
+                                <div class="avatar avatar-sm bg-success">TM</div>
+                                <div class="avatar avatar-sm bg-success">LV</div>
+                                <div class="avatar avatar-sm bg-success">PV</div>
+                                <div class="avatar avatar-sm bg-success">AN</div>
+                                <div class="avatar avatar-sm bg-success">DM</div>
+                                <div class="avatar avatar-sm bg-success">SJ</div>
+                                <div class="avatar avatar-sm bg-success">LD</div>
+                                <div class="avatar avatar-sm bg-success">KO</div>
+                                <div class="avatar avatar-sm bg-warning">PN</div>
+                                <div class="avatar avatar-sm bg-warning">JS</div>
+                                <div class="avatar avatar-sm bg-danger">MJ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Fully Compliant -->
+                <div class="col-md-6 col-lg-2-4">
+                    <div class="summary-card compliant" data-filter="compliant">
+                        <div class="summary-number text-success">9</div>
+                        <div class="summary-label">Fully Compliant</div>
+                        <div class="progress mt-2" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 75%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">75%</small>
+                            <i class="fas fa-check-circle text-success"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: At Risk -->
+                <div class="col-md-6 col-lg-2-4">
+                    <div class="summary-card at-risk" data-filter="at-risk">
+                        <div class="summary-number text-warning">2</div>
+                        <div class="summary-label">Need Attention</div>
+                        <div class="progress mt-2" style="height: 6px;">
+                            <div class="progress-bar bg-warning" style="width: 17%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">17%</small>
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                        </div>
+                        <small class="text-muted mt-1 d-block">Johan Smith, Peter Nel</small>
+                    </div>
+                </div>
+
+                <!-- Card 4: Non-Compliant -->
+                <div class="col-md-6 col-lg-2-4">
+                    <div class="summary-card non-compliant" data-filter="non-compliant">
+                        <div class="summary-number text-danger">1</div>
+                        <div class="summary-label">Non-Compliant</div>
+                        <div class="progress mt-2" style="height: 6px;">
+                            <div class="progress-bar bg-danger" style="width: 8%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">8%</small>
+                            <i class="fas fa-times-circle text-danger pulse"></i>
+                        </div>
+                        <small class="text-danger mt-1 d-block">Mike Johnson</small>
+                    </div>
+                </div>
+
+                <!-- Card 5: Average Score -->
+                <div class="col-md-6 col-lg-2-4">
+                    <div class="summary-card" data-filter="score">
+                        <div class="summary-number">87%</div>
+                        <div class="summary-label">Team Average</div>
+                        <div class="score-gauge mt-2">
+                            <div class="gauge-circle">
+                                <svg viewBox="0 0 100 100" class="gauge-svg">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#e9ecef" stroke-width="8"/>
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="#5CBDB4" stroke-width="8" 
+                                            stroke-dasharray="283" stroke-dashoffset="37" transform="rotate(-90 50 50)"/>
+                                </svg>
+                                <div class="gauge-text">87%</div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-success">+2% vs last month <i class="fas fa-arrow-up"></i></small>
+                        </div>
+                        <small class="text-muted">Range: 98% - 45%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. FILTERS & SEARCH BAR -->
+        <div class="filters-section mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <!-- Search Bar -->
+                        <div class="col-md-12 col-lg-3">
+                            <label class="form-label small">Search Representatives</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search by name, email, or FSCAR number...">
+                                <button class="btn btn-outline-secondary" type="button" id="clearSearch" style="display: none;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filter Dropdowns -->
+                        <div class="col-md-6 col-lg-2">
+                            <label class="form-label small">Compliance Status</label>
+                            <select class="form-select form-select-sm" id="statusFilter">
+                                <option value="all">All (12)</option>
+                                <option value="compliant">✓ Compliant (9)</option>
+                                <option value="at-risk">⚠️ At Risk (2)</option>
+                                <option value="non-compliant">✗ Non-Compliant (1)</option>
+                                <option value="new">🆕 New</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 col-lg-2">
+                            <label class="form-label small">CPD Status</label>
+                            <select class="form-select form-select-sm" id="cpdFilter">
+                                <option value="all">All</option>
+                                <option value="completed">✓ Completed (18+ hrs)</option>
+                                <option value="in-progress">⚠️ In Progress (10-17 hrs)</option>
+                                <option value="behind">✗ Behind Schedule (< 10 hrs)</option>
+                                <option value="not-started">⏳ Not Started</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 col-lg-2">
+                            <label class="form-label small">FICA Status</label>
+                            <select class="form-select form-select-sm" id="ficaFilter">
+                                <option value="all">All</option>
+                                <option value="current">✓ All Clients Current</option>
+                                <option value="some-overdue">⚠️ Some Reviews Overdue</option>
+                                <option value="many-overdue">✗ Many Reviews Overdue</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 col-lg-2">
+                            <label class="form-label small">Supervisor</label>
+                            <select class="form-select form-select-sm" id="supervisorFilter">
+                                <option value="all">All</option>
+                                <option value="thabo">Thabo Mokoena (5 reps)</option>
+                                <option value="johan">Johan Smit (4 reps)</option>
+                                <option value="sarah">Sarah Naidoo (3 reps)</option>
+                                <option value="unassigned">Unassigned</option>
+                            </select>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="col-md-12 col-lg-1">
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-sm btn-outline-secondary" id="clearFiltersBtn" title="Clear All Filters">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" id="savePresetBtn" title="Save Filter Preset">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sort Options -->
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="form-label small mb-0">Sort By:</label>
+                                    <select class="form-select form-select-sm" id="sortBy" style="width: auto;">
+                                        <option value="critical">Critical Issues First</option>
+                                        <option value="name-asc">Name (A-Z)</option>
+                                        <option value="name-desc">Name (Z-A)</option>
+                                        <option value="score-desc">Compliance Score (High to Low)</option>
+                                        <option value="score-asc">Compliance Score (Low to High)</option>
+                                        <option value="updated-desc">Last Updated (Newest First)</option>
+                                        <option value="updated-asc">Last Updated (Oldest First)</option>
+                                        <option value="cpd">CPD Progress (%)</option>
+                                        <option value="fica">FICA Status</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary" id="expandAllBtn">
+                                        <i class="fas fa-expand-alt me-1"></i> Expand All
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="collapseAllBtn" style="display: none;">
+                                        <i class="fas fa-compress-alt me-1"></i> Collapse All
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. MAIN COMPLIANCE MATRIX TABLE -->
+        <div class="matrix-section">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="complianceMatrix">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th style="width: 40px;">
+                                        <input type="checkbox" class="form-check-input" id="selectAll">
+                                    </th>
+                                    <th style="width: 200px;">
+                                        Representative <i class="fas fa-sort ms-1 sort-icon" data-sort="name"></i>
+                                    </th>
+                                    <th style="width: 80px;">
+                                        F&P <i class="fas fa-sort ms-1 sort-icon" data-sort="fp"></i>
+                                    </th>
+                                    <th style="width: 120px;">
+                                        CPD <i class="fas fa-sort ms-1 sort-icon" data-sort="cpd"></i>
+                                    </th>
+                                    <th style="width: 100px;">
+                                        FICA <i class="fas fa-sort ms-1 sort-icon" data-sort="fica"></i>
+                                    </th>
+                                    <th style="width: 80px;">
+                                        Docs <i class="fas fa-sort ms-1 sort-icon" data-sort="docs"></i>
+                                    </th>
+                                    <th style="width: 120px;">
+                                        Overall Status <i class="fas fa-sort ms-1 sort-icon" data-sort="score"></i>
+                                    </th>
+                                    <th style="width: 120px;">
+                                        Last Updated <i class="fas fa-sort ms-1 sort-icon" data-sort="updated"></i>
+                                    </th>
+                                    <th style="width: 150px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="matrixBody">
+                                <!-- Rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. BULK ACTIONS BAR -->
+        <div class="bulk-actions-bar" id="bulkActionsBar" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center p-3 bg-light border-top">
+                <div>
+                    <strong id="selectedCount">0</strong> representatives selected
+                    <a href="#" class="ms-2" id="selectAllLink">Select All 12</a>
+                    <a href="#" class="ms-2" id="deselectAllLink">Deselect All</a>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-primary" id="bulkReminderBtn">
+                        <i class="fas fa-envelope me-1"></i> Send Reminder
+                    </button>
+                    <button class="btn btn-sm btn-info" id="bulkReportBtn">
+                        <i class="fas fa-file-pdf me-1"></i> Generate Report
+                    </button>
+                    <button class="btn btn-sm btn-success" id="bulkExportBtn">
+                        <i class="fas fa-file-excel me-1"></i> Export Selected
+                    </button>
+                    <button class="btn btn-sm btn-secondary" id="bulkAssignBtn">
+                        <i class="fas fa-user-tie me-1"></i> Assign Supervisor
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" id="bulkMarkReviewedBtn">
+                        <i class="fas fa-check me-1"></i> Mark as Reviewed
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" id="cancelSelectionBtn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. REPRESENTATIVE DETAIL PANEL (Modal) -->
+    <div class="modal fade" id="repDetailModal" tabindex="-1" aria-labelledby="repDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="repDetailModalLabel">Representative Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="repDetailContent">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/team-compliance.js"></script>
+</body>
+</html>
+

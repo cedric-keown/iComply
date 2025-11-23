@@ -1,0 +1,394 @@
+/* CPD Management Styles */
+
+:root {
+    --primary-color: #5CBDB4;
+    --text-color: #4A4A4A;
+    --bg-color: #FFFFFF;
+    --light-grey: #F8F9FA;
+    --success: #28A745;
+    --warning: #FFC107;
+    --danger: #DC3545;
+    --info: #17A2B8;
+}
+
+/* Tab Navigation */
+.cpd-tabs-container {
+    background: var(--bg-color);
+    border-bottom: 2px solid var(--light-grey);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.cpd-tabs {
+    border-bottom: none;
+    margin-bottom: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.cpd-tabs .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.cpd-tabs .nav-link {
+    color: var(--text-color);
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 15px 20px;
+    margin-right: 0;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.cpd-tabs .nav-link:hover {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: var(--light-grey);
+}
+
+.cpd-tabs .nav-link.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    background-color: transparent;
+    font-weight: 600;
+}
+
+.cpd-content {
+    padding: 20px;
+    min-height: calc(100vh - 200px);
+}
+
+/* Hero Section */
+.cpd-hero-card {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #4a9d96 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Progress Circle */
+.progress-circle-container {
+    position: relative;
+    display: inline-block;
+}
+
+.progress-circle {
+    transform: rotate(-90deg);
+}
+
+.progress-circle-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.2);
+    stroke-width: 15;
+}
+
+.progress-circle-progress {
+    fill: none;
+    stroke-width: 15;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.progress-green {
+    stroke: var(--success);
+}
+
+.progress-amber {
+    stroke: var(--warning);
+}
+
+.progress-red {
+    stroke: var(--danger);
+}
+
+.progress-circle-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+}
+
+.progress-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.progress-label {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-top: 5px;
+}
+
+.progress-percentage {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+/* Stat Cards */
+.stat-card {
+    background: var(--bg-color);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 100%;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.stat-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    opacity: 0.2;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 15px 0 5px 0;
+}
+
+.stat-label {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.stat-sublabel {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+/* Activity List */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.activity-item {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.activity-item:hover {
+    background-color: var(--light-grey);
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-actions {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+/* Upload Zone */
+.upload-zone {
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    background: var(--light-grey);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.upload-zone:hover {
+    border-color: var(--primary-color);
+    background: rgba(92, 189, 180, 0.05);
+}
+
+.upload-zone.dragover {
+    border-color: var(--primary-color);
+    background: rgba(92, 189, 180, 0.1);
+}
+
+/* Upload Method Cards */
+.upload-method-card {
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+    height: 100%;
+}
+
+.upload-method-card:hover {
+    border-color: var(--primary-color);
+    background: var(--light-grey);
+}
+
+.upload-method-card.active {
+    border-color: var(--primary-color);
+    background: rgba(92, 189, 180, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cpd-tabs-container {
+        overflow-x: auto;
+    }
+
+    .cpd-tabs {
+        flex-wrap: nowrap;
+        min-width: max-content;
+    }
+
+    .cpd-tabs .nav-link {
+        white-space: nowrap;
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+
+    .progress-circle-container {
+        margin-bottom: 20px;
+    }
+
+    .activity-item {
+        flex-direction: column;
+    }
+
+    .activity-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+/* Chart Container */
+canvas {
+    max-height: 300px;
+}
+
+/* Badge Styles */
+.badge {
+    font-weight: 500;
+    padding: 5px 10px;
+}
+
+/* Table Styles */
+.table th {
+    background-color: var(--light-grey);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Alert Styles */
+.alert {
+    border-left: 4px solid;
+    border-radius: 8px;
+}
+
+.alert-warning {
+    border-left-color: var(--warning);
+}
+
+.alert-success {
+    border-left-color: var(--success);
+}
+
+.alert-info {
+    border-left-color: var(--info);
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: var(--light-grey);
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+    padding: 15px 20px;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 8px 16px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #4a9d96;
+    border-color: #4a9d96;
+}
+
+/* Form Styles */
+.form-label {
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(92, 189, 180, 0.25);
+}
+
+/* Print Styles */
+@media print {
+    .cpd-tabs-container,
+    .btn,
+    .activity-actions {
+        display: none !important;
+    }
+
+    .card {
+        break-inside: avoid;
+    }
+}
+
