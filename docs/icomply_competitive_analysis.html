@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iComply Competitive Analysis - Full Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --custom-teal: #5CBDB4;
+            --custom-grey: #4A4A4A;
+            --custom-light-teal: #e0f5f3;
+            --custom-dark-teal: #4aa59d;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--custom-grey);
+            background-color: #f8f9fa;
+            padding-top: 120px;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--custom-teal) 0%, var(--custom-dark-teal) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .navbar-brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--custom-teal) 0%, var(--custom-dark-teal) 100%);
+            color: white;
+            padding: 2.5rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-section h1 {
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .hero-section .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+        
+        .toc-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--custom-teal);
+        }
+        
+        .toc-section h2 {
+            color: var(--custom-teal);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .toc-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .toc-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .toc-list a {
+            color: var(--custom-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .toc-list a:hover {
+            color: var(--custom-teal);
+            padding-left: 0.5rem;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--custom-teal);
+        }
+        
+        .section-card h2 {
+            color: var(--custom-teal);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 1.8rem;
+        }
+        
+        .section-card h3 {
+            color: var(--custom-grey);
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+        
+        .section-card h4 {
+            color: var(--custom-dark-teal);
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+        
+        .executive-summary {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffe082 100%);
+            border-left: 5px solid #ffa726;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .executive-summary h2 {
+            color: #f57c00;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .competitor-profile {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--custom-teal);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .competitor-profile h3 {
+            color: var(--custom-teal);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .threat-badge {
+            display: inline-block;
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .threat-high {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 2px solid #ef5350;
+        }
+        
+        .threat-medium {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            border: 2px solid #ff9800;
+        }
+        
+        .threat-low {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #66bb6a;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .info-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--custom-teal);
+        }
+        
+        .info-item strong {
+            color: var(--custom-dark-teal);
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        
+        .feature-list {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .feature-list h4 {
+            color: var(--custom-teal);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-list ul {
+            margin-bottom: 0;
+        }
+        
+        .feature-list li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            color: var(--custom-teal);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .strengths-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .strengths-box h4 {
+            color: #2e7d32;
+            font-weight: 700;
+        }
+        
+        .weaknesses-box {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .weaknesses-box h4 {
+            color: #c62828;
+            font-weight: 700;
+        }
+        
+        .table-custom {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin: 1.5rem 0;
+        }
+        
+        .table-custom thead {
+            background: var(--custom-teal);
+            color: white;
+        }
+        
+        .table-custom th {
+            font-weight: 600;
+            padding: 1rem;
+            border: none;
+        }
+        
+        .table-custom td {
+            padding: 0.9rem;
+            vertical-align: middle;
+        }
+        
+        .table-custom tbody tr:hover {
+            background-color: var(--custom-light-teal);
+        }
+        
+        .checkmark {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .crossmark {
+            color: #f44336;
+            font-weight: bold;
+        }
+        
+        .warning {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .swot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .swot-box {
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .swot-box h4 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .swot-strengths {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+        
+        .swot-strengths h4 {
+            color: #2e7d32;
+        }
+        
+        .swot-weaknesses {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+        }
+        
+        .swot-weaknesses h4 {
+            color: #c62828;
+        }
+        
+        .swot-opportunities {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+        
+        .swot-opportunities h4 {
+            color: #1565c0;
+        }
+        
+        .swot-threats {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        }
+        
+        .swot-threats h4 {
+            color: #ef6c00;
+        }
+        
+        .recommendation-box {
+            background: linear-gradient(135deg, var(--custom-light-teal) 0%, #b2dfdb 100%);
+            border-left: 5px solid var(--custom-teal);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        
+        .recommendation-box h4 {
+            color: var(--custom-dark-teal);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--custom-teal);
+        }
+        
+        .pricing-card h4 {
+            color: var(--custom-teal);
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--custom-grey);
+            margin: 1rem 0;
+        }
+        
+        .pricing-card .features {
+            text-align: left;
+            margin-top: 1rem;
+        }
+        
+        .alert-custom {
+            border-left: 5px solid;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .alert-info-custom {
+            background-color: #e3f2fd;
+            border-color: #1976d2;
+            color: #0d47a1;
+        }
+        
+        .alert-warning-custom {
+            background-color: #fff3e0;
+            border-color: #f57c00;
+            color: #e65100;
+        }
+        
+        .alert-success-custom {
+            background-color: #e8f5e9;
+            border-color: #388e3c;
+            color: #1b5e20;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--custom-teal);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .back-to-top:hover {
+            background: var(--custom-dark-teal);
+            transform: translateY(-5px);
+        }
+        
+        .footer {
+            background: var(--custom-grey);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        @media print {
+            body {
+                padding-top: 0;
+            }
+            .navbar, .back-to-top, .footer {
+                display: none;
+            }
+            .section-card {
+                page-break-inside: avoid;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding-top: 80px;
+            }
+            .hero-section h1 {
+                font-size: 1.6rem;
+            }
+            .section-card {
+                padding: 1.5rem;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#top">
+                <i class="bi bi-shield-check"></i> iComply
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#executive-summary">Summary</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#direct-competitors">Direct Competitors</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#service-providers">Service Providers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#international-grc">International GRC</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#specialized">Specialized</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#analysis">Analysis</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#recommendations">Recommendations</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="top">
+        <div class="container">
+            <h1><i class="bi bi-graph-up-arrow"></i> iComply Competitive Analysis</h1>
+            <p class="subtitle">Comprehensive Market Intelligence for South African FSP Compliance Management</p>
+            <p class="mb-0"><small><strong>Date:</strong> 23 November 2025 | <strong>Prepared for:</strong> iComply Platform Development</small></p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Table of Contents -->
+        <div class="toc-section">
+            <h2><i class="bi bi-list-ul"></i> Table of Contents</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="toc-list">
+                        <li><a href="#executive-summary"><i class="bi bi-chevron-right"></i> Executive Summary</a></li>
+                        <li><a href="#direct-competitors"><i class="bi bi-chevron-right"></i> Category 1: Direct Software Competitors</a></li>
+                        <li><a href="#service-providers"><i class="bi bi-chevron-right"></i> Category 2: Service Providers</a></li>
+                        <li><a href="#international-grc"><i class="bi bi-chevron-right"></i> Category 3: International GRC Platforms</a></li>
+                        <li><a href="#specialized"><i class="bi bi-chevron-right"></i> Category 4: Specialized Solutions</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="toc-list">
+                        <li><a href="#analysis"><i class="bi bi-chevron-right"></i> Competitive Positioning Analysis</a></li>
+                        <li><a href="#feature-comparison"><i class="bi bi-chevron-right"></i> Feature Comparison Matrix</a></li>
+                        <li><a href="#advantages"><i class="bi bi-chevron-right"></i> iComply Competitive Advantages</a></li>
+                        <li><a href="#threats"><i class="bi bi-chevron-right"></i> Competitive Threats & Risks</a></li>
+                        <li><a href="#pricing"><i class="bi bi-chevron-right"></i> Pricing Analysis</a></li>
+                        <li><a href="#recommendations"><i class="bi bi-chevron-right"></i> Go-to-Market Recommendations</a></li>
+                        <li><a href="#swot"><i class="bi bi-chevron-right"></i> SWOT Analysis</a></li>
+                        <li><a href="#conclusion"><i class="bi bi-chevron-right"></i> Conclusion & Strategic Recommendations</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Executive Summary -->
+        <div class="executive-summary" id="executive-summary">
+            <h2><i class="bi bi-lightning-charge-fill"></i> Executive Summary</h2>
+            <p class="lead">The South African FSP compliance management market consists of three primary competitor categories:</p>
+            
+            <ol>
+                <li><strong>Direct Software Competitors</strong> (2 identified): Full-featured platforms targeting the same market</li>
+                <li><strong>Service Providers with Software</strong> (3+ identified): Compliance firms offering software as part of service packages</li>
+                <li><strong>International GRC Platforms</strong> (7+ major players): Enterprise-grade global solutions that could be adapted</li>
+                <li><strong>Specialized Solutions</strong> (5+ identified): LMS and document management systems addressing specific compliance needs</li>
+            </ol>
+            
+            <div class="alert alert-success-custom mt-4">
+                <h4><i class="bi bi-trophy-fill"></i> Key Finding</h4>
+                <p class="mb-0">iComply's competitive advantage lies in its purpose-built design for South African brokerage FSPs with integrated Fit & Proper, CPD, FICA, and document management in a single, affordable platform with role-based access for teams.</p>
+            </div>
+        </div>
+
+        <!-- CATEGORY 1: Direct Software Competitors -->
+        <div class="section-card" id="direct-competitors">
+            <h2><i class="bi bi-bullseye"></i> CATEGORY 1: Direct Software Competitors</h2>
+            
+            <!-- Kotive -->
+            <div class="competitor-profile">
+                <h3>
+                    <span>1. Kotive</span>
+                    <span class="threat-badge threat-high">🔴 HIGH THREAT</span>
+                </h3>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Website</strong>
+                        <a href="https://www.kotive.com/solutions/compliance-south-africa/" target="_blank">kotive.com/compliance</a>
+                    </div>
+                    <div class="info-item">
+                        <strong>Founded</strong>
+                        Established workflow automation company
+                    </div>
+                    <div class="info-item">
+                        <strong>Market Position</strong>
+                        Established SA FSP compliance leader
+                    </div>
+                    <div class="info-item">
+                        <strong>Pricing Model</strong>
+                        Est. R15,000-30,000/month
+                    </div>
+                </div>
+                
+                <h4>Company Profile</h4>
+                <p>Established workflow automation company with GRC solution for SA FSPs. Founded by Hendrik Rust. Multi-industry platform adapted for FSP compliance.</p>
+                
+                <div class="feature-list">
+                    <h4><i class="bi bi-check-circle-fill"></i> Core Features</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li>FAIS & FICA compliance management</li>
+                                <li>CPD tracking and management</li>
+                                <li>Fit & Proper monitoring</li>
+                                <li>Automated Conduct Assessments (monthly)</li>
+                                <li>Profile management (FSP and Representatives)</li>
+                                <li>Automated FSCA profile changes</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Auto-filled Quarterly Compliance Reports</li>
+                                <li>Auto-filled Conduct of Business Reports</li>
+                                <li>Interactive Risk Management</li>
+                                <li>Multi-tenant system (manage multiple FSPs)</li>
+                                <li>Role-based access control</li>
+                                <li>FSCA ePortal integration</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="strengths-box">
+                            <h4><i class="bi bi-plus-circle-fill"></i> Strengths</h4>
+                            <ul>
+                                <li>First mover advantage in SA FSP compliance software</li>
+                                <li>Proven track record with established FSPs</li>
+                                <li>Comprehensive FSCA systems integration</li>
+                                <li>Strong automation of reporting workflows</li>
+                                <li>No-code workflow customization</li>
+                                <li>Single source of truth for compliance data</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="weaknesses-box">
+                            <h4><i class="bi bi-dash-circle-fill"></i> Weaknesses</h4>
+                            <ul>
+                                <li>General workflow platform adapted for compliance</li>
+                                <li>Pricing appears higher-tier (enterprise focus)</li>
+                                <li>Less emphasis on representative self-service</li>
+                                <li>Limited information on mobile access</li>
+                                <li>Generic workflow tool may have unnecessary complexity</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning-custom">
+                    <strong><i class="bi bi-exclamation-triangle-fill"></i> Strategic Response:</strong> Emphasize purpose-built brokerage design and representative experience at 40% lower cost. Position as "scalpel vs. Swiss Army knife" approach.
+                </div>
+            </div>
+
+            <!-- Compliance Toolbox -->
+            <div class="competitor-profile">
+                <h3>
+                    <span>2. Compliance Toolbox (CTB)</span>
+                    <span class="threat-badge threat-medium">🟡 MEDIUM THREAT</span>
+                </h3>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Website</strong>
+                        <a href="https://www.ctb.co.za/" target="_blank">ctb.co.za</a>
+                    </div>
+                    <div class="info-item">
+                        <strong>Founded</strong>
+                        2003 (20+ years)
+                    </div>
+                    <div class="info-item">
+                        <strong>Location</strong>
+                        Gauteng, SA (National service)
+                    </div>
+                    <div class="info-item">
+                        <strong>Business Model</strong>
+                        Services + Software hybrid
+                    </div>
+                </div>
+                
+                <h4>Company Profile</h4>
+                <p>Founded in 2003 with 70+ years accumulated team experience. Dynamic compliance practice with proprietary software developed in partnership with solution developer. Small institution focus providing personalized service. CISA registered compliance officers.</p>
+                
+                <div class="feature-list">
+                    <h4><i class="bi bi-check-circle-fill"></i> Software Features</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Holistic FSP compliance footprint view</li>
+                                <li>Fit & Proper status tracking</li>
+                                <li>Instant alerts for material non-compliance</li>
+                                <li>FSP risk tracking and management</li>
+                                <li>Fundamental records management</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Key role player activity supervision</li>
+                                <li>Compliance score tracking</li>
+                                <li>Automated Conduct Assessments</li>
+                                <li>Document storage system</li>
+                                <li>Real-time risk profile visualization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4>Service Offerings</h4>
+                <ul>
+                    <li><strong>Prime Solution Monitoring Program:</strong> Comprehensive regulatory governance framework</li>
+                    <li><strong>Training:</strong> CPD-accredited (FICA, POPIA, TCF, Cyber Security, etc.)</li>
+                    <li><strong>Licensing:</strong> Cat I & II applications (100% success rate claimed)</li>
+                    <li><strong>Consulting:</strong> FSP authorization and structuring</li>
+                </ul>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="strengths-box">
+                            <h4><i class="bi bi-plus-circle-fill"></i> Strengths</h4>
+                            <ul>
+                                <li>20+ year track record in SA compliance</li>
+                                <li>Personal relationship model (small advantage)</li>
+                                <li>Software + human expertise combination</li>
+                                <li>100% success rate on license applications</li>
+                                <li>Training and consulting included</li>
+                                <li>Deep SA regulatory environment understanding</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="weaknesses-box">
+                            <h4><i class="bi bi-dash-circle-fill"></i> Weaknesses</h4>
+                            <ul>
+                                <li>Software details not transparent</li>
+                                <li>Appears to require compliance officer engagement</li>
+                                <li>May not offer standalone software option</li>
+                                <li>Limited scalability (small team model)</li>
+                                <li>Less emphasis on self-service compliance</li>
+                                <li>Software features less detailed than Kotive</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info-custom">
+                    <strong><i class="bi bi-lightbulb-fill"></i> Strategic Response:</strong> Position as self-service alternative to full outsourcing. "Take control of your compliance" messaging. Target FSPs wanting internal management at 70% lower cost.
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORY 2: Service Providers -->
+        <div class="section-card" id="service-providers">
+            <h2><i class="bi bi-briefcase-fill"></i> CATEGORY 2: Service Providers (Software as Supporting Tool)</h2>
+            
+            <p class="lead">These competitors offer comprehensive compliance services where software is a supporting component, not the primary product.</p>
+            
+            <!-- Masthead -->
+            <div class="competitor-profile">
+                <h3>
+                    <span>3. Masthead (Pty) Ltd</span>
+                    <span class="threat-badge threat-low">🟢 LOW THREAT</span>
+                </h3>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Website</strong>
+                        <a href="https://www.masthead.co.za/" target="_blank">masthead.co.za</a>
+                    </div>
+                    <div class="info-item">
+                        <strong>Founded</strong>
+                        2004
+                    </div>
+                    <div class="info-item">
+                        <strong>B-BBEE Status</strong>
+                        Level 1 Contributor
+                    </div>
+                    <div class="info-item">
+                        <strong>Coverage</strong>
+                        Nationwide
+                    </div>
+                </div>
+                
+                <p>Leading compliance service provider offering nationwide support for financial advisors, corporate FSPs, credit providers, and legal practitioners. Large team with comprehensive service coverage.</p>
+                
+                <h4>Services Offered</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul>
+                            <li>FAIS licensing and profile changes</li>
+                            <li>FICA implementation and monitoring</li>
+                            <li>Compliance risk management</li>
+                            <li>Representative monitoring</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li>Training (CPD-accredited)</li>
+                            <li>Annual financial statement submissions</li>
+                            <li>Ombud complaints support</li>
+                            <li>Compliance consulting</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info-custom">
+                    <strong><i class="bi bi-info-circle-fill"></i> Technology Offering:</strong> Not a standalone software product. Uses proprietary internal tools for compliance monitoring and client file reviews. Focus is on professional services delivery.
+                </div>
+                
+                <p><strong>Competitive Threat Level Rationale:</strong> Different business model (full outsourcing vs. self-service software). Not direct software competition. Target different customer segments (those wanting hands-off outsourcing).</p>
+            </div>
+
+            <!-- FSPComply -->
+            <div class="competitor-profile">
+                <h3>
+                    <span>4. FSPComply</span>
+                    <span class="threat-badge threat-low">🟢 LOW THREAT</span>
+                </h3>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Website</strong>
+                        <a href="https://fspcomply.com/" target="_blank">fspcomply.com</a>
+                    </div>
+                    <div class="info-item">
+                        <strong>Founded</strong>
+                        2025 (New entrant)
+                    </div>
+                    <div class="info-item">
+                        <strong>Status</strong>
+                        FSCA Authorized Practice
+                    </div>
+                    <div class="info-item">
+                        <strong>Focus</strong>
+                        Category 1 FSPs
+                    </div>
+                </div>
+                
+                <p>Recently established authorised external compliance practice with client-centric philosophy. Focuses on Cat 1 FSPs.</p>
+                
+                <p><strong>Technology:</strong> No software product advertised. Standard compliance consulting and officer services model.</p>
+                
+                <p><strong>Competitive Threat:</strong> Services-only model with no software offering. New market entrant with limited track record.</p>
+            </div>
+
+            <!-- FAIS Compliance & Licensing CC -->
+            <div class="competitor-profile">
+                <h3>
+                    <span>5. FAIS Compliance & Licensing CC</span>
+                    <span class="threat-badge threat-low">🟢 LOW THREAT</span>
+                </h3>
+                
+                <p>Small compliance consultancy offering compliance officer services and license applications. Limited online presence. No software offering evident. Traditional consulting model.</p>
+            </div>
+        </div>
+
+        <!-- CATEGORY 3: International GRC Platforms -->
+        <div class="section-card" id="international-grc">
+            <h2><i class="bi bi-globe"></i> CATEGORY 3: International GRC Platforms</h2>
+            
+            <p class="lead">Enterprise-grade global GRC platforms that could potentially be adapted for SA FSP market with significant localization effort.</p>
+            
+            <div class="alert alert-warning-custom mb-4">
+                <strong><i class="bi bi-exclamation-triangle-fill"></i> Key Finding:</strong> All international platforms lack SA-specific compliance modules (FAIS/FICA/FSCA) and would require extensive customization. Enterprise pricing (R50k-200k/month) makes them non-viable for SME FSPs.
+            </div>
+
+            <!-- Quick Summary Table -->
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Platform</th>
+                            <th>Market Focus</th>
+                            <th>Pricing Tier</th>
+                            <th>SA Presence</th>
+                            <th>Threat Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>MetricStream</strong></td>
+                            <td>Enterprise, Multi-industry</td>
+                            <td>Enterprise (6-figure)</td>
+                            <td>None</td>
+                            <td><span class="threat-badge threat-low">LOW</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Workiva</strong></td>
+                            <td>Financial reporting + GRC</td>
+                            <td>Enterprise</td>
+                            <td>None</td>
+                            <td><span class="threat-badge threat-low">LOW</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Quantivate</strong></td>
+                            <td>Banks, Financial institutions</td>
+                            <td>Mid-Enterprise</td>
+                            <td>None</td>
+                            <td><span class="threat-badge threat-medium">MEDIUM-LOW</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>VComply</strong></td>
+                            <td>Financial services</td>
+                            <td>Tiered (Starter-Enterprise)</td>
+                            <td>None</td>
+                            <td><span class="threat-badge threat-medium">MEDIUM-LOW</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SureCloud</strong></td>
+                            <td>Banking, DORA/Basel III</td>
+                            <td>Enterprise</td>
+                            <td>None</td>
+                            <td><span class="threat-badge threat-low">LOW</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SimpleRisk</strong></td>
+                            <td>SME GRC</td>
+                            <td>Affordable, Open-source</td>
+                            <td>None</td>
+                            <td><span class="threat-badge threat-medium">MEDIUM-LOW</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Camms</strong></td>
+                            <td>Financial services (AU)</td>
+                            <td>Enterprise</td>
+                            <td>None</td>
+                            <td><span class="threat-badge threat-low">LOW</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="recommendation-box">
+                <h4><i class="bi bi-shield-check"></i> Competitive Moat</h4>
+                <p>SA-specific compliance requirements (FAIS Act, FICA, FSCA regulations) create a significant barrier to entry for international platforms. The effort required to localize these systems is substantial, requiring:</p>
+                <ul class="mb-0">
+                    <li>Deep understanding of SA regulatory framework</li>
+                    <li>FSCA system integration expertise</li>
+                    <li>Local compliance officer partnerships</li>
+                    <li>SA-specific workflow customization</li>
+                    <li>Ongoing regulatory change management</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- CATEGORY 4: Specialized Solutions -->
+        <div class="section-card" id="specialized">
+            <h2><i class="bi bi-puzzle-fill"></i> CATEGORY 4: Specialized Solutions</h2>
+            
+            <p class="lead">Point solutions addressing specific compliance needs (training/CPD or document management), not full compliance platforms.</p>
+            
+            <h3>Learning Management Systems (LMS) - CPD Competition</h3>
+            
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Litmos</h5>
+                            <p class="card-text"><small>Leading LMS for financial services</small></p>
+                            <ul class="small">
+                                <li>98,000+ training courses</li>
+                                <li>Compliance tracking</li>
+                                <li>AI-powered platform</li>
+                                <li>CRM/HRIS integration</li>
+                            </ul>
+                            <p class="mb-0"><strong>Threat:</strong> <span class="threat-badge threat-low">LOW</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">360Learning</h5>
+                            <p class="card-text"><small>Collaborative learning platform</small></p>
+                            <ul class="small">
+                                <li>Compliance certification</li>
+                                <li>SOC 2 Type II certified</li>
+                                <li>Auto-enrollment</li>
+                                <li>Financial services focus</li>
+                            </ul>
+                            <p class="mb-0"><strong>Threat:</strong> <span class="threat-badge threat-low">LOW</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Cornerstone OnDemand</h5>
+                            <p class="card-text"><small>Enterprise talent platform</small></p>
+                            <ul class="small">
+                                <li>Strong compliance tracking</li>
+                                <li>Custom learning paths</li>
+                                <li>HR system integration</li>
+                                <li>Mobile-ready</li>
+                            </ul>
+                            <p class="mb-0"><strong>Threat:</strong> <span class="threat-badge threat-low">LOW</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Document Management Systems</h3>
+            
+            <div class="competitor-profile">
+                <h3>
+                    <span>Papertrail (South Africa)</span>
+                    <span class="threat-badge threat-medium">🟡 MEDIUM-LOW</span>
+                </h3>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Website</strong>
+                        <a href="https://papertrail.co.za/" target="_blank">papertrail.co.za</a>
+                    </div>
+                    <div class="info-item">
+                        <strong>Location</strong>
+                        South Africa
+                    </div>
+                    <div class="info-item">
+                        <strong>Focus</strong>
+                        Enterprise content management
+                    </div>
+                </div>
+                
+                <p>SA-based document management with industry-specific solutions including financial services.</p>
+                
+                <h4>Features</h4>
+                <ul>
+                    <li>Document lifecycle management</li>
+                    <li>Workflow automation</li>
+                    <li>Compliance and regulatory support</li>
+                    <li>Electronic signature capability</li>
+                    <li>Rental, HR, financial modules</li>
+                </ul>
+                
+                <p><strong>Relevance to iComply:</strong> Could compete for document management component only, not full compliance solution. Potential partnership opportunity.</p>
+            </div>
+            
+            <div class="alert alert-success-custom">
+                <h4><i class="bi bi-lightbulb-fill"></i> Strategic Opportunity</h4>
+                <p class="mb-0">LMS and DMS providers could become integration partners rather than competitors. iComply could offer superior integrated experience while maintaining APIs for customers with existing specialized tools.</p>
+            </div>
+        </div>
+
+        <!-- Competitive Positioning Analysis -->
+        <div class="section-card" id="analysis">
+            <h2><i class="bi bi-diagram-3-fill"></i> Competitive Positioning Analysis</h2>
+            
+            <h3>Market Segmentation</h3>
+            
+            <div class="table-responsive">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Segment</th>
+                            <th>Competitors</th>
+                            <th>iComply Position</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Full FSP Compliance Platforms (SA)</strong></td>
+                            <td>Kotive, CTB</td>
+                            <td>Purpose-built for brokerage FSPs with integrated solution</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Compliance Services</strong></td>
+                            <td>Masthead, FSPComply</td>
+                            <td>Software for internal management vs. outsourcing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enterprise GRC (International)</strong></td>
+                            <td>MetricStream, Workiva, Quantivate</td>
+                            <td>SME-focused, SA-specific, affordable</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Specialized Solutions</strong></td>
+                            <td>LMS platforms, Document management</td>
+                            <td>Integrates all functions vs. point solutions</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Feature Comparison Matrix -->
+        <div class="section-card" id="feature-comparison">
+            <h2><i class="bi bi-list-check"></i> Feature Comparison Matrix</h2>
+            
+            <div class="table-responsive">
+                <table class="table table-custom table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">Feature</th>
+                            <th>iComply</th>
+                            <th>Kotive</th>
+                            <th>CTB</th>
+                            <th>Enterprise GRC</th>
+                            <th>LMS/DMS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>SA-Specific (FAIS/FICA/FSCA)</strong></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="crossmark">❌ No</span></td>
+                            <td><span class="crossmark">❌ No</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fit & Proper Management</strong></td>
+                            <td><span class="checkmark">✅ Full</span></td>
+                            <td><span class="checkmark">✅ Full</span></td>
+                            <td><span class="checkmark">✅ Full</span></td>
+                            <td><span class="warning">⚠️ Adaptable</span></td>
+                            <td><span class="crossmark">❌ No</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>CPD Tracking (Annual May 31)</strong></td>
+                            <td><span class="checkmark">✅ Native</span></td>
+                            <td><span class="checkmark">✅ Native</span></td>
+                            <td><span class="checkmark">✅ Native</span></td>
+                            <td><span class="warning">⚠️ Custom</span></td>
+                            <td><span class="checkmark">✅ Some</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>FICA Verification Workflows</strong></td>
+                            <td><span class="checkmark">✅ Built-in</span></td>
+                            <td><span class="checkmark">✅ Built-in</span></td>
+                            <td><span class="checkmark">✅ Built-in</span></td>
+                            <td><span class="crossmark">❌ No</span></td>
+                            <td><span class="crossmark">❌ No</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Document Management (5-year)</strong></td>
+                            <td><span class="checkmark">✅ Integrated</span></td>
+                            <td><span class="checkmark">✅ Integrated</span></td>
+                            <td><span class="checkmark">✅ Integrated</span></td>
+                            <td><span class="warning">⚠️ Module</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Multi-Representative Management</strong></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="warning">⚠️ Custom</span></td>
+                            <td><span class="crossmark">❌ Limited</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Role-Based Access (6 roles)</strong></td>
+                            <td><span class="checkmark">✅ Granular</span></td>
+                            <td><span class="checkmark">✅ Available</span></td>
+                            <td><span class="warning">⚠️ Limited info</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="warning">⚠️ Basic</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Automated Compliance Alerts</strong></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="warning">⚠️ Limited</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Executive Dashboards</strong></td>
+                            <td><span class="checkmark">✅ Principal-focused</span></td>
+                            <td><span class="checkmark">✅ Available</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Advanced</span></td>
+                            <td><span class="crossmark">❌ No</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Representative Self-Service</strong></td>
+                            <td><span class="checkmark">✅ Emphasized</span></td>
+                            <td><span class="warning">⚠️ Limited</span></td>
+                            <td><span class="warning">⚠️ Unknown</span></td>
+                            <td><span class="crossmark">❌ No</span></td>
+                            <td><span class="warning">⚠️ Partial</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>FSCA Integration</strong></td>
+                            <td><span style="color: #2196f3; font-weight: bold;">🔄 Planned</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="warning">⚠️ Unknown</span></td>
+                            <td><span class="crossmark">❌ No</span></td>
+                            <td><span class="crossmark">❌ No</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Monthly Subscription</strong></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="warning">⚠️ Unknown</span></td>
+                            <td><span class="crossmark">❌ Annual</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>No Long-Term Contracts</strong></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="warning">⚠️ Unknown</span></td>
+                            <td><span class="crossmark">❌ Enterprise</span></td>
+                            <td><span class="warning">⚠️ Varies</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SME Price Point</strong></td>
+                            <td><span class="checkmark">✅ Target</span></td>
+                            <td><span class="warning">⚠️ Mid-High</span></td>
+                            <td><span class="warning">⚠️ Unknown</span></td>
+                            <td><span class="crossmark">❌ Enterprise</span></td>
+                            <td><span class="checkmark">✅ Varies</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mobile Access</strong></td>
+                            <td><span class="checkmark">✅ Responsive</span></td>
+                            <td><span class="checkmark">✅ Available</span></td>
+                            <td><span class="warning">⚠️ Unknown</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                            <td><span class="checkmark">✅ Yes</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <p class="mt-3 mb-0"><small><strong>Legend:</strong> ✅ Full support | ⚠️ Partial/Limited | ❌ Not available | 🔄 In development</small></p>
+        </div>
+
+        <!-- Competitive Advantages -->
+        <div class="section-card" id="advantages">
+            <h2><i class="bi bi-trophy-fill"></i> Competitive Advantages for iComply</h2>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="recommendation-box">
+                        <h4><i class="bi bi-1-circle-fill"></i> Purpose-Built for SA Brokerage FSPs</h4>
+                        <ul>
+                            <li>Unlike general GRC platforms or workflow tools adapted for compliance</li>
+                            <li>Native understanding of Section 13(2)(a) vicarious liability</li>
+                            <li>Built around actual FSP workflows vs. generic compliance</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="recommendation-box">
+                        <h4><i class="bi bi-2-circle-fill"></i> Representative-Centric Design</h4>
+                        <ul>
+                            <li>Strong self-service capabilities for representatives</li>
+                            <li>Clear data isolation and permission boundaries</li>
+                            <li>Reduces administrative burden on principals</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="recommendation-box">
+                        <h4><i class="bi bi-3-circle-fill"></i> Integrated Solution vs. Point Solutions</h4>
+                        <ul>
+                            <li>Single platform for all four core compliance areas</li>
+                            <li>Eliminates need for multiple subscriptions (LMS + DMS + Compliance + Risk)</li>
+                            <li>Single source of truth with connected data</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="recommendation-box">
+                        <h4><i class="bi bi-4-circle-fill"></i> SME-Focused Pricing</h4>
+                        <ul>
+                            <li>Affordable for independent brokerages</li>
+                            <li>No enterprise minimums</li>
+                            <li>Pay-as-you-grow model</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="recommendation-box">
+                        <h4><i class="bi bi-5-circle-fill"></i> Compliance-First, Not Risk-First</h4>
+                        <ul>
+                            <li>Designed around May 31 CPD deadlines, 5-year retention, etc.</li>
+                            <li>Practical FSP workflows vs. theoretical risk frameworks</li>
+                            <li>Regulatory calendar-driven alerts</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="recommendation-box">
+                        <h4><i class="bi bi-6-circle-fill"></i> Modern Tech Stack</h4>
+                        <ul>
+                            <li>React/TypeScript frontend (modern UI/UX)</li>
+                            <li>Mobile-responsive (Bootstrap 5/Phoenix theme)</li>
+                            <li>API-first architecture for integrations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Competitive Threats & Risks -->
+        <div class="section-card" id="threats">
+            <h2><i class="bi bi-shield-exclamation"></i> Competitive Threats & Risks</h2>
+            
+            <h3>High-Priority Threats</h3>
+            
+            <div class="alert alert-danger mb-4">
+                <h4><i class="bi bi-1-circle-fill"></i> Kotive Market Leadership 🔴</h4>
+                <p><strong>Risk:</strong> Established market presence with proven product and FSCA integration</p>
+                
+                <h5 class="mt-3">Mitigation Strategies:</h5>
+                <ul class="mb-0">
+                    <li>Emphasize brokerage-specific features vs. general workflow tool</li>
+                    <li>Target smaller FSPs where Kotive may be cost-prohibitive</li>
+                    <li>Highlight representative self-service and user experience advantages</li>
+                    <li>Faster, more focused customer support</li>
+                    <li>More intuitive UI/UX (less "workflow platform complexity")</li>
+                </ul>
+            </div>
+            
+            <div class="alert alert-warning mb-4">
+                <h4><i class="bi bi-2-circle-fill"></i> Compliance Service Provider Bundling 🟡</h4>
+                <p><strong>Risk:</strong> CTB/Masthead could bundle software more aggressively to retain clients</p>
+                
+                <h5 class="mt-3">Mitigation Strategies:</h5>
+                <ul class="mb-0">
+                    <li>Position as "take control" alternative to outsourcing</li>
+                    <li>Emphasize cost savings (software vs. ongoing service fees)</li>
+                    <li>Target FSPs wanting internal compliance management</li>
+                    <li>Offer migration assistance from service providers</li>
+                </ul>
+            </div>
+            
+            <h3>Medium-Priority Threats</h3>
+            
+            <div class="alert alert-warning mb-4">
+                <h4><i class="bi bi-3-circle-fill"></i> International Platform Localization 🟡</h4>
+                <p><strong>Risk:</strong> VComply, SimpleRisk, or Quantivate could partner with SA compliance firm</p>
+                
+                <h5 class="mt-3">Mitigation Strategies:</h5>
+                <ul class="mb-0">
+                    <li>Maintain SA-specific feature velocity</li>
+                    <li>Deep FSCA integration (hard to replicate)</li>
+                    <li>Local customer support and compliance expertise</li>
+                    <li>SA regulatory change responsiveness</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pricing Analysis -->
+        <div class="section-card" id="pricing">
+            <h2><i class="bi bi-currency-dollar"></i> Pricing Analysis</h2>
+            
+            <div class="table-responsive mb-4">
+                <table class="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Competitor Type</th>
+                            <th>Estimated Pricing</th>
+                            <th>iComply Target Position</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Kotive</strong></td>
+                            <td>R15,000 - R30,000/month (estimated)</td>
+                            <td>40-60% lower</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CTB (Services + Software)</strong></td>
+                            <td>R8,000 - R20,000/month + setup</td>
+                            <td>Software-only, lower</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Masthead (Full Services)</strong></td>
+                            <td>R15,000 - R40,000/month</td>
+                            <td>Software-only, 70% lower</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enterprise GRC</strong></td>
+                            <td>R50,000 - R200,000/month</td>
+                            <td>80-95% lower</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LMS (Litmos/360Learning)</strong></td>
+                            <td>R5,000 - R15,000/month</td>
+                            <td>Full compliance suite at competitive price</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Document Management</strong></td>
+                            <td>R3,000 - R10,000/month</td>
+                            <td>Included in full suite</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>iComply Recommended Pricing Strategy</h3>
+            
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="pricing-card">
+                        <h4>Solo Practitioner</h4>
+                        <div class="price">R2,499<small>/mo</small></div>
+                        <div class="features">
+                            <ul>
+                                <li>1 FSP Owner</li>
+                                <li>Up to 3 Representatives</li>
+                                <li>All core modules</li>
+                                <li>Standard support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="pricing-card">
+                        <h4>Small Brokerage</h4>
+                        <div class="price">R4,999<small>/mo</small></div>
+                        <div class="features">
+                            <ul>
+                                <li>1 FSP Owner</li>
+                                <li>Up to 10 Representatives</li>
+                                <li>All core modules</li>
+                                <li>Priority support</li>
+                                <li>Custom branding</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="pricing-card">
+                        <h4>Medium Brokerage</h4>
+                        <div class="price">R8,999<small>/mo</small></div>
+                        <div class="features">
+                            <ul>
+                                <li>1 FSP Owner</li>
+                                <li>Up to 30 Representatives</li>
+                                <li>All core modules</li>
+                                <li>Priority support</li>
+                                <li>Custom branding</li>
+                                <li>API access</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="pricing-card">
+                        <h4>Large Brokerage</h4>
+                        <div class="price">R14,999<small>/mo</small></div>
+                        <div class="features">
+                            <ul>
+                                <li>1 FSP Owner</li>
+                                <li>Unlimited Representatives</li>
+                                <li>All core modules</li>
+                                <li>Premium support</li>
+                                <li>Custom branding</li>
+                                <li>API access</li>
+                                <li>Account manager</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info-custom">
+                <strong><i class="bi bi-info-circle-fill"></i> Add-Ons:</strong>
+                <ul class="mb-0">
+                    <li>Additional FSP licenses: +R1,999/month each</li>
+                    <li>Advanced reporting module: +R999/month</li>
+                    <li>White-label reseller: Custom pricing</li>
+                    <li><strong>Annual Discount:</strong> 15% off monthly pricing</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Go-to-Market Recommendations -->
+        <div class="section-card" id="recommendations">
+            <h2><i class="bi bi-rocket-takeoff-fill"></i> Go-to-Market Recommendations</h2>
+            
+            <h3>1. Differentiation Messaging</h3>
+            
+            <div class="alert alert-success-custom">
+                <h4>Primary Message:</h4>
+                <p class="mb-0">"Purpose-built compliance management for SA brokerages—everything you need in one platform, at a fraction of the cost of services or enterprise tools."</p>
+            </div>
+            
+            <h4>Key Points</h4>
+            <ul>
+                <li>✅ Built for South African FSPs (not adapted from international tools)</li>
+                <li>✅ All four compliance pillars in one system (Fit & Proper, CPD, FICA, Documents)</li>
+                <li>✅ Representative self-service reduces principal workload</li>
+                <li>✅ Affordable pricing designed for independent brokerages</li>
+                <li>✅ No outsourcing required—take control of your compliance</li>
+            </ul>
+            
+            <h3>2. Target Customer Segments</h3>
+            
+            <h4>Primary</h4>
+            <ol>
+                <li>Independent FSPs with 5-30 representatives</li>
+                <li>FSPs currently using spreadsheets/manual processes</li>
+                <li>FSPs unhappy with service provider costs</li>
+                <li>New FSP license applicants</li>
+            </ol>
+            
+            <h4>Secondary</h4>
+            <ol start="5">
+                <li>Medium brokerages (30-100 representatives) wanting to reduce service costs</li>
+                <li>FSPs outgrowing Kotive or seeking alternatives</li>
+                <li>Compliance practices managing multiple FSPs (white-label opportunity)</li>
+            </ol>
+            
+            <h3>3. Competitive Positioning</h3>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card border-danger h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-danger"><i class="bi bi-arrow-right-circle-fill"></i> vs. Kotive</h5>
+                            <ul>
+                                <li>"Purpose-built for brokerages, not a general workflow tool"</li>
+                                <li>"Better representative experience with intuitive self-service"</li>
+                                <li>"40% lower cost with same core functionality"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <div class="card border-warning h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning"><i class="bi bi-arrow-right-circle-fill"></i> vs. Services</h5>
+                            <ul>
+                                <li>"Take control of your compliance—own your data and processes"</li>
+                                <li>"70% cost savings compared to outsourced compliance"</li>
+                                <li>"Software + optional consulting vs. mandatory service bundles"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <div class="card border-success h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-success"><i class="bi bi-arrow-right-circle-fill"></i> vs. Manual</h5>
+                            <ul>
+                                <li>"Eliminate spreadsheet chaos and missed deadlines"</li>
+                                <li>"Complete audit trails and automated alerts"</li>
+                                <li>"FSCA-ready reports at the click of a button"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>4. Distribution Strategy</h3>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Direct</h4>
+                    <ul>
+                        <li>Online demo and self-service signup</li>
+                        <li>Webinar series on FSP compliance management</li>
+                        <li>Free trial (30 days)</li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-4">
+                    <h4>Partners</h4>
+                    <ul>
+                        <li>Compliance consultants (implementation)</li>
+                        <li>Accounting firms serving FSPs</li>
+                        <li>Industry associations</li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-4">
+                    <h4>Content Marketing</h4>
+                    <ul>
+                        <li>FSP compliance guides and checklists</li>
+                        <li>May 31 CPD deadline campaigns</li>
+                        <li>FAIS Act amendment explainers</li>
+                        <li>"Compliance checklist" lead magnets</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SWOT Analysis -->
+        <div class="section-card" id="swot">
+            <h2><i class="bi bi-grid-3x3-gap-fill"></i> SWOT Analysis</h2>
+            
+            <div class="swot-grid">
+                <div class="swot-box swot-strengths">
+                    <h4><i class="bi bi-plus-circle-fill"></i> STRENGTHS</h4>
+                    <ul>
+                        <li>✅ Purpose-built for SA brokerage FSPs</li>
+                        <li>✅ Integrated full-compliance solution</li>
+                        <li>✅ Modern tech stack</li>
+                        <li>✅ Representative-centric design</li>
+                        <li>✅ Competitive pricing strategy</li>
+                        <li>✅ Granular role-based access</li>
+                        <li>✅ No legacy technical debt</li>
+                    </ul>
+                </div>
+                
+                <div class="swot-box swot-weaknesses">
+                    <h4><i class="bi bi-dash-circle-fill"></i> WEAKNESSES</h4>
+                    <ul>
+                        <li>⚠️ New market entrant (no track record)</li>
+                        <li>⚠️ No existing customer base</li>
+                        <li>⚠️ Brand awareness gap vs. Kotive</li>
+                        <li>⚠️ FSCA integration not yet built</li>
+                        <li>⚠️ Limited initial feature set vs. mature competitors</li>
+                        <li>⚠️ Solo founder/small team (perceived risk)</li>
+                    </ul>
+                </div>
+                
+                <div class="swot-box swot-opportunities">
+                    <h4><i class="bi bi-lightbulb-fill"></i> OPPORTUNITIES</h4>
+                    <ul>
+                        <li>✅ Growing FSP compliance burden (2014 amendments)</li>
+                        <li>✅ FSPs seeking alternatives to expensive services</li>
+                        <li>✅ Kotive pricing may exclude smaller FSPs</li>
+                        <li>✅ International platforms not localized</li>
+                        <li>✅ Underserved representative experience</li>
+                        <li>✅ White-label opportunity</li>
+                        <li>✅ Government digitization push</li>
+                    </ul>
+                </div>
+                
+                <div class="swot-box swot-threats">
+                    <h4><i class="bi bi-exclamation-triangle-fill"></i> THREATS</h4>
+                    <ul>
+                        <li>🔴 Kotive market dominance and FSCA integration</li>
+                        <li>🟡 Compliance service bundling</li>
+                        <li>🟡 International platform localization</li>
+                        <li>🟡 Regulatory changes requiring rapid adaptation</li>
+                        <li>🟡 Low switching costs (early days)</li>
+                        <li>🟢 Economic downturn reducing FSP budgets</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="section-card" id="conclusion">
+            <h2><i class="bi bi-flag-fill"></i> Conclusion & Strategic Recommendations</h2>
+            
+            <h3>Key Findings</h3>
+            
+            <ol>
+                <li><strong>Limited Direct Competition:</strong> Only 2 serious software competitors (Kotive, CTB) in SA FSP space</li>
+                <li><strong>Market Gap:</strong> No true brokerage-focused platform with strong representative experience</li>
+                <li><strong>Price Opportunity:</strong> Significant price differentiation possible vs. services and enterprise tools</li>
+                <li><strong>Feature Parity Achievable:</strong> Core compliance needs are well-defined and achievable</li>
+                <li><strong>Localization Barrier:</strong> SA-specific compliance creates moat vs. international platforms</li>
+            </ol>
+            
+            <h3>Strategic Imperatives</h3>
+            
+            <div class="recommendation-box mb-4">
+                <h4>Phase 1: Market Entry (Months 1-6)</h4>
+                <ul>
+                    <li>✅ Feature completeness on core modules (Priority 1)</li>
+                    <li>✅ FSCA integration (critical for credibility)</li>
+                    <li>✅ 10 pilot customers (testimonials and case studies)</li>
+                    <li>✅ Competitive pricing launch</li>
+                    <li>✅ Strong onboarding experience</li>
+                </ul>
+            </div>
+            
+            <div class="recommendation-box mb-4">
+                <h4>Phase 2: Market Penetration (Months 7-12)</h4>
+                <ul>
+                    <li>✅ Content marketing and thought leadership</li>
+                    <li>✅ Partner channel development</li>
+                    <li>✅ Customer success and low churn</li>
+                    <li>✅ Feature velocity vs. Kotive</li>
+                    <li>✅ 100+ customers milestone</li>
+                </ul>
+            </div>
+            
+            <div class="recommendation-box mb-4">
+                <h4>Phase 3: Market Leadership (Year 2+)</h4>
+                <ul>
+                    <li>✅ Advanced features (analytics, AI, predictive compliance)</li>
+                    <li>✅ White-label offering</li>
+                    <li>✅ API ecosystem</li>
+                    <li>✅ International expansion (Namibia, Botswana, Zimbabwe)</li>
+                    <li>✅ 500+ customers milestone</li>
+                </ul>
+            </div>
+            
+            <h3>Critical Success Factors</h3>
+            
+            <ol>
+                <li><strong>Speed to Market:</strong> Launch before Kotive entrenches further</li>
+                <li><strong>User Experience:</strong> Best-in-class UI for representatives</li>
+                <li><strong>Customer Success:</strong> Low churn through onboarding excellence</li>
+                <li><strong>SA Compliance Depth:</strong> Deep regulatory expertise and responsiveness</li>
+                <li><strong>Pricing Discipline:</strong> Maintain SME accessibility while profitable</li>
+            </ol>
+            
+            <h3>Investment Priorities</h3>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="alert alert-danger">
+                        <h5><strong>High Priority</strong></h5>
+                        <ul class="mb-0">
+                            <li>FSCA integration development</li>
+                            <li>Sales and marketing</li>
+                            <li>Customer success infrastructure</li>
+                            <li>Feature development (roadmap)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="alert alert-warning">
+                        <h5><strong>Medium Priority</strong></h5>
+                        <ul class="mb-0">
+                            <li>Partner ecosystem</li>
+                            <li>Content marketing</li>
+                            <li>Advanced analytics</li>
+                            <li>Mobile apps (native)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="alert alert-info">
+                        <h5><strong>Low Priority</strong></h5>
+                        <ul class="mb-0">
+                            <li>White-label offering (Year 2)</li>
+                            <li>International expansion (Year 2+)</li>
+                            <li>Enterprise features</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appendix -->
+        <div class="section-card">
+            <h2><i class="bi bi-link-45deg"></i> Appendix: Competitor URLs</h2>
+            
+            <div class="table-responsive">
+                <table class="table table-custom table-sm">
+                    <thead>
+                        <tr>
+                            <th>Competitor</th>
+                            <th>Website</th>
+                            <th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Kotive</td>
+                            <td><a href="https://www.kotive.com/solutions/compliance-south-africa/" target="_blank">kotive.com/compliance</a></td>
+                            <td>Direct Software</td>
+                        </tr>
+                        <tr>
+                            <td>Compliance Toolbox</td>
+                            <td><a href="https://www.ctb.co.za/" target="_blank">ctb.co.za</a></td>
+                            <td>Software + Services</td>
+                        </tr>
+                        <tr>
+                            <td>Masthead</td>
+                            <td><a href="https://www.masthead.co.za/" target="_blank">masthead.co.za</a></td>
+                            <td>Services</td>
+                        </tr>
+                        <tr>
+                            <td>FSPComply</td>
+                            <td><a href="https://fspcomply.com/" target="_blank">fspcomply.com</a></td>
+                            <td>Services</td>
+                        </tr>
+                        <tr>
+                            <td>MetricStream</td>
+                            <td><a href="https://www.metricstream.com/" target="_blank">metricstream.com</a></td>
+                            <td>Enterprise GRC</td>
+                        </tr>
+                        <tr>
+                            <td>Workiva</td>
+                            <td><a href="https://www.workiva.com/" target="_blank">workiva.com</a></td>
+                            <td>Enterprise GRC</td>
+                        </tr>
+                        <tr>
+                            <td>Quantivate</td>
+                            <td><a href="https://quantivate.com/" target="_blank">quantivate.com</a></td>
+                            <td>Enterprise GRC</td>
+                        </tr>
+                        <tr>
+                            <td>VComply</td>
+                            <td><a href="https://www.v-comply.com/" target="_blank">v-comply.com</a></td>
+                            <td>Mid-Market GRC</td>
+                        </tr>
+                        <tr>
+                            <td>Papertrail</td>
+                            <td><a href="https://papertrail.co.za/" target="_blank">papertrail.co.za</a></td>
+                            <td>Document Management (SA)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="bi bi-arrow-up"></i>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-shield-check"></i> iComply Competitive Analysis</h5>
+                    <p><strong>Document Version:</strong> 1.0</p>
+                    <p><strong>Date:</strong> 23 November 2025</p>
+                    <p><strong>Prepared for:</strong> iComply Platform Development</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p><strong>Research Source:</strong> Web search & competitive intelligence</p>
+                    <p><strong>Confidence Level:</strong> High (direct competitors), Medium (international platforms)</p>
+                    <p><strong>Next Review:</strong> After mystery shopping and customer interviews</p>
+                </div>
+            </div>
+            <hr style="border-color: rgba(255,255,255,0.2);">
+            <div class="text-center">
+                <p class="mb-0"><small>This analysis is based on publicly available information. Pricing estimates are based on industry benchmarks. Market intelligence should be validated through direct research.</small></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
