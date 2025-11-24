@@ -94,7 +94,7 @@ Example database record:
 INSERT INTO identity_providers (provider_name, config_data, redirect_uri, is_active)
 VALUES (
   'google',
-  '{"client_id": "your-google-client-id.apps.googleusercontent.com", "client_secret": "your-client-secret"}',
+  '{"client_id": "169561657330-d73bg45fi3joehq379iolns58rs1hcgq.apps.googleusercontent.com", "client_secret": "your-client-secret"}',
   'https://your-domain.com/auth/callback',
   true
 );

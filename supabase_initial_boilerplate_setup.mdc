@@ -918,7 +918,7 @@ INSERT INTO "UserRoles" (role_name, description, level) VALUES
 ```sql
 -- Insert default identity providers
 INSERT INTO "IdentityProviders" (provider_name, config_data, description) VALUES
-('google', '{"client_id": "your-google-client-id", "client_secret": "your-google-client-secret"}', 'Google OAuth provider'),
+('google', '{"client_id": "169561657330-d73bg45fi3joehq379iolns58rs1hcgq.apps.googleusercontent.com", "client_secret": "your-google-client-secret"}', 'Google OAuth provider'),
 ('email', '{"smtp_host": "smtp.gmail.com", "smtp_port": 587}', 'Email authentication provider');
 ```
 

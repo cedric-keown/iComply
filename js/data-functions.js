@@ -6,7 +6,7 @@
 
 var _dataFunctions = function () {
     return {
-        proxyUrl: 'https://r5kwwuprd75nfmnhjtna3hebxy0knpyr.lambda-url.af-south-1.on.aws/proxy/function',
+        proxyUrl: 'https://o4n4qwc7mtdgzqhjkscuheyvji0seljg.lambda-url.af-south-1.on.aws/proxy/function',
 
         init: function () {
         },

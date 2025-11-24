@@ -510,7 +510,7 @@
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-moon me-2"></i>Dark Mode</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="handleLogout(event)"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                 </ul>
                 </div>
             </div>
@@ -932,6 +932,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Auth Service -->
+    <script src="js/auth-service.js"></script>
 
     <script>
         // Navigation State
@@ -971,9 +974,10 @@
             }
             
             // PRODUCTION MODE: Check authentication
-            // Check authentication first
-            const isAuthenticated = (typeof dataFunctions !== 'undefined' && dataFunctions.isAuthenticated()) ||
-                                   (typeof authService !== 'undefined' && authService.isAuthenticated());
+            // Check authentication directly from localStorage (most reliable)
+            const token = localStorage.getItem('lambda_token');
+            const userInfo = localStorage.getItem('user_info');
+            const isAuthenticated = !!(token && userInfo);
             
             if (!isAuthenticated) {
                 // Get cc parameter from localStorage or URL
@@ -998,6 +1002,55 @@
             updateCurrentDate();
             setupKeyboardShortcuts();
         });
+
+        // Handle Logout
+        function handleLogout(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            
+            // Show confirmation dialog
+            Swal.fire({
+                title: 'Sign Out?',
+                text: 'Are you sure you want to sign out?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, sign out',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Clear all authentication data
+                    const clientGuid = localStorage.getItem('client_guid');
+                    
+                    localStorage.removeItem('lambda_token');
+                    localStorage.removeItem('user_info');
+                    
+                    // Clear any session storage
+                    sessionStorage.clear();
+                    
+                    // Use authService if available
+                    if (typeof authService !== 'undefined') {
+                        authService.token = null;
+                        authService.userInfo = null;
+                    }
+                    
+                    // Show success message and redirect
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Signed Out',
+                        text: 'You have been successfully signed out.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Redirect to signin page with client guid
+                        const signinUrl = clientGuid ? `signin.html?cc=${encodeURIComponent(clientGuid)}` : 'signin.html';
+                        window.location.href = signinUrl;
+                    });
+                }
+            });
+        }
 
         // Initialize Navigation
         function initializeNavigation() {

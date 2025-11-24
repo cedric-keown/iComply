@@ -5,7 +5,7 @@
 
 class AuthService {
     constructor() {
-        this.proxyUrl = 'https://r5kwwuprd75nfmnhjtna3hebxy0knpyr.lambda-url.af-south-1.on.aws';
+        this.proxyUrl = 'https://o4n4qwc7mtdgzqhjkscuheyvji0seljg.lambda-url.af-south-1.on.aws';
         this.token = localStorage.getItem('lambda_token');
         this.userInfo = this.getUserInfo();
 
