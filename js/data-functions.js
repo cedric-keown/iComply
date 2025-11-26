@@ -242,9 +242,19 @@ var _dataFunctions = function () {
             }, token);
         },
 
-        getUserProfiles: async function (roleId = null, status = 'active', token = null) {
+        getUserProfiles: async function (statusOrParams = 'active', token = null) {
+            // Handle both call formats:
+            // 1. getUserProfiles('active', token) - simple status string
+            // 2. getUserProfiles({ p_status: 'active' }, token) - params object
+            let status = 'active';
+
+            if (typeof statusOrParams === 'string') {
+                status = statusOrParams;
+            } else if (statusOrParams && typeof statusOrParams === 'object') {
+                status = statusOrParams.p_status || 'active';
+            }
+
             return await this.callFunction('get_user_profiles', {
-                p_role_id: roleId,
                 p_status: status
             }, token);
         },

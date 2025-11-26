@@ -486,23 +486,23 @@
                 <div class="dropdown">
                     <div class="user-menu-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="avatar-sm">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="d-none d-md-inline user-name">Loading...</span>
+                        <i class="fas fa-chevron-down d-none d-md-inline"></i>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 280px;">
+                        <li class="dropdown-header">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm me-2" style="width: 40px; height: 40px;">
                                     <i class="fas fa-user"></i>
                                 </div>
-                        <span class="d-none d-md-inline user-name">Thabo M.</span>
-                        <i class="fas fa-chevron-down d-none d-md-inline"></i>
-                            </div>
-                    <ul class="dropdown-menu dropdown-menu-end" style="width: 280px;">
-                            <li class="dropdown-header">
-                                <div class="d-flex align-items-center">
-                            <div class="avatar-sm me-2" style="width: 40px; height: 40px;">
-                                            <i class="fas fa-user"></i>
-                                    </div>
-                                    <div>
-                                <div class="fw-bold">Thabo Mokoena</div>
-                                <small class="text-muted">FSP Owner</small>
-                                    </div>
+                                <div>
+                                    <div class="fw-bold">Loading...</div>
+                                    <small class="text-muted">User</small>
                                 </div>
-                            </li>
+                            </div>
+                        </li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-lock me-2"></i>Change Password</a></li>
@@ -636,7 +636,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h2><i class="fas fa-check-circle me-2"></i>FSP LICENSE ACTIVE</h2>
-                        <p class="mb-2">CustomApp Financial Services (Pty) Ltd | FSP 12345</p>
+                        <p class="mb-2">Loading FSP Information...</p>
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <small>License Valid Until: <strong>31/12/2025</strong> (377 days)</small><br>
@@ -935,21 +935,242 @@
     
     <!-- Auth Service -->
     <script src="js/auth-service.js"></script>
+    <!-- Data Functions -->
+    <script src="js/data-functions.js"></script>
 
     <script>
         // Navigation State
         const navigationState = {
             currentUser: {
-                id: 'USR-001',
-                name: 'Thabo Mokoena',
-                role: 'FSP_OWNER',
+                id: null,
+                name: 'Loading...',
+                role: 'User',
                 fsp: 'CustomApp Financial Services',
-                fspNumber: 'FSP12345'
+                fspNumber: 'FSP12345',
+                email: null,
+                first_name: null,
+                last_name: null,
+                role_name: null
             },
             sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
             activeMenuItem: 'dashboard',
             originalDashboardContent: null // Store original dashboard HTML
         };
+
+        // Load User Profile from Database
+        async function loadUserProfile() {
+            try {
+                // Get user info from localStorage
+                const userInfoStr = localStorage.getItem('user_info');
+                if (!userInfoStr) {
+                    console.warn('No user info in localStorage');
+                    return;
+                }
+
+                const userInfo = JSON.parse(userInfoStr);
+                console.log('User info from localStorage:', userInfo);
+
+                // Update navigation state with basic info
+                navigationState.currentUser.id = userInfo.id;
+                navigationState.currentUser.email = userInfo.email;
+
+                // Fetch full user profile from database
+                const response = await dataFunctions.getUserProfiles('active');
+                console.log('User profiles response:', response);
+
+                // Handle different response formats
+                let profiles = [];
+                if (response && response.get_user_profiles) {
+                    profiles = response.get_user_profiles;
+                } else if (Array.isArray(response)) {
+                    profiles = response;
+                }
+
+                // Find current user's profile
+                const currentUserProfile = profiles.find(p => p.id === userInfo.id || p.email === userInfo.email);
+                
+                if (currentUserProfile) {
+                    console.log('Found user profile:', currentUserProfile);
+                    
+                    // Update navigation state with full profile
+                    navigationState.currentUser.first_name = currentUserProfile.first_name;
+                    navigationState.currentUser.last_name = currentUserProfile.last_name;
+                    navigationState.currentUser.name = `${currentUserProfile.first_name} ${currentUserProfile.last_name}`;
+                    navigationState.currentUser.role_name = currentUserProfile.role_name || userInfo.role_name || 'User';
+                    navigationState.currentUser.job_title = currentUserProfile.job_title;
+                    navigationState.currentUser.department = currentUserProfile.department;
+                    
+                    // Update UI elements
+                    updateUserUI();
+                } else {
+                    console.warn('User profile not found in database, using localStorage data');
+                    // Fallback to localStorage data
+                    navigationState.currentUser.first_name = userInfo.first_name || 'User';
+                    navigationState.currentUser.last_name = userInfo.last_name || '';
+                    navigationState.currentUser.name = userInfo.first_name ? 
+                        `${userInfo.first_name} ${userInfo.last_name || ''}`.trim() : 
+                        userInfo.email;
+                    navigationState.currentUser.role_name = userInfo.role_name || 'User';
+                    updateUserUI();
+                }
+
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+                
+                // Handle RBAC permission denied errors
+                if (error.code === 'RBAC_PERMISSION_DENIED') {
+                    console.warn('RBAC permission denied for user profile:', error);
+                    authService.showRBACError(error);
+                    // Still try to use localStorage data as fallback
+                }
+                
+                // Fallback to localStorage data
+                try {
+                    const userInfo = JSON.parse(localStorage.getItem('user_info'));
+                    navigationState.currentUser.name = userInfo.first_name ? 
+                        `${userInfo.first_name} ${userInfo.last_name || ''}`.trim() : 
+                        userInfo.email;
+                    navigationState.currentUser.role_name = userInfo.role_name || 'User';
+                    updateUserUI();
+                } catch (e) {
+                    console.error('Error parsing user info:', e);
+                }
+            }
+        }
+
+        // Update User UI Elements
+        function updateUserUI() {
+            const user = navigationState.currentUser;
+            
+            // Get initials for avatar
+            const initials = user.first_name && user.last_name ? 
+                `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase() : 
+                user.name.charAt(0).toUpperCase();
+            
+            // Short name for navbar (First name + Last initial)
+            const shortName = user.first_name && user.last_name ?
+                `${user.first_name} ${user.last_name.charAt(0)}.` :
+                user.name;
+            
+            // Update navbar user name
+            const navbarUserName = document.querySelector('.user-name');
+            if (navbarUserName) {
+                navbarUserName.textContent = shortName;
+            }
+
+            // Update dropdown header name
+            const dropdownUserName = document.querySelector('.dropdown-header .fw-bold');
+            if (dropdownUserName) {
+                dropdownUserName.textContent = user.name;
+            }
+
+            // Update dropdown header role
+            const dropdownUserRole = document.querySelector('.dropdown-header .text-muted');
+            if (dropdownUserRole) {
+                dropdownUserRole.textContent = user.job_title || user.role_name || 'User';
+            }
+
+            // Update avatar initials (all instances)
+            const avatars = document.querySelectorAll('.avatar-sm');
+            avatars.forEach(avatar => {
+                // Replace icon with initials
+                const icon = avatar.querySelector('i');
+                if (icon) {
+                    avatar.innerHTML = initials;
+                }
+            });
+
+            console.log('UI updated with user info:', user);
+        }
+
+        // Load FSP Configuration from Database
+        async function loadFspConfiguration() {
+            try {
+                console.log('Loading FSP configuration...');
+                const response = await dataFunctions.getFspConfiguration();
+                console.log('FSP configuration response:', response);
+
+                // Handle different response formats
+                let fspConfig = null;
+                if (response && response.get_fsp_configuration) {
+                    // Array format
+                    const configs = response.get_fsp_configuration;
+                    if (configs && configs.length > 0) {
+                        fspConfig = configs[0];
+                    }
+                } else if (Array.isArray(response) && response.length > 0) {
+                    fspConfig = response[0];
+                } else if (response && response.fsp_name) {
+                    // Direct object format
+                    fspConfig = response;
+                }
+
+                if (fspConfig) {
+                    console.log('FSP configuration loaded:', fspConfig);
+                    
+                    // Update navigation state
+                    navigationState.currentUser.fsp = fspConfig.fsp_name;
+                    navigationState.currentUser.fspNumber = fspConfig.fsp_license_number;
+                    
+                    // Update hero section with FSP details
+                    updateFspUI(fspConfig);
+                } else {
+                    console.warn('No FSP configuration found in database');
+                }
+
+            } catch (error) {
+                console.error('Error loading FSP configuration:', error);
+                
+                // Handle RBAC permission denied errors
+                if (error.code === 'RBAC_PERMISSION_DENIED') {
+                    console.warn('RBAC permission denied for FSP configuration:', error);
+                    authService.showRBACError(error);
+                }
+            }
+        }
+
+        // Update FSP UI Elements
+        function updateFspUI(fspConfig) {
+            // Update hero section FSP name and license
+            const heroSection = document.querySelector('.hero-section h2');
+            if (heroSection) {
+                heroSection.innerHTML = `<i class="fas fa-check-circle me-2"></i>FSP LICENSE ACTIVE`;
+            }
+
+            const heroFspInfo = document.querySelector('.hero-section p.mb-2');
+            if (heroFspInfo) {
+                heroFspInfo.textContent = `${fspConfig.fsp_name} | FSP ${fspConfig.fsp_license_number}`;
+            }
+
+            console.log('FSP UI updated with:', fspConfig);
+        }
+
+        // Global RBAC Error Handler
+        // Catches unhandled promise rejections and displays RBAC errors appropriately
+        window.addEventListener('unhandledrejection', function(event) {
+            if (event.reason && event.reason.code === 'RBAC_PERMISSION_DENIED') {
+                console.error('Unhandled RBAC error:', event.reason);
+                event.preventDefault(); // Prevent default error handling
+                
+                // Show user-friendly error message
+                if (typeof authService !== 'undefined' && authService.showRBACError) {
+                    authService.showRBACError(event.reason);
+                } else {
+                    // Fallback if authService is not available
+                    const message = `Permission Denied\n\nYou do not have permission to perform this action.\n\nPlease contact your administrator if you believe this is an error.`;
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Permission Denied',
+                            text: message,
+                            confirmButtonColor: '#dc3545'
+                        });
+                    } else {
+                        alert(message);
+                    }
+                }
+            }
+        });
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -970,6 +1191,8 @@
                 initializeSidebar();
                 updateCurrentDate();
                 setupKeyboardShortcuts();
+                loadUserProfile();
+                loadFspConfiguration();
                 return; // Exit early, no authentication check
             }
             
@@ -1001,6 +1224,10 @@
             initializeSidebar();
             updateCurrentDate();
             setupKeyboardShortcuts();
+            
+            // Load user profile and FSP configuration from database
+            loadUserProfile();
+            loadFspConfiguration();
         });
 
         // Handle Logout
