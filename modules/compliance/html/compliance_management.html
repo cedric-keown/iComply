@@ -41,7 +41,7 @@
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="alerts-tab" data-bs-toggle="tab" data-bs-target="#alerts" type="button" role="tab">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Risk & Alerts <span class="badge bg-danger">7</span>
+                    <i class="fas fa-exclamation-triangle me-2"></i>Risk & Alerts <span class="badge bg-danger" id="alerts-badge">0</span>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -69,11 +69,11 @@
                             <div class="stat-icon text-success">
                                 <i class="fas fa-check-circle fa-3x"></i>
                             </div>
-                            <div class="stat-value text-success">87%</div>
+                            <div class="stat-value text-success" id="overall-compliance">0%</div>
                             <div class="stat-label">Overall Compliance</div>
                             <div class="stat-sublabel">Company-wide status</div>
                             <div class="progress mt-3" style="height: 8px;">
-                                <div class="progress-bar bg-success" style="width: 87%"></div>
+                                <div class="progress-bar bg-success" id="compliance-progress-bar" style="width: 0%"></div>
                             </div>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
                             <div class="stat-icon text-warning">
                                 <i class="fas fa-exclamation-triangle fa-3x"></i>
                             </div>
-                            <div class="stat-value text-warning">3</div>
+                            <div class="stat-value text-warning" id="action-required">0</div>
                             <div class="stat-label">Action Required</div>
                             <div class="stat-sublabel">Urgent items</div>
                             <a href="#" class="btn btn-sm btn-warning mt-2" onclick="switchComplianceTab('alerts-tab')">Review Now</a>
@@ -93,9 +93,9 @@
                             <div class="stat-icon text-info">
                                 <i class="fas fa-users fa-3x"></i>
                             </div>
-                            <div class="stat-value text-info">12/15</div>
+                            <div class="stat-value text-info" id="reps-compliant">0/0</div>
                             <div class="stat-label">Reps Compliant</div>
-                            <div class="stat-sublabel">80% of team</div>
+                            <div class="stat-sublabel" id="reps-compliant-percent">0% of team</div>
                             <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchComplianceTab('team-tab')">View Team</a>
                         </div>
                     </div>
@@ -104,7 +104,7 @@
                             <div class="stat-icon text-danger">
                                 <i class="fas fa-clock fa-3x"></i>
                             </div>
-                            <div class="stat-value text-danger">7</div>
+                            <div class="stat-value text-danger" id="expiring-soon">0</div>
                             <div class="stat-label">Expiring Soon</div>
                             <div class="stat-sublabel">Next 30 days</div>
                             <a href="#" class="btn btn-sm btn-danger mt-2">View Details</a>
@@ -120,19 +120,19 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0"><span class="badge bg-success fs-6">✅ ACTIVE</span></div>
+                                <div class="h4 mb-0"><span class="badge bg-success fs-6" id="license-status">✅ ACTIVE</span></div>
                                 <small class="text-muted">License Status</small>
                             </div>
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0">FSP-12345</div>
+                                <div class="h4 mb-0" id="license-number">N/A</div>
                                 <small class="text-muted">License Number</small>
                             </div>
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0">31/03/2025</div>
+                                <div class="h4 mb-0" id="license-expiry">N/A</div>
                                 <small class="text-muted">Expiry Date</small>
                             </div>
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0">106 days</div>
+                                <div class="h4 mb-0" id="license-days-remaining">N/A</div>
                                 <small class="text-muted">Days Remaining</small>
                             </div>
                         </div>
@@ -140,20 +140,16 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <h6>Authorized Categories:</h6>
-                                <ul class="list-unstyled">
-                                    <li><i class="fas fa-check-circle text-success me-2"></i>Category I - Advice/Intermediary Services</li>
-                                    <li><i class="fas fa-check-circle text-success me-2"></i>Category IIA - Long-term Insurance</li>
-                                    <li><i class="fas fa-check-circle text-success me-2"></i>Category IIB - Short-term Insurance</li>
-                                    <li><i class="fas fa-check-circle text-success me-2"></i>Category IIIA - Health Service Benefits</li>
+                                <ul class="list-unstyled" id="authorized-categories">
+                                    <!-- Categories will be loaded from FSP configuration -->
+                                    <li class="text-muted">Loading categories...</li>
                                 </ul>
                             </div>
                             <div class="col-md-6">
                                 <h6>Compliance Status:</h6>
-                                <ul class="list-unstyled">
-                                    <li><i class="fas fa-check-circle text-success me-2"></i>Financial Soundness: ✅ Current</li>
-                                    <li><i class="fas fa-check-circle text-success me-2"></i>PI Insurance: ✅ Current</li>
-                                    <li><i class="fas fa-check-circle text-success me-2"></i>Fidelity Cover: ✅ Current</li>
-                                    <li><i class="fas fa-check-circle text-success me-2"></i>Annual Returns: ✅ Up to date</li>
+                                <ul class="list-unstyled" id="compliance-status-list">
+                                    <!-- Compliance status will be loaded dynamically -->
+                                    <li class="text-muted">Loading status...</li>
                                 </ul>
                             </div>
                         </div>
@@ -178,36 +174,11 @@
                                 <h5 class="mb-0">Upcoming Deadlines</h5>
                             </div>
                             <div class="card-body">
-                                <div class="deadline-list">
-                                    <div class="deadline-item critical">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <strong>🔴 CRITICAL</strong>
-                                                <p class="mb-1 small">2 RE5 certificates expiring in 14 days</p>
-                                                <small class="text-muted">Representatives: John D., Sarah M.</small>
-                                            </div>
-                                            <button class="btn btn-sm btn-danger">Action</button>
-                                        </div>
-                                    </div>
-                                    <div class="deadline-item high">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <strong>🟠 HIGH</strong>
-                                                <p class="mb-1 small">CPD deadline: 31 May 2025 (167 days)</p>
-                                                <small class="text-muted">3 representatives behind</small>
-                                            </div>
-                                            <button class="btn btn-sm btn-warning">Review</button>
-                                        </div>
-                                    </div>
-                                    <div class="deadline-item medium">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <strong>🟡 MEDIUM</strong>
-                                                <p class="mb-1 small">FSP license renewal: 31/03/2025 (106 days)</p>
-                                                <small class="text-muted">Start preparation</small>
-                                            </div>
-                                            <button class="btn btn-sm btn-outline-warning">Plan</button>
-                                        </div>
+                                <div class="deadline-list" id="upcoming-deadlines-list">
+                                    <!-- Deadlines will be loaded dynamically -->
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        No upcoming deadlines in the next 90 days.
                                     </div>
                                 </div>
                             </div>
@@ -222,36 +193,13 @@
                     </div>
                     <div class="card-body">
                         <div class="activity-list">
-                            <div class="activity-item">
-                                <div class="activity-icon bg-success">
-                                    <i class="fas fa-check"></i>
+                                <div id="compliance-activity-feed">
+                                    <!-- Activity items will be loaded dynamically -->
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Loading activity feed...
+                                    </div>
                                 </div>
-                                <div class="activity-content">
-                                    <h6 class="mb-1">Compliance verification completed</h6>
-                                    <p class="mb-1 small text-muted">Sarah Naidoo - All requirements met</p>
-                                    <small class="text-muted">2 hours ago</small>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon bg-warning">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <h6 class="mb-1">CPD deadline reminder sent</h6>
-                                    <p class="mb-1 small text-muted">3 representatives notified</p>
-                                    <small class="text-muted">5 hours ago</small>
-                                </div>
-                            </div>
-                            <div class="activity-item">
-                                <div class="activity-icon bg-info">
-                                    <i class="fas fa-file-upload"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <h6 class="mb-1">Documents uploaded</h6>
-                                    <p class="mb-1 small text-muted">Thabo Mokoena uploaded RE5 certificate</p>
-                                    <small class="text-muted">1 day ago</small>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -290,8 +238,7 @@
                                 <label class="form-label">Supervisor</label>
                                 <select class="form-select">
                                     <option>All Supervisors</option>
-                                    <option>Johan Smit (KI)</option>
-                                    <option>Sarah Naidoo (KI)</option>
+                                    <!-- Supervisors will be loaded dynamically -->
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -323,90 +270,15 @@
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="team-matrix-tbody">
+                                    <!-- Team matrix will be loaded dynamically -->
                                     <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm me-2">
-                                                    <i class="fas fa-user"></i>
-                                                </div>
-                                                <div>
-                                                    <strong>Sarah Naidoo</strong><br>
-                                                    <small class="text-muted">REP-001</small>
-                                                </div>
+                                        <td colspan="9" class="text-center py-4">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
                                             </div>
+                                            <p class="mt-2 text-muted">Loading team compliance matrix...</p>
                                         </td>
-                                        <td><span class="badge bg-success">✅ Current</span></td>
-                                        <td><span class="badge bg-success">32/30hrs</span></td>
-                                        <td><span class="badge bg-success">✅ Verified</span></td>
-                                        <td><span class="badge bg-success">✅ Clear</span></td>
-                                        <td><span class="badge bg-success">✅ Covered</span></td>
-                                        <td><span class="badge bg-success">✅ Up to date</span></td>
-                                        <td><span class="badge bg-success">✅ Compliant</span></td>
-                                        <td><button class="btn btn-sm btn-outline-primary">View</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm me-2">
-                                                    <i class="fas fa-user"></i>
-                                                </div>
-                                                <div>
-                                                    <strong>Thabo Mokoena</strong><br>
-                                                    <small class="text-muted">REP-002</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge bg-success">✅ Current</span></td>
-                                        <td><span class="badge bg-success">30/30hrs</span></td>
-                                        <td><span class="badge bg-success">✅ Verified</span></td>
-                                        <td><span class="badge bg-success">✅ Clear</span></td>
-                                        <td><span class="badge bg-success">✅ Covered</span></td>
-                                        <td><span class="badge bg-success">✅ Up to date</span></td>
-                                        <td><span class="badge bg-success">✅ Compliant</span></td>
-                                        <td><button class="btn btn-sm btn-outline-primary">View</button></td>
-                                    </tr>
-                                    <tr class="table-warning">
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm me-2">
-                                                    <i class="fas fa-user"></i>
-                                                </div>
-                                                <div>
-                                                    <strong>Pieter Botha</strong><br>
-                                                    <small class="text-muted">REP-003</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge bg-success">✅ Current</span></td>
-                                        <td><span class="badge bg-warning">⚠️ 18/30hrs</span></td>
-                                        <td><span class="badge bg-success">✅ Verified</span></td>
-                                        <td><span class="badge bg-success">✅ Clear</span></td>
-                                        <td><span class="badge bg-success">✅ Covered</span></td>
-                                        <td><span class="badge bg-success">✅ Up to date</span></td>
-                                        <td><span class="badge bg-warning">⚠️ CPD Behind</span></td>
-                                        <td><button class="btn btn-sm btn-warning">Resolve</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-sm me-2">
-                                                    <i class="fas fa-user"></i>
-                                                </div>
-                                                <div>
-                                                    <strong>Johan Smit (KI)</strong><br>
-                                                    <small class="text-muted">REP-KI1</small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge bg-success">✅ Current</span></td>
-                                        <td><span class="badge bg-success">35/30hrs</span></td>
-                                        <td><span class="badge bg-success">✅ Verified</span></td>
-                                        <td><span class="badge bg-success">✅ Clear</span></td>
-                                        <td><span class="badge bg-success">✅ Covered</span></td>
-                                        <td><span class="badge bg-success">N/A</span></td>
-                                        <td><span class="badge bg-success">✅ Compliant</span></td>
-                                        <td><button class="btn btn-sm btn-outline-primary">View</button></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -425,30 +297,30 @@
                 <div class="row mb-4">
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value text-info">11/15</div>
+                            <div class="stat-value text-info" id="cpd-on-track">0/0</div>
                             <div class="stat-label">On Track</div>
-                            <div class="stat-sublabel">73% of team</div>
+                            <div class="stat-sublabel" id="cpd-on-track-percent">0% of team</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value text-warning">3/15</div>
+                            <div class="stat-value text-warning" id="cpd-behind">0/0</div>
                             <div class="stat-label">Behind</div>
-                            <div class="stat-sublabel">20% of team</div>
+                            <div class="stat-sublabel" id="cpd-behind-percent">0% of team</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value text-danger">1/15</div>
+                            <div class="stat-value text-danger" id="cpd-critical">0/0</div>
                             <div class="stat-label">Critical</div>
-                            <div class="stat-sublabel">7% of team</div>
+                            <div class="stat-sublabel" id="cpd-critical-percent">0% of team</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value text-success">167</div>
+                            <div class="stat-value text-success" id="cpd-days-remaining">0</div>
                             <div class="stat-label">Days Remaining</div>
-                            <div class="stat-sublabel">Deadline: 31 May 2025</div>
+                            <div class="stat-sublabel" id="cpd-deadline">Deadline: N/A</div>
                         </div>
                     </div>
                 </div>
@@ -536,28 +408,28 @@
                     <div class="col-md-3 mb-4">
                         <div class="alert-card bg-danger text-white">
                             <div class="alert-icon"><i class="fas fa-exclamation-circle fa-2x"></i></div>
-                            <div class="alert-value">2</div>
+                            <div class="alert-value" id="alerts-critical">0</div>
                             <div class="alert-label">Critical</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="alert-card bg-warning text-dark">
                             <div class="alert-icon"><i class="fas fa-exclamation-triangle fa-2x"></i></div>
-                            <div class="alert-value">3</div>
+                            <div class="alert-value" id="alerts-high">0</div>
                             <div class="alert-label">High Priority</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="alert-card bg-info text-white">
                             <div class="alert-icon"><i class="fas fa-info-circle fa-2x"></i></div>
-                            <div class="alert-value">2</div>
+                            <div class="alert-value" id="alerts-medium">0</div>
                             <div class="alert-label">Medium</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="alert-card bg-success text-white">
                             <div class="alert-icon"><i class="fas fa-check-circle fa-2x"></i></div>
-                            <div class="alert-value">0</div>
+                            <div class="alert-value" id="alerts-low">0</div>
                             <div class="alert-label">Low</div>
                         </div>
                     </div>
@@ -569,57 +441,11 @@
                         <h5 class="mb-0">Active Alerts</h5>
                     </div>
                     <div class="card-body">
-                        <div class="alert-item critical mb-3">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h6><i class="fas fa-exclamation-circle text-danger me-2"></i>CRITICAL: RE5 Certificates Expiring</h6>
-                                    <p class="mb-1">2 representatives' RE5 certificates expiring in 14 days</p>
-                                    <small class="text-muted">Representatives: John D., Sarah M.</small>
-                                    <br><small class="text-muted">Expiry Date: 29/12/2024</small>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-danger me-2">Take Action</button>
-                                    <button class="btn btn-sm btn-outline-secondary">Dismiss</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alert-item high mb-3">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h6><i class="fas fa-exclamation-triangle text-warning me-2"></i>HIGH: CPD Hours Behind</h6>
-                                    <p class="mb-1">3 representatives need CPD hours before May 31st deadline</p>
-                                    <small class="text-muted">Representatives: Pieter Botha (12 hrs), Mike K. (8 hrs), Jane S. (5 hrs)</small>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-warning me-2">Send Reminders</button>
-                                    <button class="btn btn-sm btn-outline-secondary">Dismiss</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alert-item high mb-3">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h6><i class="fas fa-exclamation-triangle text-warning me-2"></i>HIGH: FICA Reviews Overdue</h6>
-                                    <p class="mb-1">45 client FICA reviews overdue</p>
-                                    <small class="text-muted">Last review: Various dates</small>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-warning me-2">Schedule Reviews</button>
-                                    <button class="btn btn-sm btn-outline-secondary">Dismiss</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alert-item medium mb-3">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h6><i class="fas fa-info-circle text-info me-2"></i>MEDIUM: FSP License Renewal</h6>
-                                    <p class="mb-1">FSP license renewal due in 106 days</p>
-                                    <small class="text-muted">Expiry Date: 31/03/2025</small>
-                                </div>
-                                <div>
-                                    <button class="btn btn-sm btn-info me-2">Start Process</button>
-                                    <button class="btn btn-sm btn-outline-secondary">Dismiss</button>
-                                </div>
+                        <div id="alerts-list">
+                            <!-- Alerts will be loaded dynamically -->
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                No active alerts. All systems are compliant.
                             </div>
                         </div>
                     </div>
@@ -636,28 +462,28 @@
                 <div class="row mb-4">
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value text-success">850</div>
+                            <div class="stat-value text-success" id="doc-current">0</div>
                             <div class="stat-label">Current</div>
                             <div class="stat-sublabel">Valid documents</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value text-warning">120</div>
+                            <div class="stat-value text-warning" id="doc-expiring">0</div>
                             <div class="stat-label">Expiring Soon</div>
                             <div class="stat-sublabel">Next 90 days</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value text-danger">15</div>
+                            <div class="stat-value text-danger" id="doc-expired">0</div>
                             <div class="stat-label">Expired</div>
                             <div class="stat-sublabel">Requires action</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value">45</div>
+                            <div class="stat-value" id="doc-pending">0</div>
                             <div class="stat-label">Missing</div>
                             <div class="stat-sublabel">Not uploaded</div>
                         </div>
@@ -776,28 +602,28 @@
                                 <div class="row">
                                     <div class="col-md-3 text-center mb-3">
                                         <div class="kpi-box">
-                                            <div class="kpi-value text-success">92%</div>
+                                            <div class="kpi-value text-success" id="kpi-compliance-rate">0%</div>
                                             <div class="kpi-label">Average Compliance Rate</div>
-                                            <small class="text-muted">↑ 5% vs last quarter</small>
+                                            <small class="text-muted" id="kpi-compliance-trend"></small>
                                         </div>
                                     </div>
                                     <div class="col-md-3 text-center mb-3">
                                         <div class="kpi-box">
-                                            <div class="kpi-value text-info">18 days</div>
+                                            <div class="kpi-value text-info" id="kpi-resolution-time">0 days</div>
                                             <div class="kpi-label">Avg Resolution Time</div>
                                             <small class="text-muted">Compliance issues</small>
                                         </div>
                                     </div>
                                     <div class="col-md-3 text-center mb-3">
                                         <div class="kpi-box">
-                                            <div class="kpi-value text-warning">7</div>
+                                            <div class="kpi-value text-warning" id="kpi-open-issues">0</div>
                                             <div class="kpi-label">Open Issues</div>
                                             <small class="text-muted">Requiring attention</small>
                                         </div>
                                     </div>
                                     <div class="col-md-3 text-center mb-3">
                                         <div class="kpi-box">
-                                            <div class="kpi-value text-success">100%</div>
+                                            <div class="kpi-value text-success" id="kpi-audit-ready">0%</div>
                                             <div class="kpi-label">Audit Ready</div>
                                             <small class="text-muted">All documents current</small>
                                         </div>
@@ -816,6 +642,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../../js/data-functions.js"></script>
     <script src="../js/compliance-dashboard.js"></script>
     <script src="../js/compliance-charts.js"></script>
 </body>

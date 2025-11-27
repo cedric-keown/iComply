@@ -357,112 +357,56 @@
             <div class="container-fluid py-4">
                 <h2 class="mb-4">Representative Directory</h2>
                 
-                <!-- Filters -->
+                <!-- Filters and Actions -->
                 <div class="card mb-4">
                     <div class="card-body">
-                        <div class="row g-3">
+                        <div class="row g-3 mb-3">
                             <div class="col-md-3">
                                 <label class="form-label">Status</label>
-                                <select class="form-select">
-                                    <option>All</option>
-                                    <option>Active</option>
-                                    <option>Probation</option>
-                                    <option>Non-Compliant</option>
-                                    <option>Suspended</option>
-                                    <option>Terminated</option>
+                                <select class="form-select" id="statusFilter">
+                                    <option value="All">All</option>
+                                    <option value="active">Active</option>
+                                    <option value="suspended">Suspended</option>
+                                    <option value="terminated">Terminated</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Category</label>
-                                <select class="form-select">
-                                    <option>All</option>
-                                    <option>Category I</option>
-                                    <option>Category IIA</option>
-                                    <option>Category IIB</option>
-                                    <option>Category IIIA</option>
+                                <select class="form-select" id="categoryFilter">
+                                    <option value="All">All</option>
+                                    <option value="class_1">Category I</option>
+                                    <option value="class_2">Category II</option>
+                                    <option value="class_3">Category III</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Supervisor</label>
-                                <select class="form-select">
-                                    <option>All Supervisors</option>
-                                    <option>Johan Smit (KI)</option>
-                                    <option>Sarah Naidoo (KI)</option>
+                                <select class="form-select" id="supervisorFilter">
+                                    <option value="All Supervisors">All Supervisors</option>
+                                    <!-- Will be populated dynamically -->
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Search</label>
-                                <input type="text" class="form-control" placeholder="Name, ID, FSP #, email...">
+                                <input type="text" class="form-control" id="searchFilter" placeholder="Name, ID, FSP #...">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted">Showing <strong id="repCount">0</strong> representatives</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-outline-primary btn-sm" onclick="exportRepresentatives()">
+                                    <i class="fas fa-download me-1"></i>Export CSV
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Representative Cards -->
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="rep-card">
-                            <div class="rep-card-header">
-                                <div class="rep-photo">
-                                    <i class="fas fa-user fa-3x"></i>
-                                </div>
-                                <div class="rep-info">
-                                    <h5>Sarah Naidoo</h5>
-                                    <p class="text-muted mb-0">Senior Financial Advisor & Compliance Officer</p>
-                                    <span class="badge bg-success me-2">✅ ACTIVE</span>
-                                    <span class="badge bg-success">✅ COMPLIANT</span>
-                                </div>
-                            </div>
-                            <div class="rep-card-body">
-                                <p><strong>FSP Number:</strong> REP-12345-001</p>
-                                <p><strong>ID:</strong> 8706155800084</p>
-                                <p><strong>Join Date:</strong> 15/03/2018 (6.8 years)</p>
-                                <p><strong>Supervisor:</strong> Johan Smit (KI)</p>
-                                <hr>
-                                <p><strong>Compliance:</strong></p>
-                                <ul class="list-unstyled">
-                                    <li>Fit & Proper: ✅ Current</li>
-                                    <li>CPD: ✅ 32/30 hours (107%)</li>
-                                    <li>FICA: ✅ Verified</li>
-                                    <li>Debarment: ✅ Clear</li>
-                                </ul>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-primary">View Profile</button>
-                                    <button class="btn btn-sm btn-outline-primary">Send Message</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-4">
-                        <div class="rep-card">
-                            <div class="rep-card-header">
-                                <div class="rep-photo">
-                                    <i class="fas fa-user fa-3x"></i>
-                                </div>
-                                <div class="rep-info">
-                                    <h5>Pieter Botha</h5>
-                                    <p class="text-muted mb-0">Financial Advisor</p>
-                                    <span class="badge bg-success me-2">✅ ACTIVE</span>
-                                    <span class="badge bg-warning">⚠️ NON-COMPLIANT</span>
-                                </div>
-                            </div>
-                            <div class="rep-card-body">
-                                <p><strong>FSP Number:</strong> REP-12345-003</p>
-                                <p><strong>ID:</strong> 7803125678901</p>
-                                <p><strong>Join Date:</strong> 10/09/2020 (4.3 years)</p>
-                                <p><strong>Supervisor:</strong> Sarah Naidoo (KI)</p>
-                                <hr>
-                                <div class="alert alert-warning">
-                                    <strong>CPD Requirement:</strong> Needs 12 more hours before May 31st
-                                    <br><small>Days Remaining: 167 days</small>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-warning">Resolve CPD</button>
-                                    <button class="btn btn-sm btn-outline-primary">View Profile</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="row representatives-container" id="representativesContainer">
+                    <!-- Cards will be dynamically loaded here -->
                 </div>
             </div>
         </div>
@@ -575,20 +519,20 @@
                                         </div>
                                         <div class="col-md-5 mb-3">
                                             <label class="form-label">First Name *</label>
-                                            <input type="text" class="form-control" required>
+                                            <input type="text" class="form-control" id="repFirstName" name="first_name" required>
                                         </div>
                                         <div class="col-md-5 mb-3">
                                             <label class="form-label">Last Name *</label>
-                                            <input type="text" class="form-control" required>
+                                            <input type="text" class="form-control" id="repSurname" name="surname" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Date of Birth *</label>
-                                            <input type="date" class="form-control" required>
+                                            <input type="date" class="form-control" id="repDob" name="date_of_birth" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">ID/Passport Number *</label>
-                                            <input type="text" class="form-control" required>
-                                            <small class="text-muted">SA ID: 13 digits</small>
+                                            <input type="text" class="form-control" id="repIdNumber" name="id_number" required>
+                                            <small class="text-muted">Enter ID or Passport number</small>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Gender *</label>
@@ -643,13 +587,13 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Primary Email *</label>
-                                        <input type="email" class="form-control" required>
+                                        <input type="email" class="form-control" id="repEmail" name="email" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Primary Mobile *</label>
                                         <div class="input-group">
                                             <span class="input-group-text">+27</span>
-                                            <input type="tel" class="form-control" required>
+                                            <input type="tel" class="form-control" id="repMobile" name="mobile" required>
                                         </div>
                                     </div>
                                     <div class="col-md-12 mb-3">
@@ -698,7 +642,7 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Start Date *</label>
-                                        <input type="date" class="form-control" required>
+                                        <input type="date" class="form-control" id="repStartDate" name="onboarding_date" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Employment Type *</label>
@@ -923,13 +867,12 @@
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label class="form-label">Assign Supervisor (Key Individual) *</label>
-                                    <select class="form-select" required>
-                                        <option value="">Select...</option>
-                                        <option>Johan Smit (KI) - Categories I, IIA, IIB, IIIA</option>
-                                        <option>Sarah Naidoo (KI) - Categories I, IIA</option>
-                                        <option>Direct to FSP Owner/Principal</option>
+                                    <label class="form-label">Assign Supervisor (Key Individual)</label>
+                                    <select class="form-select" id="repSupervisor">
+                                        <option value="">Select Supervisor (Optional)...</option>
+                                        <!-- Will be populated dynamically -->
                                     </select>
+                                    <small class="text-muted">Leave blank if no supervisor assignment needed at this time</small>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">System Access Role *</label>
@@ -961,13 +904,15 @@
                                     <h6>Registration Status: READY TO SUBMIT</h6>
                                     <p class="mb-0">All required information has been captured.</p>
                                 </div>
-                                <div class="mb-4">
+                                <div class="mb-4" id="registrationSummary">
                                     <h6>Registration Summary</h6>
-                                    <p><strong>Name:</strong> [Representative Name]</p>
-                                    <p><strong>FSP Number:</strong> REP-12345-015 (will be assigned)</p>
-                                    <p><strong>Categories:</strong> Category I, IIA</p>
-                                    <p><strong>Supervisor:</strong> Johan Smit (KI)</p>
-                                    <p><strong>Status:</strong> Active</p>
+                                    <p><strong>Name:</strong> <span id="summaryName">-</span></p>
+                                    <p><strong>ID Number:</strong> <span id="summaryId">-</span></p>
+                                    <p><strong>FSP Number:</strong> <span id="summaryFspNumber" class="text-muted">Will be auto-generated</span></p>
+                                    <p><strong>Categories:</strong> <span id="summaryCategories">-</span></p>
+                                    <p><strong>Supervisor:</strong> <span id="summarySupervisor">-</span></p>
+                                    <p><strong>Onboarding Date:</strong> <span id="summaryOnboardingDate">-</span></p>
+                                    <p><strong>Status:</strong> <span class="badge bg-success">Active</span></p>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
                                     <button type="button" class="btn btn-primary btn-lg" onclick="submitRepRegistration()">Submit Registration</button>
@@ -985,7 +930,8 @@
         <div class="tab-pane fade" id="supervision" role="tabpanel">
             <div class="container-fluid py-4">
                 <h2 class="mb-4">Supervision Structure</h2>
-                <p>Organizational hierarchy and supervision structure</p>
+                <p class="text-muted">Organizational hierarchy and supervision structure</p>
+                <!-- Content will be dynamically loaded here -->
             </div>
         </div>
 
@@ -993,7 +939,8 @@
         <div class="tab-pane fade" id="compliance" role="tabpanel">
             <div class="container-fluid py-4">
                 <h2 class="mb-4">Compliance Overview</h2>
-                <p>Comprehensive compliance status for all representatives</p>
+                <p class="text-muted">Comprehensive compliance status for all representatives</p>
+                <!-- Content will be dynamically loaded here -->
             </div>
         </div>
 
@@ -1059,6 +1006,9 @@
                             <button class="btn btn-primary" onclick="runDebarmentCheck()">
                                 <i class="fas fa-ban me-2"></i>Run Debarment Check Now
                             </button>
+                            <button class="btn btn-outline-secondary ms-2" onclick="loadDebarmentRegister()">
+                                <i class="fas fa-sync me-2"></i>Refresh
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1111,9 +1061,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Data Functions -->
+    <script src="../../../js/data-functions.js"></script>
+    <!-- Module Scripts -->
     <script src="../js/representatives-dashboard.js"></script>
     <script src="../js/add-representative.js"></script>
     <script src="../js/representative-directory.js"></script>
+    <script src="../js/supervision-structure.js"></script>
+    <script src="../js/compliance-overview.js"></script>
+    <script src="../js/debarment-register.js"></script>
 </body>
 </html>
 

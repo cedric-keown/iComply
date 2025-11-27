@@ -1,12 +1,48 @@
 // Upload Activity JavaScript
 
+let currentCpdCycle = null;
+let currentRepresentativeId = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     initializeUploadActivity();
 });
 
-function initializeUploadActivity() {
+async function initializeUploadActivity() {
+    await loadCpdCycle();
     setupFormValidation();
     setupHoursValidation();
+    setupProviderCustomInput();
+}
+
+/**
+ * Load Current CPD Cycle
+ */
+async function loadCpdCycle() {
+    try {
+        const cyclesResult = await dataFunctions.getCpdCycles('active');
+        let cycles = cyclesResult;
+        if (cyclesResult && cyclesResult.data) {
+            cycles = cyclesResult.data;
+        } else if (cyclesResult && Array.isArray(cyclesResult)) {
+            cycles = cyclesResult;
+        }
+        
+        if (cycles && cycles.length > 0) {
+            currentCpdCycle = cycles[0];
+        }
+        
+        // Get current user's representative ID
+        // TODO: Get from auth context or user profile
+        // For now, we'll need to get it from the user profile or pass it in
+        const userInfo = localStorage.getItem('user_info');
+        if (userInfo) {
+            const user = JSON.parse(userInfo);
+            // Representative ID would be in user profile
+            // For now, we'll need to fetch it or use a default
+        }
+    } catch (error) {
+        console.error('Error loading CPD cycle:', error);
+    }
 }
 
 function setupFormValidation() {
@@ -25,6 +61,9 @@ function setupFormValidation() {
 }
 
 function validateForm() {
+    const form = document.getElementById('cpdActivityForm');
+    if (!form) return false;
+    
     // Basic validation
     const requiredFields = form.querySelectorAll('[required]');
     let isValid = true;
@@ -39,7 +78,7 @@ function validateForm() {
     });
     
     // Validate hours
-    const hoursInput = form.querySelector('input[type="number"]');
+    const hoursInput = document.getElementById('cpdTotalHours');
     if (hoursInput) {
         const hours = parseFloat(hoursInput.value);
         if (hours > 8) {
@@ -53,7 +92,35 @@ function validateForm() {
         }
     }
     
+    // Validate cycle exists
+    if (!currentCpdCycle) {
+        isValid = false;
+        Swal.fire({
+            icon: 'error',
+            title: 'No Active Cycle',
+            text: 'No active CPD cycle found. Please contact your administrator.'
+        });
+    }
+    
     return isValid;
+}
+
+function setupProviderCustomInput() {
+    const providerSelect = document.getElementById('cpdProvider');
+    const customInput = document.getElementById('cpdProviderCustom');
+    
+    if (providerSelect && customInput) {
+        providerSelect.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customInput.classList.remove('d-none');
+                customInput.required = true;
+            } else {
+                customInput.classList.add('d-none');
+                customInput.required = false;
+                customInput.value = '';
+            }
+        });
+    }
 }
 
 function setupHoursValidation() {
@@ -70,7 +137,10 @@ function setupHoursValidation() {
     }
 }
 
-function submitActivity() {
+async function submitActivity() {
+    const form = document.getElementById('cpdActivityForm');
+    if (!form || !currentCpdCycle) return;
+    
     // Show loading
     Swal.fire({
         title: 'Submitting...',
@@ -81,19 +151,73 @@ function submitActivity() {
         }
     });
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+        // Get form data
+        const activityData = {
+            representative_id: currentRepresentativeId || null, // TODO: Get from auth context
+            cpd_cycle_id: currentCpdCycle.id,
+            activity_date: document.getElementById('cpdActivityDate').value,
+            activity_name: document.getElementById('cpdActivityTitle').value.trim(),
+            activity_type: document.getElementById('cpdActivityType').value,
+            provider_name: document.getElementById('cpdProvider').value === 'custom' 
+                ? document.getElementById('cpdProviderCustom').value.trim()
+                : document.getElementById('cpdProvider').value,
+            total_hours: parseFloat(document.getElementById('cpdTotalHours').value) || 0,
+            ethics_hours: parseFloat(document.getElementById('cpdEthicsHours').value) || 0,
+            technical_hours: parseFloat(document.getElementById('cpdTechnicalHours').value) || 0,
+            class_1_applicable: document.getElementById('cob1').checked || false,
+            class_2_applicable: document.getElementById('cob2').checked || false,
+            class_3_applicable: document.getElementById('cob3').checked || false,
+            verifiable: document.getElementById('verifiableCheck').checked,
+            certificate_attached: document.getElementById('certificateFile')?.files?.length > 0 || false
+        };
+        
+        // Validate required fields
+        if (!activityData.representative_id) {
+            throw new Error('Representative ID not found. Please ensure you are logged in.');
+        }
+        
+        console.log('Submitting CPD activity:', activityData);
+        
+        // Submit to database
+        const result = await dataFunctions.createCpdActivity(activityData);
+        
+        // Handle response
+        let response = result;
+        if (result && result.data) {
+            response = result.data;
+        } else if (result && typeof result === 'object' && result.success !== undefined) {
+            response = result;
+        }
+        
+        if (response && response.success !== false && !response.error) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Activity Submitted',
+                text: 'Your CPD activity has been submitted successfully.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Switch to activity log tab
+                if (typeof switchTab === 'function') {
+                    switchTab('log-tab');
+                }
+                // Reset form
+                form.reset();
+                // Reload dashboard if on dashboard
+                if (typeof loadCpdDashboardData === 'function') {
+                    loadCpdDashboardData();
+                }
+            });
+        } else {
+            throw new Error(response?.error || 'Failed to submit activity');
+        }
+    } catch (error) {
+        console.error('Error submitting CPD activity:', error);
         Swal.fire({
-            icon: 'success',
-            title: 'Activity Submitted',
-            text: 'Your CPD activity has been submitted successfully.',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            // Switch to activity log tab
-            switchTab('log-tab');
-            // Reset form
-            document.getElementById('cpdActivityForm').reset();
+            icon: 'error',
+            title: 'Submission Failed',
+            text: error.message || 'Failed to submit CPD activity. Please try again.'
         });
-    }, 1500);
+    }
 }
 

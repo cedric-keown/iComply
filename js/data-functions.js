@@ -149,6 +149,13 @@ var _dataFunctions = function () {
             return await this.callFunction('get_fsp_configuration', {}, token);
         },
 
+        /**
+         * Get Key Individuals count
+         */
+        getKeyIndividualsCount: async function (token = null) {
+            return await this.callFunction('get_key_individuals_count', {}, token);
+        },
+
         updateFspConfiguration: async function (id, data, token = null) {
             return await this.callFunction('update_fsp_configuration', {
                 p_id: id,
@@ -173,9 +180,8 @@ var _dataFunctions = function () {
                 p_setting_key: data.setting_key,
                 p_setting_value: data.setting_value,
                 p_setting_type: data.setting_type,
-                p_setting_category: data.setting_category || null,
-                p_description: data.description || null,
-                p_is_public: data.is_public || false
+                p_category: data.setting_category || null,
+                p_description: data.description || null
             }, token);
         },
 
@@ -204,8 +210,9 @@ var _dataFunctions = function () {
         createUserRole: async function (data, token = null) {
             return await this.callFunction('create_user_role', {
                 p_role_name: data.role_name,
+                p_role_display_name: data.role_display_name,
                 p_role_description: data.role_description || null,
-                p_role_level: data.role_level || 1
+                p_permissions: data.permissions || {}
             }, token);
         },
 
@@ -216,9 +223,9 @@ var _dataFunctions = function () {
         updateUserRole: async function (id, data, token = null) {
             return await this.callFunction('update_user_role', {
                 p_id: id,
-                p_role_name: data.role_name || null,
+                p_role_display_name: data.role_display_name || null,
                 p_role_description: data.role_description || null,
-                p_role_level: data.role_level || null
+                p_permissions: data.permissions || null
             }, token);
         },
 
@@ -232,13 +239,16 @@ var _dataFunctions = function () {
 
         createUserProfile: async function (data, token = null) {
             return await this.callFunction('create_user_profile', {
-                p_email: data.email,
+                p_id: data.id, // UUID matching auth.users.id
                 p_role_id: data.role_id,
                 p_first_name: data.first_name,
                 p_last_name: data.last_name,
+                p_email: data.email,
                 p_phone: data.phone || null,
-                p_job_title: data.job_title || null,
-                p_department: data.department || null
+                p_mobile: data.mobile || null,
+                p_id_number: data.id_number || null,
+                p_fsp_number: data.fsp_number || null,
+                p_status: data.status || 'active'
             }, token);
         },
 
@@ -262,11 +272,13 @@ var _dataFunctions = function () {
         updateUserProfile: async function (id, data, token = null) {
             return await this.callFunction('update_user_profile', {
                 p_id: id,
+                p_role_id: data.role_id || null,
                 p_first_name: data.first_name || null,
                 p_last_name: data.last_name || null,
                 p_phone: data.phone || null,
-                p_job_title: data.job_title || null,
-                p_department: data.department || null,
+                p_mobile: data.mobile || null,
+                p_id_number: data.id_number || null,
+                p_fsp_number: data.fsp_number || null,
                 p_status: data.status || null
             }, token);
         },
@@ -284,17 +296,20 @@ var _dataFunctions = function () {
         // ----- REPRESENTATIVES -----
 
         createRepresentative: async function (data, token = null) {
-            return await this.callFunction('create_representative', {
+            // Use the comprehensive function that handles all representative details
+            return await this.callFunction('create_representative_full', {
                 p_first_name: data.first_name,
-                p_last_name: data.last_name,
+                p_surname: data.surname || data.last_name,
                 p_id_number: data.id_number,
-                p_fais_individual_number: data.fais_individual_number || null,
-                p_email: data.email || null,
-                p_phone: data.phone || null,
-                p_representative_type: data.representative_type,
-                p_appointment_date: data.appointment_date || null,
-                p_termination_date: data.termination_date || null,
-                p_status: data.status || 'active'
+                p_fsp_number: data.fsp_number || data.representative_number || null,
+                p_supervised_by_ki_id: data.supervised_by_ki_id || null,
+                p_class_1_long_term: data.class_1_long_term || false,
+                p_class_2_short_term: data.class_2_short_term || false,
+                p_class_3_pension: data.class_3_pension || false,
+                p_status: data.status || 'active',
+                p_onboarding_date: data.onboarding_date || null,
+                p_authorization_date: data.authorization_date || null,
+                p_user_profile_id: data.user_profile_id || null
             }, token);
         },
 
@@ -313,12 +328,14 @@ var _dataFunctions = function () {
         updateRepresentative: async function (id, data, token = null) {
             return await this.callFunction('update_representative', {
                 p_id: id,
-                p_first_name: data.first_name || null,
-                p_last_name: data.last_name || null,
-                p_email: data.email || null,
-                p_phone: data.phone || null,
+                p_supervised_by_ki_id: data.supervised_by_ki_id || null,
+                p_class_1_long_term: data.class_1_long_term !== undefined ? data.class_1_long_term : null,
+                p_class_2_short_term: data.class_2_short_term !== undefined ? data.class_2_short_term : null,
+                p_class_3_pension: data.class_3_pension !== undefined ? data.class_3_pension : null,
                 p_status: data.status || null,
-                p_termination_date: data.termination_date || null
+                p_authorization_date: data.authorization_date || null,
+                p_deauthorization_date: data.deauthorization_date || null,
+                p_deauthorization_reason: data.deauthorization_reason || null
             }, token);
         },
 
@@ -344,18 +361,24 @@ var _dataFunctions = function () {
         },
 
         getKeyIndividuals: async function (status = 'active', token = null) {
-            return await this.callFunction('get_key_individuals', {
-                p_status: status
-            }, token);
+            // Use the new function that returns active key individuals with representative details
+            if (status === 'active') {
+                return await this.callFunction('get_active_key_individuals', {}, token);
+            } else {
+                // Fallback to original function for other statuses
+                return await this.callFunction('get_key_individuals', {
+                    p_ki_type: null
+                }, token);
+            }
         },
 
         updateKeyIndividual: async function (id, data, token = null) {
-            return await this.callFunction('update_key_individual', {
+            // Use the full update function that supports appointment_date
+            return await this.callFunction('update_key_individual_full', {
                 p_id: id,
-                p_position_title: data.position_title || null,
-                p_email: data.email || null,
-                p_phone: data.phone || null,
-                p_status: data.status || null
+                p_appointment_date: data.appointment_date || null,
+                p_resignation_date: data.resignation_date || null,
+                p_max_supervised_count: data.max_supervised_count || null
             }, token);
         },
 
@@ -474,12 +497,16 @@ var _dataFunctions = function () {
                 p_representative_id: data.representative_id,
                 p_cpd_cycle_id: data.cpd_cycle_id,
                 p_activity_date: data.activity_date,
-                p_activity_type: data.activity_type,
-                p_activity_title: data.activity_title,
+                p_activity_name: data.activity_name || data.activity_title,
+                p_activity_type: data.activity_type || null,
                 p_provider_name: data.provider_name || null,
-                p_hours_claimed: data.hours_claimed,
-                p_description: data.description || null,
-                p_verification_status: data.verification_status || 'pending'
+                p_total_hours: data.total_hours || data.hours_claimed || 0,
+                p_ethics_hours: data.ethics_hours || 0,
+                p_technical_hours: data.technical_hours || 0,
+                p_class_1_applicable: data.class_1_applicable || false,
+                p_class_2_applicable: data.class_2_applicable || false,
+                p_class_3_applicable: data.class_3_applicable || false,
+                p_uploaded_by: data.uploaded_by || null
             }, token);
         },
 
@@ -493,9 +520,11 @@ var _dataFunctions = function () {
         updateCpdActivity: async function (id, data, token = null) {
             return await this.callFunction('update_cpd_activity', {
                 p_id: id,
-                p_hours_claimed: data.hours_claimed || null,
-                p_verification_status: data.verification_status || null,
-                p_verification_notes: data.verification_notes || null
+                p_activity_name: data.activity_name || null,
+                p_total_hours: data.total_hours || data.hours_claimed || null,
+                p_ethics_hours: data.ethics_hours || null,
+                p_technical_hours: data.technical_hours || null,
+                p_certificate_attached: data.certificate_attached || null
             }, token);
         },
 
@@ -519,24 +548,29 @@ var _dataFunctions = function () {
 
         createClient: async function (data, token = null) {
             return await this.callFunction('create_client', {
+                p_assigned_representative_id: data.assigned_representative_id || null,
                 p_client_type: data.client_type,
-                p_client_category: data.client_category,
+                p_title: data.title || null,
                 p_first_name: data.first_name || null,
                 p_last_name: data.last_name || null,
-                p_company_name: data.company_name || null,
                 p_id_number: data.id_number || null,
+                p_date_of_birth: data.date_of_birth || null,
+                p_company_name: data.company_name || null,
                 p_registration_number: data.registration_number || null,
                 p_email: data.email || null,
                 p_phone: data.phone || null,
-                p_onboarding_date: data.onboarding_date || null,
-                p_assigned_representative_id: data.assigned_representative_id || null
+                p_mobile: data.mobile || null,
+                p_client_since: data.client_since || data.onboarding_date || null,
+                p_risk_category: data.risk_category || 'low'
             }, token);
         },
 
-        getClients: async function (clientType = null, status = 'active', token = null) {
+        getClients: async function (assignedRepresentativeId = null, clientType = null, status = 'active', riskCategory = null, token = null) {
             return await this.callFunction('get_clients', {
+                p_assigned_representative_id: assignedRepresentativeId,
                 p_client_type: clientType,
-                p_status: status
+                p_status: status,
+                p_risk_category: riskCategory
             }, token);
         },
 
@@ -549,10 +583,17 @@ var _dataFunctions = function () {
         updateClient: async function (id, data, token = null) {
             return await this.callFunction('update_client', {
                 p_id: id,
+                p_assigned_representative_id: data.assigned_representative_id || null,
                 p_email: data.email || null,
                 p_phone: data.phone || null,
+                p_mobile: data.mobile || null,
+                p_address_street: data.address_street || null,
+                p_address_city: data.address_city || null,
+                p_address_province: data.address_province || null,
+                p_address_postal_code: data.address_postal_code || null,
                 p_status: data.status || null,
-                p_assigned_representative_id: data.assigned_representative_id || null
+                p_risk_category: data.risk_category || null,
+                p_pep_status: data.pep_status || null
             }, token);
         },
 
@@ -567,27 +608,31 @@ var _dataFunctions = function () {
         createFicaVerification: async function (data, token = null) {
             return await this.callFunction('create_fica_verification', {
                 p_client_id: data.client_id,
-                p_verification_date: data.verification_date,
+                p_representative_id: data.representative_id || null,
                 p_verification_type: data.verification_type,
-                p_id_verified: data.id_verified || false,
-                p_address_verified: data.address_verified || false,
-                p_risk_rating: data.risk_rating || 'medium',
-                p_verified_by: data.verified_by || null
+                p_verification_date: data.verification_date || null,
+                p_review_frequency_months: data.review_frequency_months || 60
             }, token);
         },
 
-        getFicaVerifications: async function (clientId, token = null) {
+        getFicaVerifications: async function (clientId = null, representativeId = null, ficaStatus = null, token = null) {
             return await this.callFunction('get_fica_verifications', {
-                p_client_id: clientId
+                p_client_id: clientId,
+                p_representative_id: representativeId,
+                p_fica_status: ficaStatus
             }, token);
         },
 
         updateFicaVerification: async function (id, data, token = null) {
             return await this.callFunction('update_fica_verification', {
                 p_id: id,
-                p_id_verified: data.id_verified || null,
-                p_address_verified: data.address_verified || null,
-                p_risk_rating: data.risk_rating || null,
+                p_id_document_type: data.id_document_type || null,
+                p_id_document_verified: data.id_document_verified || null,
+                p_address_document_verified: data.address_document_verified || null,
+                p_bank_details_verified: data.bank_details_verified || null,
+                p_tax_reference_verified: data.tax_reference_verified || null,
+                p_fica_status: data.fica_status || null,
+                p_verified_by: data.verified_by || null,
                 p_verification_notes: data.verification_notes || null
             }, token);
         },
@@ -597,12 +642,12 @@ var _dataFunctions = function () {
         createClientBeneficialOwner: async function (data, token = null) {
             return await this.callFunction('create_client_beneficial_owner', {
                 p_client_id: data.client_id,
-                p_first_name: data.first_name,
-                p_last_name: data.last_name,
+                p_full_name: data.full_name || (data.first_name && data.last_name ? `${data.first_name} ${data.last_name}` : null),
                 p_id_number: data.id_number || null,
+                p_nationality: data.nationality || null,
                 p_ownership_percentage: data.ownership_percentage || null,
-                p_relationship_type: data.relationship_type || null,
-                p_is_verified: data.is_verified || false
+                p_control_type: data.control_type || null,
+                p_pep_status: data.pep_status || false
             }, token);
         },
 
@@ -616,7 +661,9 @@ var _dataFunctions = function () {
             return await this.callFunction('update_client_beneficial_owner', {
                 p_id: id,
                 p_ownership_percentage: data.ownership_percentage || null,
-                p_is_verified: data.is_verified || null
+                p_id_verified: data.id_verified || null,
+                p_id_verification_date: data.id_verification_date || null,
+                p_pep_status: data.pep_status || null
             }, token);
         },
 
@@ -950,6 +997,114 @@ var _dataFunctions = function () {
                 p_generated_by: generatedBy,
                 p_status: status,
                 p_limit: limit
+            }, token);
+        },
+
+        // ----- DASHBOARD DATA -----
+
+        /**
+         * Get Executive Dashboard Health data
+         * Returns overall compliance metrics
+         */
+        getExecutiveDashboardHealth: async function (token = null) {
+            return await this.callFunction('get_executive_dashboard_health', {}, token);
+        },
+
+        /**
+         * Get Team Compliance Matrix data
+         * Returns compliance status for all representatives
+         */
+        getTeamComplianceMatrix: async function (token = null) {
+            return await this.callFunction('get_team_compliance_matrix', {}, token);
+        },
+
+        /**
+         * Get CPD Progress Dashboard data
+         * Returns CPD progress for all active representatives
+         */
+        getCpdProgressDashboard: async function (token = null) {
+            return await this.callFunction('get_cpd_progress_dashboard', {}, token);
+        },
+
+        /**
+         * Get Upcoming Deadlines
+         * Returns all upcoming deadlines (default: next 90 days)
+         */
+        getUpcomingDeadlines: async function (days = 90, token = null) {
+            return await this.callFunction('get_upcoming_deadlines', {
+                p_days: days
+            }, token);
+        },
+
+        /**
+         * Get Complaints Dashboard Summary
+         * Returns complaints aggregated by status and priority
+         */
+        getComplaintsDashboardSummary: async function (token = null) {
+            return await this.callFunction('get_complaints_dashboard_summary', {}, token);
+        },
+
+        /**
+         * Get FICA Status Overview
+         * Returns FICA verification status breakdown
+         */
+        getFicaStatusOverview: async function (token = null) {
+            return await this.callFunction('get_fica_status_overview', {}, token);
+        },
+
+        // ========================================================================
+        // FIT & PROPER MANAGEMENT
+        // ========================================================================
+
+        /**
+         * Get Fit & Proper Records
+         * Returns Fit & Proper records for a representative or all records
+         */
+        getFitAndProperRecords: async function (representativeId = null, overallStatus = null, token = null) {
+            return await this.callFunction('get_fit_and_proper_records', {
+                p_representative_id: representativeId,
+                p_overall_status: overallStatus
+            }, token);
+        },
+
+        /**
+         * Create Fit & Proper Record
+         * Creates a new Fit & Proper record for a representative
+         */
+        createFitAndProperRecord: async function (data, token = null) {
+            return await this.callFunction('create_fit_and_proper_record', {
+                p_representative_id: data.representative_id,
+                p_re5_qualification_name: data.re5_qualification_name || null,
+                p_re5_qualification_number: data.re5_qualification_number || null,
+                p_re5_issue_date: data.re5_issue_date || null,
+                p_re5_expiry_date: data.re5_expiry_date || null,
+                p_re1_qualification_name: data.re1_qualification_name || null,
+                p_re1_qualification_number: data.re1_qualification_number || null,
+                p_re1_issue_date: data.re1_issue_date || null,
+                p_re1_expiry_date: data.re1_expiry_date || null
+            }, token);
+        },
+
+        /**
+         * Update Fit & Proper Record
+         * Updates an existing Fit & Proper record
+         */
+        updateFitAndProperRecord: async function (id, data, token = null) {
+            return await this.callFunction('update_fit_and_proper_record', {
+                p_id: id,
+                p_re5_expiry_date: data.re5_expiry_date || null,
+                p_re1_expiry_date: data.re1_expiry_date || null,
+                p_cob_class_1_date: data.cob_class_1_date || null,
+                p_cob_class_2_date: data.cob_class_2_date || null,
+                p_cob_class_3_date: data.cob_class_3_date || null,
+                p_industry_experience_years: data.industry_experience_years || null,
+                p_experience_verified: data.experience_verified || null,
+                p_criminal_record_check_date: data.criminal_record_check_date || null,
+                p_criminal_record_clear: data.criminal_record_clear || null,
+                p_credit_check_date: data.credit_check_date || null,
+                p_credit_check_clear: data.credit_check_clear || null,
+                p_overall_status: data.overall_status || null,
+                p_next_review_date: data.next_review_date || null
             }, token);
         }
     }

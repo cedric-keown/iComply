@@ -36,7 +36,7 @@
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab">
-                    <i class="fas fa-list me-2"></i>Active Complaints <span class="badge bg-info">2</span>
+                    <i class="fas fa-list me-2"></i>Active Complaints <span class="badge bg-info" id="active-complaints-badge">0</span>
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -74,11 +74,11 @@
                             <div class="stat-icon text-primary">
                                 <i class="fas fa-bullhorn fa-3x"></i>
                             </div>
-                            <div class="stat-value">34</div>
+                            <div class="stat-value" id="total-complaints">0</div>
                             <div class="stat-label">Total Complaints</div>
                             <div class="stat-sublabel">All time</div>
-                            <small class="text-muted d-block mt-2">This year: 8 complaints</small>
-                            <small class="text-success">↓ 20% vs last year</small>
+                            <small class="text-muted d-block mt-2" id="this-year-complaints">This year: 0 complaints</small>
+                            <small class="text-success" id="year-over-year" style="display: none;"></small>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6 mb-4">
@@ -86,7 +86,7 @@
                             <div class="stat-icon text-info">
                                 <i class="fas fa-clock fa-3x"></i>
                             </div>
-                            <div class="stat-value text-info">2</div>
+                            <div class="stat-value text-info" id="active-cases">0</div>
                             <div class="stat-label">Active Cases</div>
                             <div class="stat-sublabel">In progress</div>
                             <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchComplaintsTab('active-tab')">View Active</a>
@@ -97,11 +97,11 @@
                             <div class="stat-icon text-warning">
                                 <i class="fas fa-exclamation-triangle fa-3x"></i>
                             </div>
-                            <div class="stat-value text-warning">1</div>
+                            <div class="stat-value text-warning" id="approaching-deadline">0</div>
                             <div class="stat-label">Approaching Deadline</div>
                             <div class="stat-sublabel">6-week deadline</div>
-                            <div class="alert alert-warning mb-0 mt-2">
-                                <small><strong>5 days remaining</strong></small>
+                            <div class="alert alert-warning mb-0 mt-2" id="deadline-alert" style="display: none;">
+                                <small><strong id="deadline-days">0 days remaining</strong></small>
                             </div>
                             <a href="#" class="btn btn-sm btn-warning mt-2">Review Now</a>
                         </div>
@@ -111,7 +111,7 @@
                             <div class="stat-icon text-success">
                                 <i class="fas fa-balance-scale fa-3x"></i>
                             </div>
-                            <div class="stat-value text-success">0</div>
+                            <div class="stat-value text-success" id="ombudsman-cases">0</div>
                             <div class="stat-label">Ombudsman Cases</div>
                             <div class="stat-sublabel">Escalated</div>
                             <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchComplaintsTab('ombudsman-tab')">View History</a>
@@ -127,19 +127,19 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0"><span class="badge bg-success fs-6">✅ COMPLIANT</span></div>
+                                <div class="h4 mb-0"><span class="badge bg-success fs-6" id="fais-status">✅ COMPLIANT</span></div>
                                 <small class="text-muted">Overall Status</small>
                             </div>
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0">100%</div>
-                                <small class="text-muted">6-Week Resolution (8/8)</small>
+                                <div class="h4 mb-0" id="six-week-resolution">0%</div>
+                                <small class="text-muted" id="six-week-label">6-Week Resolution (0/0)</small>
                             </div>
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0">100%</div>
-                                <small class="text-muted">6-Month Closure (8/8)</small>
+                                <div class="h4 mb-0" id="six-month-closure">0%</div>
+                                <small class="text-muted" id="six-month-label">6-Month Closure (0/0)</small>
                             </div>
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0">18 days</div>
+                                <div class="h4 mb-0" id="avg-resolution-time">0 days</div>
                                 <small class="text-muted">Average Resolution Time</small>
                             </div>
                         </div>
@@ -157,7 +157,7 @@
                                 <ul class="list-unstyled">
                                     <li><i class="fas fa-chart-bar text-primary me-2"></i>Ombudsman Notification: When escalated</li>
                                     <li><i class="fas fa-file-alt text-secondary me-2"></i>Record Retention: 5 years</li>
-                                    <li><i class="fas fa-calendar-check text-info me-2"></i>Last FSCA Report: 30/11/2024</li>
+                                    <li><i class="fas fa-calendar-check text-info me-2"></i>Last FSCA Report: <span id="last-fsca-report">N/A</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -172,27 +172,27 @@
                     <div class="card-body">
                         <div class="status-timeline">
                             <div class="timeline-step">
-                                <div class="timeline-marker bg-info">0</div>
+                                <div class="timeline-marker bg-info" id="status-received">0</div>
                                 <div class="timeline-label">Received</div>
                             </div>
                             <div class="timeline-connector"></div>
                             <div class="timeline-step">
-                                <div class="timeline-marker bg-info">0</div>
+                                <div class="timeline-marker bg-info" id="status-acknowledged">0</div>
                                 <div class="timeline-label">Acknowledged</div>
                             </div>
                             <div class="timeline-connector"></div>
                             <div class="timeline-step">
-                                <div class="timeline-marker bg-warning">2</div>
+                                <div class="timeline-marker bg-warning" id="status-investigating">0</div>
                                 <div class="timeline-label">Investigating</div>
                             </div>
                             <div class="timeline-connector"></div>
                             <div class="timeline-step">
-                                <div class="timeline-marker bg-success">0</div>
+                                <div class="timeline-marker bg-success" id="status-resolved">0</div>
                                 <div class="timeline-label">Resolved</div>
                             </div>
                             <div class="timeline-connector"></div>
                             <div class="timeline-step">
-                                <div class="timeline-marker bg-secondary">32</div>
+                                <div class="timeline-marker bg-secondary" id="status-closed">0</div>
                                 <div class="timeline-label">Closed</div>
                             </div>
                         </div>
@@ -207,38 +207,11 @@
                                 <h5 class="mb-0">Recent Activity</h5>
                             </div>
                             <div class="card-body">
-                                <div class="activity-list">
-                                    <div class="activity-item">
-                                        <div class="activity-icon bg-success">
-                                            <i class="fas fa-check"></i>
-                                        </div>
-                                        <div class="activity-content">
-                                            <h6 class="mb-1">Complaint CMP-2024-008 resolved</h6>
-                                            <p class="mb-1 small text-muted">Client accepted resolution - product replacement</p>
-                                            <small class="text-muted">Mary Johnson • Sarah Naidoo • 3 days ago</small>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary">View Details</button>
-                                    </div>
-                                    <div class="activity-item">
-                                        <div class="activity-icon bg-info">
-                                            <i class="fas fa-envelope"></i>
-                                        </div>
-                                        <div class="activity-content">
-                                            <h6 class="mb-1">Weekly update sent</h6>
-                                            <p class="mb-1 small text-muted">CMP-2024-007 - Investigation ongoing</p>
-                                            <small class="text-muted">Johan van Zyl • System • 5 days ago</small>
-                                        </div>
-                                    </div>
-                                    <div class="activity-item">
-                                        <div class="activity-icon bg-warning">
-                                            <i class="fas fa-file-alt"></i>
-                                        </div>
-                                        <div class="activity-content">
-                                            <h6 class="mb-1">New complaint logged</h6>
-                                            <p class="mb-1 small text-muted">CMP-2024-009 - Claim processing delay</p>
-                                            <small class="text-muted">Thabo Mokoena • 7 days ago</small>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary">Review</button>
+                                <div class="activity-list" id="recent-activity-list">
+                                    <!-- Activity items will be loaded dynamically -->
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Loading recent activity...
                                     </div>
                                 </div>
                             </div>
@@ -384,7 +357,7 @@
                     </div>
 
                     <!-- Step 1: Complaint Details -->
-                    <div class="wizard-step" id="step1" data-step="1">
+                    <div class="wizard-step active" id="step1" data-step="1" style="display: block;">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="mb-0">Step 1: Complaint Details</h5>
@@ -407,16 +380,16 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">How Received *</label>
-                                            <select class="form-select" required>
+                                            <select class="form-select" id="complaintChannel" required>
                                                 <option value="">Select...</option>
-                                                <option>Email</option>
-                                                <option>Phone Call</option>
-                                                <option>In Person</option>
-                                                <option>Letter/Post</option>
-                                                <option>WhatsApp</option>
-                                                <option>Online Form</option>
-                                                <option>Social Media</option>
-                                                <option>Other</option>
+                                                <option value="email">Email</option>
+                                                <option value="phone">Phone Call</option>
+                                                <option value="in_person">In Person</option>
+                                                <option value="letter">Letter/Post</option>
+                                                <option value="whatsapp">WhatsApp</option>
+                                                <option value="online_form">Online Form</option>
+                                                <option value="social_media">Social Media</option>
+                                                <option value="other">Other</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">
@@ -440,12 +413,12 @@
                                             <label class="form-label">Primary Category *</label>
                                             <select class="form-select" id="primaryCategory" required>
                                                 <option value="">Select...</option>
-                                                <option>Claims Issues</option>
-                                                <option>Service Quality</option>
-                                                <option>Product Issues</option>
-                                                <option>Financial Concerns</option>
-                                                <option>Administrative</option>
-                                                <option>Other</option>
+                                                <option value="Claims Issues">Claims Issues</option>
+                                                <option value="Service Quality">Service Quality</option>
+                                                <option value="Product Issues">Product Issues</option>
+                                                <option value="Financial Concerns">Financial Concerns</option>
+                                                <option value="Administrative">Administrative</option>
+                                                <option value="Other">Other</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">
@@ -456,7 +429,7 @@
                                         </div>
                                         <div class="col-12 mb-3">
                                             <label class="form-label">Complaint Summary *</label>
-                                            <input type="text" class="form-control" maxlength="200" required>
+                                            <input type="text" class="form-control" id="complaintSummary" maxlength="200" required>
                                             <small class="text-muted">Brief one-line summary (max 200 characters)</small>
                                         </div>
                                     </div>
@@ -480,9 +453,10 @@
                                 <div class="mb-4">
                                     <label class="form-label">Search Existing Client</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Search by name, ID, policy number, phone...">
-                                        <button class="btn btn-outline-secondary" type="button">Search</button>
+                                        <input type="text" class="form-control" id="clientSearch" placeholder="Search by name, ID, policy number, phone...">
+                                        <button class="btn btn-outline-secondary" type="button" id="searchClientBtn">Search</button>
                                     </div>
+                                    <div id="clientSearchResults" class="mt-2" style="display: none;"></div>
                                 </div>
                                 <div class="alert alert-info">
                                     <strong>OR</strong> Client not in system? <a href="#" onclick="showNewClientForm()">Enter manually</a>
@@ -492,25 +466,26 @@
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Full Name *</label>
-                                            <input type="text" class="form-control" required>
+                                            <input type="text" class="form-control" id="newClientName" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">ID/Passport Number</label>
-                                            <input type="text" class="form-control">
+                                            <input type="text" class="form-control" id="newClientId">
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Email *</label>
-                                            <input type="email" class="form-control" required>
+                                            <input type="email" class="form-control" id="newClientEmail" required>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">Mobile *</label>
                                             <div class="input-group">
                                                 <span class="input-group-text">+27</span>
-                                                <input type="tel" class="form-control" required>
+                                                <input type="tel" class="form-control" id="newClientMobile" required>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <input type="hidden" id="selectedClientId" value="">
                                 <div class="d-flex gap-2 mt-4">
                                     <button type="button" class="btn btn-primary" onclick="nextComplaintStep(3)">Next: Issue Description</button>
                                     <button type="button" class="btn btn-outline-secondary" onclick="previousComplaintStep(1)">Back</button>
@@ -529,21 +504,21 @@
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label class="form-label">Detailed Description *</label>
-                                    <textarea class="form-control" rows="8" required placeholder="Please provide a detailed description of the complaint, including dates, amounts, and specific concerns..."></textarea>
+                                    <textarea class="form-control" id="complaintDescription" rows="8" required placeholder="Please provide a detailed description of the complaint, including dates, amounts, and specific concerns..."></textarea>
                                     <small class="text-muted">Minimum 50 characters</small>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Date of Incident/Issue</label>
-                                        <input type="date" class="form-control">
+                                        <input type="date" class="form-control" id="incidentDate">
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Financial Impact (ZAR)</label>
-                                        <input type="number" class="form-control" placeholder="0.00">
+                                        <input type="number" class="form-control" id="financialImpact" placeholder="0.00" step="0.01">
                                     </div>
                                     <div class="col-12 mb-3">
                                         <label class="form-label">Client's Expected Resolution *</label>
-                                        <textarea class="form-control" rows="3" required placeholder="What does the client want? What would satisfy the complaint?"></textarea>
+                                        <textarea class="form-control" id="expectedResolution" rows="3" required placeholder="What does the client want? What would satisfy the complaint?"></textarea>
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -588,12 +563,11 @@
                                 </div>
                                 <div id="representativeSection" style="display: none;">
                                     <div class="mb-3">
-                                        <label class="form-label">Select Representative(s)</label>
-                                        <select class="form-select" multiple>
-                                            <option>Sarah Naidoo</option>
-                                            <option>Thabo Mokoena</option>
-                                            <option>Pieter Botha</option>
+                                        <label class="form-label">Select Representative</label>
+                                        <select class="form-select" id="representativeSelect">
+                                            <option value="">Select representative...</option>
                                         </select>
+                                        <small class="text-muted">If complaint involves multiple representatives, select the primary one</small>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
@@ -618,23 +592,20 @@
                                 </div>
                                 <div class="mb-4">
                                     <h6>Complaint Summary</h6>
-                                    <p><strong>Reference:</strong> CMP-2024-010 (draft)</p>
-                                    <p><strong>Date Received:</strong> 15/12/2024 14:30</p>
-                                    <p><strong>Category:</strong> Claims Issues - Claim Rejected</p>
-                                    <p><strong>Urgency:</strong> Standard</p>
+                                    <div id="reviewSummary">
+                                        <p class="text-muted">Loading summary...</p>
+                                    </div>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Assign Handler *</label>
-                                    <select class="form-select" required>
-                                        <option>Sarah Naidoo (Compliance Officer) - Recommended</option>
-                                        <option>Johan Smit (Key Individual)</option>
-                                        <option>FSP Owner</option>
+                                    <select class="form-select" id="assignedTo" required>
+                                        <option value="">Select handler...</option>
                                     </select>
                                 </div>
-                                <div class="alert alert-info">
+                                <div class="alert alert-info" id="deadlineInfo">
                                     <strong>Deadlines:</strong><br>
-                                    6-week deadline: 26/01/2025<br>
-                                    6-month deadline: 15/06/2025
+                                    <span id="sixWeekDeadline">Calculating...</span><br>
+                                    <span id="sixMonthDeadline">Calculating...</span>
                                 </div>
                                 <div class="d-flex gap-2 mt-4">
                                     <button type="button" class="btn btn-primary btn-lg" onclick="submitComplaint()">Submit Complaint</button>
@@ -729,7 +700,17 @@
                 <!-- Complaints List -->
                 <div class="card">
                     <div class="card-body">
-                        <div class="complaint-card mb-4">
+                        <div class="row" id="complaints-list-container">
+                            <!-- Complaints will be loaded dynamically here -->
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Loading complaints...
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Old hard-coded complaint card (hidden) -->
+                        <div class="complaint-card mb-4" style="display: none;">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
                                     <h5>CMP-2024-007</h5>
@@ -771,8 +752,168 @@
         <!-- 4. COMPLAINTS CALENDAR TAB -->
         <div class="tab-pane fade" id="calendar" role="tabpanel">
             <div class="container-fluid py-4">
-                <h2 class="mb-4">Complaints Calendar</h2>
-                <p>Calendar view with deadlines and scheduled activities</p>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0">Complaints Calendar</h2>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="switchCalendarView('month')">Month</button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="switchCalendarView('week')">Week</button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="switchCalendarView('day')">Day</button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="switchCalendarView('list')">List</button>
+                    </div>
+                </div>
+
+                <!-- Calendar Legend -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <span class="badge bg-danger me-2">🔴</span>
+                                <small>6-Week Deadlines</small>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="badge bg-warning me-2">🟠</span>
+                                <small>Follow-up Dates</small>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="badge bg-info me-2">🔵</span>
+                                <small>Scheduled Meetings</small>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="badge bg-success me-2">🟢</span>
+                                <small>Completed Milestones</small>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="badge bg-secondary me-2">🟣</span>
+                                <small>Ombudsman Dates</small>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-sm btn-primary" onclick="openAddCalendarEventModal()">
+                                    <i class="fas fa-plus me-1"></i>Add Event
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar View -->
+                <div class="card mb-4" id="calendar-view-container">
+                    <div class="card-body">
+                        <div id="complaints-calendar">
+                            <!-- Calendar will be rendered here -->
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading calendar...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Loading calendar...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deadline Tracker -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="mb-0">Within 7 Days</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm" id="deadlines-7days">
+                                        <thead>
+                                            <tr>
+                                                <th>Reference</th>
+                                                <th>Date</th>
+                                                <th>Days</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted">Loading...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0">Within 30 Days</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm" id="deadlines-30days">
+                                        <thead>
+                                            <tr>
+                                                <th>Reference</th>
+                                                <th>Date</th>
+                                                <th>Days</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted">Loading...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">6-Month Deadlines</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm" id="deadlines-6months">
+                                        <thead>
+                                            <tr>
+                                                <th>Reference</th>
+                                                <th>Date</th>
+                                                <th>Days</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted">Loading...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scheduled Activities -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Scheduled Activities</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>This Week</h6>
+                                <div id="activities-this-week">
+                                    <p class="text-muted">Loading...</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Next Week</h6>
+                                <div id="activities-next-week">
+                                    <p class="text-muted">Loading...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -780,7 +921,40 @@
         <div class="tab-pane fade" id="analysis" role="tabpanel">
             <div class="container-fluid py-4">
                 <h2 class="mb-4">Analysis & Trends</h2>
-                
+
+                <!-- Overview Statistics -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value" id="ytd-total">0</div>
+                            <div class="stat-label">Total Complaints (YTD)</div>
+                            <div class="stat-sublabel" id="ytd-year">2024</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-success" id="ytd-resolved">0</div>
+                            <div class="stat-label">Resolved</div>
+                            <div class="stat-sublabel" id="ytd-resolved-percent">0%</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-info" id="ytd-active">0</div>
+                            <div class="stat-label">Active</div>
+                            <div class="stat-sublabel" id="ytd-active-percent">0%</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-value text-warning" id="avg-resolution-time">0</div>
+                            <div class="stat-label">Avg Resolution Time</div>
+                            <div class="stat-sublabel">Days</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 1 -->
                 <div class="row mb-4">
                     <div class="col-md-6 mb-4">
                         <div class="card">
@@ -803,24 +977,168 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Charts Row 2 -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Complaints Trend Over Time</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="trendOverTimeChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Resolution Time Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="resolutionTimeDistributionChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 3 -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Complaints by Priority</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="priorityChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Complaints by Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="statusChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Representative Analysis -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Complaints by Representative</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="representativeChart" height="100"></canvas>
+                    </div>
+                </div>
+
+                <!-- Compliance Metrics -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">FAIS Act Compliance Metrics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 text-center mb-3">
+                                <div class="h4 mb-0 text-success" id="compliance-48hr">0%</div>
+                                <small class="text-muted">48-Hour Acknowledgment</small>
+                            </div>
+                            <div class="col-md-3 text-center mb-3">
+                                <div class="h4 mb-0 text-success" id="compliance-6week">0%</div>
+                                <small class="text-muted">6-Week Resolution Rate</small>
+                            </div>
+                            <div class="col-md-3 text-center mb-3">
+                                <div class="h4 mb-0 text-success" id="compliance-6month">0%</div>
+                                <small class="text-muted">6-Month Closure Rate</small>
+                            </div>
+                            <div class="col-md-3 text-center mb-3">
+                                <div class="h4 mb-0 text-success" id="compliance-escalation">0%</div>
+                                <small class="text-muted">Escalation Rate</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- 6. OMBUDSMAN CASES TAB -->
         <div class="tab-pane fade" id="ombudsman" role="tabpanel">
             <div class="container-fluid py-4">
-                <h2 class="mb-4">Ombudsman Cases</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0">Ombudsman Cases</h2>
+                    <button class="btn btn-primary" onclick="if(typeof loadOmbudsmanCases === 'function') { loadOmbudsmanCases(); } else if(typeof window.loadOmbudsmanCases === 'function') { window.loadOmbudsmanCases(); } else { alert('Function not available'); }">
+                        <i class="fas fa-sync me-2"></i>Refresh
+                    </button>
+                </div>
                 
-                <div class="card">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-balance-scale fa-5x text-success mb-4"></i>
-                        <h4>No complaints have been escalated to Ombudsman</h4>
-                        <p class="text-muted">This indicates effective internal resolution processes</p>
-                        <span class="badge bg-success fs-6">✅ Excellent compliance performance</span>
+                <div id="ombudsman-cases-container">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading Ombudsman cases...</p>
+                        <p class="mt-2 text-muted small">Click "Refresh" if cases don't load automatically</p>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <script>
+            // Ensure Ombudsman cases load when tab is shown
+            (function() {
+                function setupOmbudsmanTabListener() {
+                    const ombudsmanTab = document.getElementById('ombudsman-tab');
+                    const ombudsmanPane = document.getElementById('ombudsman');
+                    
+                    if (ombudsmanTab) {
+                        // Remove any existing listeners
+                        const newTab = ombudsmanTab.cloneNode(true);
+                        ombudsmanTab.parentNode.replaceChild(newTab, ombudsmanTab);
+                        
+                        // Add new listener
+                        document.getElementById('ombudsman-tab').addEventListener('shown.bs.tab', function() {
+                            console.log('Ombudsman tab clicked, loading cases...');
+                            if (typeof loadOmbudsmanCases === 'function') {
+                                loadOmbudsmanCases();
+                            } else if (typeof window.loadOmbudsmanCases === 'function') {
+                                window.loadOmbudsmanCases();
+                            } else {
+                                console.error('loadOmbudsmanCases function not found');
+                            }
+                        });
+                    }
+                    
+                    if (ombudsmanPane) {
+                        // Also listen for when the pane becomes visible
+                        const observer = new MutationObserver(function(mutations) {
+                            if (ombudsmanPane.classList.contains('active') && ombudsmanPane.classList.contains('show')) {
+                                console.log('Ombudsman pane visible, loading cases...');
+                                if (typeof loadOmbudsmanCases === 'function') {
+                                    loadOmbudsmanCases();
+                                } else if (typeof window.loadOmbudsmanCases === 'function') {
+                                    window.loadOmbudsmanCases();
+                                }
+                            }
+                        });
+                        
+                        observer.observe(ombudsmanPane, {
+                            attributes: true,
+                            attributeFilter: ['class']
+                        });
+                    }
+                }
+                
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', setupOmbudsmanTabListener);
+                } else {
+                    setupOmbudsmanTabListener();
+                }
+            })();
+        </script>
 
         <!-- 7. REPORTS TAB -->
         <div class="tab-pane fade" id="reports" role="tabpanel">
@@ -863,14 +1181,137 @@
         </div>
     </div>
 
+    <!-- Complaint Detail Modal -->
+    <div class="modal fade" id="complaintDetailModal" tabindex="-1" aria-labelledby="complaintDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="complaintDetailModalLabel">Complaint Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="complaintDetailContent">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading complaint details...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="editComplaintBtn" onclick="editComplaintFromModal()">Edit Complaint</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Complaint Modal -->
+    <div class="modal fade" id="editComplaintModal" tabindex="-1" aria-labelledby="editComplaintModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editComplaintModalLabel">Edit Complaint</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editComplaintForm" onsubmit="saveComplaintChanges(event)">
+                    <div class="modal-body">
+                        <input type="hidden" id="editComplaintId" name="complaintId">
+                        
+                        <!-- Status -->
+                        <div class="mb-3">
+                            <label for="editComplaintStatus" class="form-label">Status <span class="text-danger">*</span></label>
+                            <select class="form-select" id="editComplaintStatus" name="status" required>
+                                <option value="">Select Status</option>
+                                <option value="open">Open</option>
+                                <option value="acknowledged">Acknowledged</option>
+                                <option value="investigating">Investigating</option>
+                                <option value="pending_info">Pending Info</option>
+                                <option value="resolved">Resolved</option>
+                                <option value="closed">Closed</option>
+                            </select>
+                        </div>
+
+                        <!-- Priority -->
+                        <div class="mb-3">
+                            <label for="editComplaintPriority" class="form-label">Priority</label>
+                            <select class="form-select" id="editComplaintPriority" name="priority">
+                                <option value="">Select Priority</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+
+                        <!-- Assigned To -->
+                        <div class="mb-3">
+                            <label for="editComplaintAssignedTo" class="form-label">Assigned To</label>
+                            <select class="form-select" id="editComplaintAssignedTo" name="assigned_to">
+                                <option value="">Unassigned</option>
+                                <!-- Will be populated dynamically -->
+                            </select>
+                        </div>
+
+                        <!-- Acknowledgement Sent Date -->
+                        <div class="mb-3">
+                            <label for="editComplaintAckDate" class="form-label">Acknowledgement Sent Date</label>
+                            <input type="date" class="form-control" id="editComplaintAckDate" name="acknowledgement_sent_date">
+                        </div>
+
+                        <!-- Resolution Date -->
+                        <div class="mb-3">
+                            <label for="editComplaintResolutionDate" class="form-label">Resolution Date</label>
+                            <input type="date" class="form-control" id="editComplaintResolutionDate" name="resolution_date">
+                        </div>
+
+                        <!-- Investigation Notes -->
+                        <div class="mb-3">
+                            <label for="editComplaintInvestigationNotes" class="form-label">Investigation Notes</label>
+                            <textarea class="form-control" id="editComplaintInvestigationNotes" name="investigation_notes" rows="4" placeholder="Enter investigation notes..."></textarea>
+                        </div>
+
+                        <!-- Resolution Description -->
+                        <div class="mb-3">
+                            <label for="editComplaintResolutionDescription" class="form-label">Resolution Description</label>
+                            <textarea class="form-control" id="editComplaintResolutionDescription" name="resolution_description" rows="4" placeholder="Enter resolution description..."></textarea>
+                        </div>
+
+                        <!-- Root Cause -->
+                        <div class="mb-3">
+                            <label for="editComplaintRootCause" class="form-label">Root Cause</label>
+                            <textarea class="form-control" id="editComplaintRootCause" name="root_cause" rows="3" placeholder="Enter root cause analysis..."></textarea>
+                        </div>
+
+                        <!-- Preventative Action -->
+                        <div class="mb-3">
+                            <label for="editComplaintPreventativeAction" class="form-label">Preventative Action</label>
+                            <textarea class="form-control" id="editComplaintPreventativeAction" name="preventative_action" rows="3" placeholder="Enter preventative actions taken..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../../js/data-functions.js"></script>
     <script src="../js/complaints-dashboard.js"></script>
     <script src="../js/log-complaint.js"></script>
     <script src="../js/active-complaints.js"></script>
+    <script src="../js/complaints-calendar.js"></script>
+    <script src="../js/complaints-analysis.js"></script>
+    <script src="../js/ombudsman-cases.js"></script>
 </body>
 </html>
 

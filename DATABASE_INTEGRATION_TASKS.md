@@ -3,8 +3,40 @@
 ## Document Information
 **Project:** iComply - FSP Compliance Management Platform  
 **Database:** Supabase PostgreSQL  
-**Last Updated:** 2025-11-27 by calen-pillay  
+**Last Updated:** 2025-11-27 by cedric-keown  
 **Status Tracking:** ✅ Complete | 🔄 In Progress | ⏳ Pending | ❌ Blocked
+
+### Assignment Verification
+**Assignment Rule:** The "Completed By" column must match the GitHub username of the developer who **actually committed the code changes** for that task.
+
+**⚠️ CRITICAL:** 
+- **DO NOT** use `mcp_github_get_me` to determine "Completed By" - this only shows who is currently logged in
+- **ALWAYS** check git history to find who actually made the code commits
+- Use the git author name (`%an` from git log) as the "Completed By" value
+- The format may vary (e.g., `calenPillay` vs `calen-pillay`) - use exactly as it appears in git log
+
+### "Completed By" Field Rules
+**⚠️ CRITICAL:** The "Completed By" field must reflect the GitHub username of the developer who **actually committed the code changes**, NOT the logged-in user.
+
+**How to determine "Completed By":**
+1. Check git history for the files related to the task:
+   ```bash
+   git log --all --format="%h|%an|%ae|%ad|%s" --date=short --since="YYYY-MM-DD" -- "path/to/files"
+   ```
+2. Use the `%an` (author name) from git log as the "Completed By" value
+3. Format: Use exactly as it appears in git log (e.g., `calenPillay`, `cedric-keown`)
+4. **DO NOT** use `mcp_github_get_me` - this only shows who is currently logged in, not who made the code changes
+5. If multiple developers worked on a task, use the primary implementer (the one who wrote most of the code)
+
+### Dummy Data Policy
+**⚠️ CRITICAL:** All dummy/sample/test data must be removed when a task is marked as complete. This includes:
+- Hardcoded values in HTML forms (e.g., `value="Bright Future Financial Services"`)
+- Sample data arrays in JavaScript (e.g., `const usersData = [{id: 1, name: 'John Doe'}]`)
+- Test records in database seed scripts
+- Pre-populated form fields with dummy data
+- Dummy text in UI elements (e.g., "Current Cycle: 1 June 2024 - 31 May 2025")
+
+Forms should load data from the database or display empty states. See the "Dummy Data Removal Checklist" in the "How to Update This Document" section for details.
 
 ---
 
@@ -51,10 +83,10 @@
 ### Frontend Integration
 | # | Task | Status | Completed By | Date | Notes |
 |---|------|--------|-------------|------|-------|
-| P1.14 | Integrate FSP config in settings module | ✅ Complete | calen-pillay | 2025-11-27 | Settings UI integrated with database CRUD |
-| P1.15 | Integrate system settings in admin panel | ⏳ Pending | - | - | Key-value editor |
-| P1.16 | User role management UI | ⏳ Pending | - | - | Role assignment interface |
-| P1.17 | User profile management UI | ⏳ Pending | - | - | Profile editing |
+| P1.14 | Integrate FSP config in settings module | ✅ Complete | calenPillay | 2025-11-27 | Settings UI integrated with database CRUD (code by calenPillay, tested/verified by cedric-keown) |
+| P1.15 | Integrate system settings in admin panel | ✅ Complete | calen-pillay | 2025-11-27 | Key-value editor with full CRUD operations |
+| P1.16 | User role management UI | ✅ Complete | calen-pillay | 2025-11-27 | Role management interface with full CRUD operations |
+| P1.17 | User profile management UI | ✅ Complete | calen-pillay | 2025-11-27 | Full CRUD operations integrated with database |
 
 ---
 
@@ -86,7 +118,7 @@
 ### Database Functions & Triggers
 | # | Task | Status | Completed By | Date | Notes |
 |---|------|--------|-------------|------|-------|
-| P2.12 | Auto-update supervised count trigger | ⏳ Pending | - | - | Update KI supervision count |
+| P2.12 | Auto-update supervised count trigger | ✅ Complete | cedric-keown | 2025-11-27 | Trigger automatically updates current_supervised_count when representatives are assigned/unassigned or status changes |
 | P2.13 | Calculate supervision compliance | ⏳ Pending | - | - | Check 6-month supervision requirement |
 | P2.14 | Representative status change notification | ⏳ Pending | - | - | Alert on deauthorization |
 
@@ -477,8 +509,8 @@
 
 ### Overall Progress
 - **Total Tasks:** 220 (enumerated)
-- **Completed (✅):** 33 (15.0%)
-- **In Progress (🔄):** 18 (8.2%)
+- **Completed (✅):** 34 (15.5%)
+- **In Progress (🔄):** 17 (7.7%)
 - **Pending (⏳):** 169 (76.8%)
 - **Blocked (❌):** 0 (0%)
 
@@ -486,7 +518,7 @@
 | Phase | Task Range | Total | Complete | In Progress | Pending | % Complete |
 |-------|-----------|-------|----------|-------------|---------|------------|
 | Phase 1 | P1.1-P1.17 | 17 | 9 | 0 | 8 | 52.9% |
-| Phase 2 | P2.1-P2.19 | 19 | 9 | 1 | 9 | 47.4% |
+| Phase 2 | P2.1-P2.19 | 19 | 10 | 0 | 9 | 52.6% |
 | Phase 3 | P3.1-P3.24 | 24 | 0 | 3 | 21 | 0% |
 | Phase 4 | P4.1-P4.18 | 18 | 0 | 3 | 15 | 0% |
 | Phase 5 | P5.1-P5.24 | 24 | 0 | 4 | 20 | 0% |
@@ -500,16 +532,87 @@
 ## How to Update This Document
 
 ### When a Task is Completed
-1. Change status from ⏳ Pending or 🔄 In Progress to ✅ Complete
-2. Developer name is automatically populated from logged-in GitHub account (currently: **calen-pillay**)
-3. Add completion date in "Date" column (format: YYYY-MM-DD)
-4. Add any relevant notes
-5. Update the Task Completion Summary counts
+1. **Identify the Developer:** Check git history to determine who actually made the code changes
+   ```bash
+   # Check who modified files related to the task
+   git log --all --format="%h|%an|%ae|%ad|%s" --date=short --since="YYYY-MM-DD" -- "path/to/files"
+   
+   # Or check recent commits for the feature
+   git log --all --format="%an|%ae" --since="YYYY-MM-DD" | sort -u
+   ```
+   - **CRITICAL:** Use the GitHub username of the developer who actually committed the code changes
+   - Do NOT use the logged-in user from `get_me` unless they are the one who made the changes
+   - Format: Use GitHub username (e.g., `cedric-keown`, `calenPillay`) - match the git author name
+2. Change status from ⏳ Pending or 🔄 In Progress to ✅ Complete
+3. **Set "Completed By":** Use the GitHub username from step 1 (the actual code committer)
+   - Format: Use GitHub username exactly as it appears in git log (may be different from `get_me`)
+   - Verify via git log: `git log --author="username" --oneline --since="YYYY-MM-DD"`
+4. Add completion date in "Date" column (format: YYYY-MM-DD)
+5. **Remove Dummy Data:** Remove all dummy/sample/test data from the implementation
+   - Remove hardcoded values from HTML forms (replace with empty values or placeholders)
+   - Remove sample data arrays from JavaScript files
+   - Remove test data from database seed scripts (if applicable)
+   - Ensure forms load data from database instead of using dummy values
+   - Verify that all UI elements display real data or empty states appropriately
+6. Add any relevant notes (including note if dummy data was removed)
+7. Update the Task Completion Summary counts
+
+### Verifying Task Assignments
+**⚠️ CRITICAL:** Always verify the actual code committer via git history, NOT the logged-in user.
+
+To verify who completed a task:
+```bash
+# Method 1: Check commits for specific files related to the task
+git log --all --format="%h|%an|%ae|%ad|%s" --date=short --since="YYYY-MM-DD" -- "path/to/related/files"
+
+# Method 2: Search commit messages for task references
+git log --all --grep="P1.15" --pretty=format:"%h - %an (%ae) - %ad - %s"
+
+# Method 3: Check all commits by a specific author
+git log --author="calenPillay" --oneline --since="2025-11-27"
+
+# Method 4: See who modified a specific file
+git log --all --format="%an|%ae" --since="YYYY-MM-DD" -- "path/to/file.js" | sort -u
+```
+
+**Important:** 
+- The "Completed By" field must reflect the GitHub username of the developer who **actually committed the code changes**
+- Do NOT use `get_me` unless that user is the one who made the commits
+- Check git history first, then use the author name from git log
+- For historical tasks, verify via git log before updating assignments
 
 ### Example Entry
 ```markdown
-| P4.1 | Create `clients` table | ✅ Complete | calen-pillay | 2025-11-28 | Added indexes on FK columns |
+# Step 1: Check git history to find who made the changes
+# git log --all --format="%an|%ae" --since="2025-11-27" -- "modules/settings-administration/js/settings-administration.js"
+# Returns: calenPillay|calen.pillay@gmail.com
+
+# Step 2: Use the GitHub username from git log (NOT from get_me)
+| P4.1 | Create `clients` table | ✅ Complete | calenPillay | 2025-11-28 | Added indexes on FK columns, removed dummy data |
 ```
+
+**Note:** 
+- **CRITICAL:** Always check git history first to find who actually committed the code
+- Use the GitHub username from git log (the `%an` field), not from `get_me`
+- The username format may vary (e.g., `calenPillay` vs `calen-pillay`) - use exactly as it appears in git log
+- Do NOT use email addresses or full names
+
+### Dummy Data Removal Checklist
+When marking a task as complete, ensure all dummy data has been removed:
+
+- [ ] **HTML Forms:** No hardcoded `value` attributes with sample data (e.g., "Bright Future Financial Services", "FSP12345")
+- [ ] **JavaScript Arrays:** Remove or replace sample data arrays (e.g., `const usersData = [...]` with dummy entries)
+- [ ] **Database Seeds:** Remove test/dummy records from seed scripts (keep only realistic seed data if needed)
+- [ ] **UI Placeholders:** Replace dummy text with appropriate placeholders or empty states
+- [ ] **Form Defaults:** Remove pre-selected dummy values (use database-loaded values or empty states)
+- [ ] **Test Data:** Remove any test data used during development
+- [ ] **Comments:** Remove or update comments referencing dummy data
+
+**Example:**
+- ❌ Bad: `<input value="Bright Future Financial Services (Pty) Ltd">`
+- ✅ Good: `<input>` or `<input placeholder="Enter FSP Name">`
+- ❌ Bad: `const usersData = [{id: 1, name: 'John Doe', ...}]`
+- ✅ Good: `let usersData = [];` (loaded from database)
 
 ### Task Numbering System
 - **P1.x** - Phase 1: Foundation & Authentication (17 tasks)
@@ -563,8 +666,12 @@
 
 ---
 
-**Document Owner:** calen-pillay (Development Team)  
+**Document Owner:** cedric-keown (Development Team)  
 **Last Reviewed:** 2025-11-27  
 **Next Review:** Weekly (Every Monday)  
-**GitHub Account:** [@calen-pillay](https://github.com/calen-pillay)
+**Current GitHub User:** Use `mcp_github_get_me` to verify current authenticated user
+
+### Active Contributors
+- **cedric-keown** - [@cedric-keown](https://github.com/cedric-keown) - Project Owner
+- **calenPillay** - [@calenPillay](https://github.com/calenPillay) - Developer
 

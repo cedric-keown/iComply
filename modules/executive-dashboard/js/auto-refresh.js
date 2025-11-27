@@ -15,7 +15,7 @@ function stopAutoRefresh() {
     }
 }
 
-function refreshDashboardData() {
+async function refreshDashboardData() {
     // Update last refresh time
     const now = new Date();
     const formatted = formatDateTime(now);
@@ -24,8 +24,12 @@ function refreshDashboardData() {
         element.textContent = formatted;
     }
     
-    // In a real implementation, this would fetch fresh data from the API
-    console.log('Auto-refreshing dashboard data...');
+    // Fetch fresh data from the API
+    if (typeof window.loadDashboardData === 'function') {
+        await window.loadDashboardData();
+    } else {
+        console.log('Auto-refreshing dashboard data...');
+    }
 }
 
 // Start auto-refresh when page loads

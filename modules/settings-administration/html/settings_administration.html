@@ -53,6 +53,11 @@
                 </button>
             </li>
             <li class="nav-item" role="presentation">
+                <button class="nav-link" id="system-settings-tab" data-bs-toggle="tab" data-bs-target="#system-settings" type="button" role="tab">
+                    <i class="fas fa-sliders-h me-2"></i>System Settings
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
                 <button class="nav-link" id="maintenance-tab" data-bs-toggle="tab" data-bs-target="#maintenance" type="button" role="tab">
                     <i class="fas fa-tools me-2"></i>System Maintenance
                 </button>
@@ -82,19 +87,19 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">FSP Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="fspName" value="Bright Future Financial Services (Pty) Ltd" required>
+                                    <input type="text" class="form-control" id="fspName" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">FSP License Number <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="fspLicense" value="FSP12345" required>
+                                    <input type="text" class="form-control" id="fspLicense" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Registration Number</label>
-                                    <input type="text" class="form-control" id="regNumber" value="2015/123456/07">
+                                    <input type="text" class="form-control" id="regNumber">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">VAT Number</label>
-                                    <input type="text" class="form-control" id="vatNumber" value="4123456789">
+                                    <input type="text" class="form-control" id="vatNumber">
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">Primary Business Address <span class="text-danger">*</span></label>
@@ -107,7 +112,8 @@
                                 </div>
                                 <div class="col-md-2">
                                     <select class="form-select mb-2" id="province" required>
-                                        <option value="WC" selected>Western Cape</option>
+                                        <option value="">Select Province</option>
+                                        <option value="WC">Western Cape</option>
                                         <option value="EC">Eastern Cape</option>
                                         <option value="FS">Free State</option>
                                         <option value="GP">Gauteng</option>
@@ -123,7 +129,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Phone</label>
-                                    <input type="tel" class="form-control" id="phone" value="+27 21 123 4567">
+                                    <input type="tel" class="form-control" id="phone">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Email</label>
@@ -255,9 +261,9 @@
                                 <div class="col-md-6">
                                     <label class="form-label">Business Hours (Monday - Friday)</label>
                                     <div class="d-flex gap-2 align-items-center">
-                                        <input type="time" class="form-control" id="startTime" value="08:00">
+                                        <input type="time" class="form-control" id="startTime">
                                         <span>to</span>
-                                        <input type="time" class="form-control" id="endTime" value="17:00">
+                                        <input type="time" class="form-control" id="endTime">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -298,24 +304,47 @@
                                     <label class="form-label">CPD Cycle Period</label>
                                     <div class="d-flex gap-2 align-items-center">
                                         <select class="form-select" id="cpdStartMonth">
-                                            <option value="1" selected>1 June</option>
+                                            <option value="">Select Start Month</option>
+                                            <option value="1">1 June</option>
+                                            <option value="2">1 July</option>
+                                            <option value="3">1 August</option>
+                                            <option value="4">1 September</option>
+                                            <option value="5">1 October</option>
+                                            <option value="6">1 November</option>
+                                            <option value="7">1 December</option>
+                                            <option value="8">1 January</option>
+                                            <option value="9">1 February</option>
+                                            <option value="10">1 March</option>
+                                            <option value="11">1 April</option>
+                                            <option value="12">1 May</option>
                                         </select>
                                         <span>to</span>
                                         <select class="form-select" id="cpdEndMonth">
-                                            <option value="5" selected>31 May</option>
+                                            <option value="">Select End Month</option>
+                                            <option value="1">31 May</option>
+                                            <option value="2">30 June</option>
+                                            <option value="3">31 July</option>
+                                            <option value="4">31 August</option>
+                                            <option value="5">30 September</option>
+                                            <option value="6">31 October</option>
+                                            <option value="7">30 November</option>
+                                            <option value="8">31 December</option>
+                                            <option value="9">31 January</option>
+                                            <option value="10">28/29 February</option>
+                                            <option value="11">31 March</option>
+                                            <option value="12">30 April</option>
                                         </select>
                                     </div>
-                                    <small class="text-muted">Current Cycle: 1 June 2024 - 31 May 2025 (175 days elapsed, 188 remaining)</small>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Required CPD Hours</label>
                                     <div class="row g-2">
                                         <div class="col-6">
-                                            <input type="number" class="form-control" id="totalHours" value="18" min="0">
+                                            <input type="number" class="form-control" id="totalHours" min="0" placeholder="Total Hours">
                                             <small class="text-muted">Total Hours</small>
                                         </div>
                                         <div class="col-6">
-                                            <input type="number" class="form-control" id="ethicsHours" value="3" min="0">
+                                            <input type="number" class="form-control" id="ethicsHours" min="0" placeholder="Ethics Hours">
                                             <small class="text-muted">Ethics (minimum)</small>
                                         </div>
                                     </div>
@@ -332,7 +361,6 @@
                                             <label class="form-check-label" for="fpReview2">Biannual Review</label>
                                         </div>
                                     </div>
-                                    <small class="text-muted">Next F&P Review Due: 1 June 2025</small>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">FICA Review Requirements</label>
@@ -417,7 +445,7 @@
                 </div>
 
                 <!-- Users Table -->
-                <div class="card">
+                <div class="card mb-4">
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-hover">
@@ -434,6 +462,43 @@
                                 </thead>
                                 <tbody id="usersTableBody">
                                     <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Roles Management Section -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">User Roles Management</h5>
+                        <button class="btn btn-sm btn-primary" id="addRoleBtn">
+                            <i class="fas fa-plus me-1"></i> Add New Role
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-3">Manage user roles and their permissions. Roles define what users can access and do in the system.</p>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Role Name</th>
+                                        <th>Display Name</th>
+                                        <th>Description</th>
+                                        <th>Permissions</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userRolesTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -458,18 +523,20 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">License Number</label>
-                                    <input type="text" class="form-control" id="licenseNumber" value="FSP12345">
+                                    <input type="text" class="form-control" id="licenseNumber" readonly>
+                                    <small class="text-muted">License number is managed in FSP Information section</small>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Issue Date</label>
-                                    <input type="date" class="form-control" id="issueDate" value="2015-03-15">
+                                    <input type="date" class="form-control" id="issueDate">
+                                    <small class="text-muted">Date when FSP license was issued</small>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">Categories of Advice Authorized</label>
                                     <div class="row g-2">
                                         <div class="col-md-4">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="cat1" checked>
+                                                <input class="form-check-input" type="checkbox" id="cat1">
                                                 <label class="form-check-label" for="cat1">
                                                     Category I - Long-term Insurance
                                                 </label>
@@ -477,7 +544,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="cat2" checked>
+                                                <input class="form-check-input" type="checkbox" id="cat2">
                                                 <label class="form-check-label" for="cat2">
                                                     Category II - Short-term Insurance
                                                 </label>
@@ -485,7 +552,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="cat3" checked>
+                                                <input class="form-check-input" type="checkbox" id="cat3">
                                                 <label class="form-check-label" for="cat3">
                                                     Category III - Retail Pension Benefits
                                                 </label>
@@ -848,7 +915,77 @@
                 </div>
             </div>
 
-            <!-- TAB 7: SYSTEM MAINTENANCE -->
+            <!-- TAB 7: SYSTEM SETTINGS -->
+            <div class="tab-pane fade" id="system-settings" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3>System Settings</h3>
+                        <p class="text-muted mb-0">Manage key-value system configuration settings</p>
+                    </div>
+                    <button class="btn btn-primary" id="addSystemSettingBtn">
+                        <i class="fas fa-plus me-1"></i> Add New Setting
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Category Filter</label>
+                                <select class="form-select" id="settingsCategoryFilter">
+                                    <option value="">All Categories</option>
+                                    <option value="general">General</option>
+                                    <option value="compliance">Compliance</option>
+                                    <option value="notifications">Notifications</option>
+                                    <option value="security">Security</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Search</label>
+                                <input type="text" class="form-control" id="settingsSearch" placeholder="Search by key or description...">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-outline-secondary w-100" id="applySettingsFilters">
+                                    <i class="fas fa-filter me-1"></i> Apply Filters
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Table -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Key</th>
+                                        <th>Value</th>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="systemSettingsTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 8: SYSTEM MAINTENANCE -->
             <div class="tab-pane fade" id="maintenance" role="tabpanel">
                 <div class="mb-4">
                     <h3>System Maintenance</h3>
@@ -979,7 +1116,7 @@
                 </div>
             </div>
 
-            <!-- TAB 8: AUDIT LOGS -->
+            <!-- TAB 9: AUDIT LOGS -->
             <div class="tab-pane fade" id="audit" role="tabpanel">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -1097,41 +1234,229 @@
                             <label class="form-label">Role <span class="text-danger">*</span></label>
                             <select class="form-select" id="userRole" required>
                                 <option value="">Select Role...</option>
-                                <option value="fsp-owner">FSP Owner/Principal</option>
-                                <option value="key-individual">Key Individual</option>
-                                <option value="compliance-officer">Compliance Officer</option>
-                                <option value="representative">Representative</option>
-                                <option value="admin">Admin Staff</option>
+                                <!-- Populated by JavaScript -->
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Status</label>
-                            <div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="userStatus" id="userStatusActive" value="active" checked>
-                                    <label class="form-check-label" for="userStatusActive">
-                                        Active (Send welcome email with login details)
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="userStatus" id="userStatusPending" value="pending">
-                                    <label class="form-check-label" for="userStatusPending">
-                                        Pending (Create account, user activates later)
-                                    </label>
-                                </div>
-                            </div>
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="userPhone" placeholder="+27">
                         </div>
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="sendWelcomeEmail" checked>
-                                <label class="form-check-label" for="sendWelcomeEmail">
-                                    Yes, send account setup instructions
-                                </label>
-                            </div>
+                            <label class="form-label">ID Number (SA ID)</label>
+                            <input type="text" class="form-control" id="userIdNumber" placeholder="YYMMDDSSSSCAZ">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">FSP Number</label>
+                            <input type="text" class="form-control" id="userFspNumber" placeholder="FSP12345">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" id="userStatus">
+                                <option value="active" selected>Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>Note:</strong> User profiles must be linked to an existing auth.users account. 
+                            The user ID must match an existing authentication user. For new users, create the auth account first.
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">User ID (UUID) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="userId" required placeholder="UUID from auth.users">
+                            <small class="text-muted">Must match an existing auth.users.id</small>
                         </div>
                         <div class="d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-primary">Create User</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Role Modal -->
+    <div class="modal fade" id="userRoleModal" tabindex="-1" aria-labelledby="userRoleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userRoleModalLabel">Add User Role</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userRoleForm">
+                        <input type="hidden" id="roleId" value="">
+                        <div class="mb-3">
+                            <label class="form-label">Role Name (Internal) <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="roleName" required placeholder="e.g., custom_role, auditor" pattern="[a-z0-9_]+">
+                            <small class="text-muted">Lowercase, underscores only. Cannot be changed after creation.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Display Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="roleDisplayName" required placeholder="e.g., Custom Role, Auditor">
+                            <small class="text-muted">Human-readable name shown in the UI</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="roleDescription" rows="3" placeholder="Describe what this role is for and what permissions it grants"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Permissions (JSON) <span class="text-danger">*</span></label>
+                            <textarea class="form-control font-monospace" id="rolePermissions" rows="8" required placeholder='{"all": false, "actions": ["view"], "modules": ["*"]}'>{"all": false, "actions": ["view"], "modules": []}</textarea>
+                            <small class="text-muted">Valid JSON object defining permissions. Use <code>{"all": true}</code> for full access.</small>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Permission Structure:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li><code>"all": true</code> - Grants all permissions (FSP Owner)</li>
+                                <li><code>"actions": ["view", "manage", "report"]</code> - Allowed actions</li>
+                                <li><code>"modules": ["*"]</code> - All modules, or specific: ["cpd", "fica", "clients"]</li>
+                            </ul>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Role</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Setting Modal -->
+    <!-- Edit Key Individual Modal -->
+    <div class="modal fade" id="editKeyIndividualModal" tabindex="-1" aria-labelledby="editKeyIndividualModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editKeyIndividualModalLabel">Edit Key Individual</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editKeyIndividualForm">
+                        <input type="hidden" id="editKiId" name="ki_id">
+                        <input type="hidden" id="editKiRepresentativeId" name="representative_id">
+                        
+                        <!-- Read-only Information -->
+                        <div class="mb-3">
+                            <h6>Key Individual Information</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="editKiName" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Type</label>
+                                    <input type="text" class="form-control" id="editKiType" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">ID Number</label>
+                                    <input type="text" class="form-control" id="editKiIdNumber" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Representative Number</label>
+                                    <input type="text" class="form-control" id="editKiRepNumber" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <!-- Editable Fields -->
+                        <div class="mb-3">
+                            <h6>Appointment Details</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Appointment Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="editKiAppointmentDate" name="appointment_date" required>
+                                    <small class="text-muted">Date when this person was appointed as Key Individual</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Resignation Date</label>
+                                    <input type="date" class="form-control" id="editKiResignationDate" name="resignation_date">
+                                    <small class="text-muted">Leave empty if still active. Setting a date will deactivate this Key Individual.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>Supervision Limits</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Maximum Supervised Count <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="editKiMaxSupervised" name="max_supervised_count" min="0" max="100" required>
+                                    <small class="text-muted">Maximum number of representatives this Key Individual can supervise</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Current Supervised Count</label>
+                                    <input type="number" class="form-control" id="editKiCurrentSupervised" readonly>
+                                    <small class="text-muted">This is automatically calculated based on assigned representatives</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> To edit representative details (name, contact information), please use the Representatives Management module.
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveKeyIndividualBtn">
+                        <i class="fas fa-save me-1"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="systemSettingModal" tabindex="-1" aria-labelledby="systemSettingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="systemSettingModalLabel">Add System Setting</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="systemSettingForm">
+                        <input type="hidden" id="settingId" value="">
+                        <div class="mb-3">
+                            <label class="form-label">Setting Key <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="settingKey" required placeholder="e.g., app_name, max_upload_size">
+                            <small class="text-muted">Unique identifier for this setting (lowercase, underscores)</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Setting Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="settingType" required>
+                                <option value="string">String</option>
+                                <option value="number">Number</option>
+                                <option value="boolean">Boolean</option>
+                                <option value="json">JSON</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category <span class="text-danger">*</span></label>
+                            <select class="form-select" id="settingCategory" required>
+                                <option value="general">General</option>
+                                <option value="compliance">Compliance</option>
+                                <option value="notifications">Notifications</option>
+                                <option value="security">Security</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Setting Value <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="settingValue" rows="4" required placeholder='Enter value based on type. For JSON: {"key": "value"}'></textarea>
+                            <small class="text-muted">For boolean: use "true" or "false". For JSON: valid JSON object</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="settingDescription" rows="2" placeholder="Optional description of what this setting does"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Setting</button>
                         </div>
                     </form>
                 </div>

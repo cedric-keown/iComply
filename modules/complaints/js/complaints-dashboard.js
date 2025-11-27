@@ -1,59 +1,528 @@
 // Complaints Dashboard JavaScript
 
+let complaintsData = {
+    summary: null,
+    complaints: [],
+    charts: {}
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     initializeComplaintsDashboard();
-    initializeCharts();
 });
 
-function initializeComplaintsDashboard() {
+async function initializeComplaintsDashboard() {
+    // Load dashboard data when tab is shown
+    const dashboardTab = document.getElementById('dashboard-tab');
+    if (dashboardTab) {
+        dashboardTab.addEventListener('shown.bs.tab', function() {
+            loadComplaintsDashboard();
+        });
+        
+        // Also load if already active
+        if (dashboardTab.classList.contains('active')) {
+            loadComplaintsDashboard();
+        }
+    }
+    
     setupActivityFeed();
 }
 
-function initializeCharts() {
-    // Category Chart
-    const ctx = document.getElementById('categoryChart');
-    if (ctx) {
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Claims Issues', 'Service Quality', 'Communication', 'Product Issues', 'Other'],
-                datasets: [{
-                    data: [12, 10, 6, 4, 2],
-                    backgroundColor: [
-                        '#5CBDB4',
-                        '#17A2B8',
-                        '#28A745',
-                        '#FFC107',
-                        '#6c757d'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
+/**
+ * Load Complaints Dashboard Data
+ */
+async function loadComplaintsDashboard() {
+    try {
+        const dataFunctionsToUse = typeof dataFunctions !== 'undefined' 
+            ? dataFunctions 
+            : (window.dataFunctions || window.parent?.dataFunctions);
+        
+        if (!dataFunctionsToUse) {
+            throw new Error('dataFunctions is not available');
+        }
+        
+        // Load all complaints first (needed for aggregation)
+        const complaintsResult = await dataFunctionsToUse.getComplaints(null, null, null, null, null);
+        let complaints = complaintsResult;
+        if (complaintsResult && complaintsResult.data) {
+            complaints = complaintsResult.data;
+        } else if (complaintsResult && Array.isArray(complaintsResult)) {
+            complaints = complaintsResult;
+        }
+        
+        complaintsData.complaints = complaints || [];
+        
+        // Load dashboard summary - function returns multiple rows, need to aggregate
+        const summaryResult = await dataFunctionsToUse.getComplaintsDashboardSummary();
+        let summaryRows = summaryResult;
+        if (summaryResult && summaryResult.data) {
+            summaryRows = summaryResult.data;
+        } else if (summaryResult && Array.isArray(summaryResult)) {
+            summaryRows = summaryResult;
+        } else if (summaryResult && typeof summaryResult === 'object' && !Array.isArray(summaryResult)) {
+            summaryRows = [summaryResult];
+        }
+        
+        // Aggregate the summary rows into a single summary object using all complaints
+        const summary = aggregateDashboardSummary(summaryRows || [], complaintsData.complaints);
+        complaintsData.summary = summary;
+        
+        // Update dashboard UI
+        updateDashboardStats();
+        updateRecentActivity();
+        initializeCharts();
+        
+        // Update navbar badges
+        if (typeof updateNavbarBadges === 'function') {
+            updateNavbarBadges(dataFunctionsToUse);
+        } else if (typeof window.parent !== 'undefined' && typeof window.parent.updateNavbarBadges === 'function') {
+            window.parent.updateNavbarBadges(window.parent.dataFunctions);
+        }
+    } catch (error) {
+        console.error('Error loading complaints dashboard:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to load complaints dashboard data'
         });
     }
 }
 
-function setupActivityFeed() {
-    // Activity feed interactions
-    const activityItems = document.querySelectorAll('.activity-item');
-    activityItems.forEach(item => {
-        const viewBtn = item.querySelector('.btn-outline-primary');
-        if (viewBtn) {
-            viewBtn.addEventListener('click', function() {
-                // Navigate to complaint detail
-                console.log('View complaint details');
-            });
+/**
+ * Aggregate Dashboard Summary from rows and complaints
+ */
+function aggregateDashboardSummary(summaryRows, allComplaints) {
+    const summary = {
+        total_complaints: allComplaints.length || 0,
+        active_complaints: 0,
+        overdue_complaints: 0,
+        resolved_this_month: 0,
+        ombudsman_cases: 0,
+        open_complaints: 0,
+        acknowledged_complaints: 0,
+        investigating_complaints: 0,
+        resolved_complaints: 0,
+        closed_complaints: 0,
+        approaching_deadline: 0,
+        average_resolution_days: 0,
+        six_week_resolution_rate: 0,
+        six_month_closure_rate: 0
+    };
+    
+    // Calculate from all complaints
+    const now = new Date();
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const sevenDaysFromNow = new Date(now);
+    sevenDaysFromNow.setDate(now.getDate() + 7);
+    
+    allComplaints.forEach(complaint => {
+        const status = (complaint.status || '').toLowerCase();
+        
+        // Active complaints (not resolved/closed)
+        if (!['resolved', 'closed'].includes(status)) {
+            summary.active_complaints++;
+        }
+        
+        // Overdue
+        if (complaint.is_overdue || (complaint.resolution_due_date && new Date(complaint.resolution_due_date) < now)) {
+            summary.overdue_complaints++;
+        }
+        
+        // Resolved this month
+        if (status === 'resolved' || status === 'closed') {
+            if (complaint.resolution_date) {
+                const resDate = new Date(complaint.resolution_date);
+                if (resDate >= currentMonthStart) {
+                    summary.resolved_this_month++;
+                }
+            }
+        }
+        
+        // Ombudsman cases
+        if (complaint.escalated_to_ombud === true || complaint.escalated_to_ombud === 'true') {
+            summary.ombudsman_cases++;
+        }
+        
+        // Status counts
+        if (status === 'open') summary.open_complaints++;
+        else if (status === 'acknowledged') summary.acknowledged_complaints++;
+        else if (status === 'investigating') summary.investigating_complaints++;
+        else if (status === 'resolved') summary.resolved_complaints++;
+        else if (status === 'closed') summary.closed_complaints++;
+        
+        // Approaching deadline (within 7 days)
+        if (complaint.resolution_due_date) {
+            const dueDate = new Date(complaint.resolution_due_date);
+            if (dueDate > now && dueDate <= sevenDaysFromNow && !['resolved', 'closed'].includes(status)) {
+                summary.approaching_deadline++;
+            }
         }
     });
+    
+    // Calculate average resolution time
+    const resolvedWithDates = allComplaints.filter(c => 
+        c.resolution_date && c.complaint_received_date && 
+        (c.status === 'resolved' || c.status === 'closed')
+    );
+    if (resolvedWithDates.length > 0) {
+        const totalDays = resolvedWithDates.reduce((sum, c) => {
+            const received = new Date(c.complaint_received_date);
+            const resolved = new Date(c.resolution_date);
+            return sum + Math.ceil((resolved - received) / (1000 * 60 * 60 * 24));
+        }, 0);
+        summary.average_resolution_days = Math.round(totalDays / resolvedWithDates.length);
+    }
+    
+    // Calculate 6-week resolution rate
+    const withDeadline = allComplaints.filter(c => c.resolution_due_date);
+    const resolvedWithin6Weeks = allComplaints.filter(c => {
+        if (!c.resolution_due_date || !c.resolution_date) return false;
+        const resolved = new Date(c.resolution_date);
+        const deadline = new Date(c.resolution_due_date);
+        return resolved <= deadline;
+    });
+    summary.six_week_resolution_rate = withDeadline.length > 0 
+        ? (resolvedWithin6Weeks.length / withDeadline.length) * 100 
+        : 0;
+    
+    // Calculate 6-month closure rate
+    const resolved = allComplaints.filter(c => c.status === 'resolved' || c.status === 'closed');
+    summary.six_month_closure_rate = allComplaints.length > 0 
+        ? (resolved.length / allComplaints.length) * 100 
+        : 0;
+    
+    return summary;
+}
+
+/**
+ * Update Dashboard Statistics
+ */
+function updateDashboardStats() {
+    const summary = complaintsData.summary;
+    if (!summary) return;
+    
+    // Total Complaints
+    const totalEl = document.getElementById('total-complaints');
+    if (totalEl) {
+        totalEl.textContent = summary.total_complaints || 0;
+    }
+    
+    // This year complaints
+    const currentYear = new Date().getFullYear();
+    const thisYearComplaints = complaintsData.complaints.filter(c => {
+        const date = new Date(c.complaint_received_date || c.complaint_date || c.created_at);
+        return date.getFullYear() === currentYear;
+    }).length;
+    const thisYearEl = document.getElementById('this-year-complaints');
+    if (thisYearEl) {
+        thisYearEl.textContent = `This year: ${thisYearComplaints} complaints`;
+    }
+    
+    // Active Cases
+    const activeEl = document.getElementById('active-cases');
+    if (activeEl) {
+        activeEl.textContent = summary.active_complaints || 0;
+    }
+    
+    // Approaching Deadline
+    const approachingEl = document.getElementById('approaching-deadline');
+    if (approachingEl) {
+        approachingEl.textContent = summary.approaching_deadline || 0;
+    }
+    
+    // Ombudsman Cases (only update once)
+    const ombudsmanEl = document.getElementById('ombudsman-cases');
+    if (ombudsmanEl && summary.ombudsman_cases !== undefined) {
+        ombudsmanEl.textContent = summary.ombudsman_cases || 0;
+    }
+    
+    // Average Resolution Time
+    const avgTimeEl = document.getElementById('avg-resolution-time');
+    if (avgTimeEl) {
+        const avgDays = summary.average_resolution_days || 0;
+        avgTimeEl.textContent = `${avgDays} days`;
+    }
+    
+    // Update badge counts
+    const activeBadge = document.querySelector('#active-tab .badge, #active-complaints-badge');
+    if (activeBadge && summary.active_complaints !== undefined) {
+        activeBadge.textContent = summary.active_complaints;
+    }
+    
+    // Update FAIS compliance stats
+    const sixWeekEl = document.getElementById('six-week-resolution');
+    const sixWeekLabel = document.getElementById('six-week-label');
+    if (sixWeekEl && summary.six_week_resolution_rate !== undefined) {
+        const rate = summary.six_week_resolution_rate || 0;
+        sixWeekEl.textContent = `${Math.round(rate)}%`;
+        if (sixWeekLabel && summary.total_complaints !== undefined) {
+            const resolved = Math.round((rate / 100) * (summary.total_complaints || 0));
+            sixWeekLabel.textContent = `6-Week Resolution (${resolved}/${summary.total_complaints || 0})`;
+        }
+    }
+    
+    const sixMonthEl = document.getElementById('six-month-closure');
+    const sixMonthLabel = document.getElementById('six-month-label');
+    if (sixMonthEl && summary.six_month_closure_rate !== undefined) {
+        const rate = summary.six_month_closure_rate || 0;
+        sixMonthEl.textContent = `${Math.round(rate)}%`;
+        if (sixMonthLabel && summary.total_complaints !== undefined) {
+            const closed = Math.round((rate / 100) * (summary.total_complaints || 0));
+            sixMonthLabel.textContent = `6-Month Closure (${closed}/${summary.total_complaints || 0})`;
+        }
+    }
+    
+    // Update status timeline
+    updateStatusTimeline(summary);
+    
+    // Update FAIS status
+    const faisStatusEl = document.getElementById('fais-status');
+    if (faisStatusEl) {
+        const isCompliant = summary.six_week_resolution_rate >= 100 && summary.six_month_closure_rate >= 100;
+        faisStatusEl.textContent = isCompliant ? '✅ COMPLIANT' : '⚠️ REVIEW NEEDED';
+        faisStatusEl.className = isCompliant ? 'badge bg-success fs-6' : 'badge bg-warning fs-6';
+    }
+    
+    // Update navbar badge for complaints
+    updateNavbarBadges(summary);
+}
+
+/**
+ * Update Status Timeline
+ */
+function updateStatusTimeline(summary) {
+    if (!summary) return;
+    
+    // Use the aggregated counts from our summary
+    const receivedEl = document.getElementById('status-received');
+    const acknowledgedEl = document.getElementById('status-acknowledged');
+    const investigatingEl = document.getElementById('status-investigating');
+    const resolvedEl = document.getElementById('status-resolved');
+    const closedEl = document.getElementById('status-closed');
+    
+    // Received = total complaints
+    if (receivedEl) receivedEl.textContent = summary.total_complaints || 0;
+    if (acknowledgedEl) acknowledgedEl.textContent = summary.acknowledged_complaints || 0;
+    if (investigatingEl) investigatingEl.textContent = summary.investigating_complaints || 0;
+    if (resolvedEl) resolvedEl.textContent = summary.resolved_complaints || 0;
+    if (closedEl) closedEl.textContent = summary.closed_complaints || 0;
+}
+
+/**
+ * Update Recent Activity Feed
+ */
+function updateRecentActivity() {
+    const activityContainer = document.querySelector('#dashboard .activity-list, #dashboard #recent-activity-list, #dashboard [data-activity-feed]');
+    if (!activityContainer) return;
+    
+    // Get recent complaints (last 10)
+    const recentComplaints = complaintsData.complaints
+        .sort((a, b) => new Date(b.complaint_date || b.created_at) - new Date(a.complaint_date || a.created_at))
+        .slice(0, 10);
+    
+    if (recentComplaints.length === 0) {
+        activityContainer.innerHTML = `
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                No recent complaints activity.
+            </div>
+        `;
+        return;
+    }
+    
+    activityContainer.innerHTML = recentComplaints.map(complaint => {
+        const date = new Date(complaint.complaint_date || complaint.created_at).toLocaleDateString('en-ZA');
+        const priorityBadge = complaint.priority === 'high' 
+            ? '<span class="badge bg-danger">High</span>'
+            : complaint.priority === 'medium'
+            ? '<span class="badge bg-warning">Medium</span>'
+            : '<span class="badge bg-info">Low</span>';
+        
+        const statusBadge = complaint.status === 'resolved'
+            ? '<span class="badge bg-success">Resolved</span>'
+            : complaint.status === 'investigating'
+            ? '<span class="badge bg-info">Investigating</span>'
+            : '<span class="badge bg-warning">Open</span>';
+        
+        return `
+            <div class="activity-item card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">${complaint.complaint_reference_number || 'N/A'} - ${complaint.complainant_name || 'Unknown'}</h6>
+                            <p class="mb-1 text-muted">${complaint.complaint_category || 'N/A'}</p>
+                            <p class="mb-0 small text-muted">${date} • ${priorityBadge} • ${statusBadge}</p>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewComplaintDetails('${complaint.id}')">View</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+/**
+ * Initialize Charts
+ */
+function initializeCharts() {
+    const summary = complaintsData.summary;
+    if (!summary) return;
+    
+    // Check if Chart.js is available
+    const ChartToUse = typeof Chart !== 'undefined' ? Chart : 
+                      (window.parent && typeof window.parent.Chart !== 'undefined' ? window.parent.Chart : undefined);
+    
+    if (!ChartToUse) {
+        console.warn('Chart.js not available, skipping chart initialization');
+        return;
+    }
+    
+    // Make Chart available if needed
+    if (typeof Chart === 'undefined' && ChartToUse) {
+        window.Chart = ChartToUse;
+    }
+    
+    // Category Chart
+    const ctx = document.getElementById('categoryChart');
+    if (ctx) {
+        // Destroy existing chart if it exists
+        if (complaintsData.charts.categoryChart) {
+            complaintsData.charts.categoryChart.destroy();
+        }
+        
+        // Get category breakdown from complaints
+        const categoryCounts = {};
+        complaintsData.complaints.forEach(complaint => {
+            const category = complaint.complaint_category || 'Other';
+            categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+        });
+        
+        const labels = Object.keys(categoryCounts);
+        const data = Object.values(categoryCounts);
+        
+        try {
+            complaintsData.charts.categoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No Data'],
+                    datasets: [{
+                        data: data.length > 0 ? data : [1],
+                        backgroundColor: [
+                            '#5CBDB4',
+                            '#17A2B8',
+                            '#28A745',
+                            '#FFC107',
+                            '#DC3545',
+                            '#6c757d'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error creating category chart:', error);
+        }
+    }
+    
+    // Status Chart
+    const statusCtx = document.getElementById('statusChart');
+    if (statusCtx) {
+        if (complaintsData.charts.statusChart) {
+            complaintsData.charts.statusChart.destroy();
+        }
+        
+        const statusCounts = {
+            open: summary.open_complaints || 0,
+            investigating: summary.investigating_complaints || 0,
+            resolved: summary.resolved_complaints || 0,
+            closed: summary.closed_complaints || 0
+        };
+        
+        try {
+            complaintsData.charts.statusChart = new Chart(statusCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Open', 'Investigating', 'Resolved', 'Closed'],
+                    datasets: [{
+                        label: 'Complaints by Status',
+                        data: [
+                            statusCounts.open,
+                            statusCounts.investigating,
+                            statusCounts.resolved,
+                            statusCounts.closed
+                        ],
+                        backgroundColor: [
+                            '#FFC107',
+                            '#17A2B8',
+                            '#28A745',
+                            '#6c757d'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error creating status chart:', error);
+        }
+    }
+}
+
+function setupActivityFeed() {
+    // Activity feed interactions are handled in updateRecentActivity
+}
+
+function viewComplaintDetails(complaintId) {
+    // Switch to active complaints tab and show details
+    switchComplaintsTab('active-tab');
+    // TODO: Open complaint detail modal or navigate to detail view
+    console.log('View complaint details:', complaintId);
+}
+
+/**
+ * Update Navbar Badges
+ */
+function updateNavbarBadges(summary) {
+    if (!summary) return;
+    
+    // Update complaints badge in main navbar (if accessible)
+    try {
+        const complaintsNavBadge = document.querySelector('[data-route="complaints"] .menu-badge');
+        if (complaintsNavBadge) {
+            complaintsNavBadge.textContent = summary.active_complaints || 0;
+        }
+        
+        // Also try parent window if in iframe
+        if (window.parent && window.parent !== window) {
+            const parentComplaintsBadge = window.parent.document.querySelector('[data-route="complaints"] .menu-badge');
+            if (parentComplaintsBadge) {
+                parentComplaintsBadge.textContent = summary.active_complaints || 0;
+            }
+        }
+    } catch (error) {
+        // Cross-origin or iframe access might fail, that's okay
+        console.warn('Could not update navbar badge:', error);
+    }
 }
 
 function switchComplaintsTab(tabId) {
@@ -64,6 +533,17 @@ function switchComplaintsTab(tabId) {
     }
 }
 
-// Export for global access
+// Export for global access - ensure it's available immediately
 window.switchComplaintsTab = switchComplaintsTab;
+window.viewComplaintDetails = viewComplaintDetails;
+window.loadComplaintsDashboard = loadComplaintsDashboard;
+
+// Also make available on parent window if in iframe
+if (window.parent && window.parent !== window) {
+    try {
+        window.parent.switchComplaintsTab = switchComplaintsTab;
+    } catch (e) {
+        // Cross-origin access might fail
+    }
+}
 

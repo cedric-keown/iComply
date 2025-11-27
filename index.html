@@ -937,6 +937,7 @@
     <script src="js/auth-service.js"></script>
     <!-- Data Functions -->
     <script src="js/data-functions.js"></script>
+    <script src="js/navbar-badges.js"></script>
 
     <script>
         // Navigation State
@@ -1193,6 +1194,12 @@
                 setupKeyboardShortcuts();
                 loadUserProfile();
                 loadFspConfiguration();
+                // Initialize navbar badges after a short delay to ensure dataFunctions is loaded
+                setTimeout(() => {
+                    if (typeof initializeNavbarBadges === 'function') {
+                        initializeNavbarBadges();
+                    }
+                }, 1500);
                 return; // Exit early, no authentication check
             }
             
@@ -1228,6 +1235,13 @@
             // Load user profile and FSP configuration from database
             loadUserProfile();
             loadFspConfiguration();
+            
+            // Initialize navbar badges after a short delay to ensure dataFunctions is loaded
+            setTimeout(() => {
+                if (typeof initializeNavbarBadges === 'function') {
+                    initializeNavbarBadges();
+                }
+            }, 1500);
         });
 
         // Handle Logout
@@ -1578,6 +1592,12 @@
                 case 'analytics':
                     console.log('Loading Reports & Analytics module...');
                     loadReportsAnalyticsModule(dashboardContent, breadcrumbNav);
+                    break;
+                case 'team-compliance':
+                case 'team-compliance-matrix':
+                case 'team-matrix':
+                    console.log('Loading Team Compliance Matrix module...');
+                    loadTeamComplianceModule(dashboardContent, breadcrumbNav);
                     break;
                 case 'settings':
                 case 'settings-administration':
@@ -1933,6 +1953,39 @@
                 
                 // Update URL hash
                 window.location.hash = '#reports';
+            } else {
+                console.error('Dashboard content area not found');
+            }
+        }
+        
+        // Load Team Compliance Matrix Module
+        function loadTeamComplianceModule(dashboardContent, breadcrumbNav) {
+            if (dashboardContent) {
+                // Store original content if not already stored
+                if (!navigationState.originalDashboardContent) {
+                    navigationState.originalDashboardContent = dashboardContent.innerHTML;
+                }
+                
+                // Update breadcrumb
+                if (breadcrumbNav) {
+                    breadcrumbNav.innerHTML = `
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#" onclick="goToDashboard(); return false;"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Team Compliance Matrix</li>
+                        </ol>
+                    `;
+                }
+                
+                // Load Team Compliance Matrix module via iframe
+                dashboardContent.innerHTML = `
+                    <iframe src="modules/team-compliance/html/team_compliance_matrix.html" 
+                            style="width: 100%; height: calc(100vh - 200px); border: none; margin-top: -20px;"
+                            title="Team Compliance Matrix"
+                            id="teamComplianceModuleFrame"></iframe>
+                `;
+                
+                // Update URL hash
+                window.location.hash = '#team-compliance';
             } else {
                 console.error('Dashboard content area not found');
             }

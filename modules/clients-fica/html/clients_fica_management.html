@@ -341,18 +341,19 @@
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label">Representative</label>
-                                <select class="form-select">
-                                    <option>All</option>
-                                    <option>Sarah Naidoo</option>
-                                    <option>Thabo Mokoena</option>
-                                    <option>Pieter Vermeulen</option>
+                                <select class="form-select" id="representative-filter">
+                                    <option value="">All</option>
+                                    <!-- Representatives will be loaded dynamically -->
                                 </select>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-12">
-                                <button class="btn btn-primary me-2">Apply Filters</button>
-                                <button class="btn btn-outline-secondary">Clear All</button>
+                                <button class="btn btn-primary me-2" onclick="applyFilters()">Apply Filters</button>
+                                <button class="btn btn-outline-secondary" onclick="clearFilters()">Clear All</button>
+                                <button class="btn btn-outline-info ms-2" onclick="exportClients()">
+                                    <i class="fas fa-download me-1"></i>Export to CSV
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -372,88 +373,65 @@
                         </button>
                     </div>
                     <div>
-                        <span class="text-muted me-2">Showing 1-50 of 248</span>
-                        <select class="form-select form-select-sm d-inline-block" style="width: auto;">
-                            <option>50 per page</option>
-                            <option>25 per page</option>
-                            <option>100 per page</option>
+                        <span class="text-muted me-2" id="portfolio-count">Showing 0 of 0</span>
+                        <select class="form-select form-select-sm d-inline-block" id="page-size-select" style="width: auto;" onchange="changePageSize(this.value)">
+                            <option value="25">25 per page</option>
+                            <option value="50" selected>50 per page</option>
+                            <option value="100">100 per page</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Client List View -->
                 <div id="portfolio-list-view">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="d-flex align-items-start">
-                                <div class="avatar-lg me-3">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <h5 class="mb-1">Thabo Johannes Mokoena <span class="badge bg-success">✓ FICA</span></h5>
-                                            <p class="mb-1 text-muted">ID: 850615****083 • <i class="fas fa-phone me-1"></i>+27 82 555 1234</p>
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-info">Medium (CDD)</span>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <small class="text-muted">Representative: Sarah Naidoo</small><br>
-                                            <small class="text-muted">Products: LT Insurance, Investments</small>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <small class="text-muted">Portfolio Value: R1.2M</small><br>
-                                            <small class="text-muted">Next Review: 15/11/2025</small>
-                                        </div>
-                                    </div>
-                                    <div class="mt-3">
-                                        <button class="btn btn-sm btn-outline-primary me-2">View Profile</button>
-                                        <button class="btn btn-sm btn-outline-secondary me-2">FICA Review</button>
-                                        <button class="btn btn-sm btn-outline-secondary">Documents</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Clients will be loaded dynamically -->
+                </div>
 
-                    <div class="card mb-3 border-warning">
+                <!-- Client Grid View -->
+                <div id="portfolio-grid-view" style="display: none;">
+                    <div class="row" id="portfolio-grid-container">
+                        <!-- Clients will be loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Client Table View -->
+                <div id="portfolio-table-view" style="display: none;">
+                    <div class="card">
                         <div class="card-body">
-                            <div class="d-flex align-items-start">
-                                <div class="avatar-lg me-3">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <h5 class="mb-1">Lerato Dlamini <span class="badge bg-warning">⚠️ EDD</span> <span class="badge bg-danger">🚩 PEP</span></h5>
-                                            <p class="mb-1 text-muted">ID: 920508****012 • <i class="fas fa-phone me-1"></i>+27 83 555 5678</p>
-                                        </div>
-                                        <div>
-                                            <span class="badge bg-danger">High (EDD)</span>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <small class="text-muted">Representative: Thabo Mokoena</small><br>
-                                            <small class="text-muted">Products: LT Insurance</small>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <small class="text-muted">Portfolio Value: R4.5M</small><br>
-                                            <small class="text-muted">Next Review: 01/02/2025 ⚠️</small>
-                                        </div>
-                                    </div>
-                                    <div class="mt-3">
-                                        <button class="btn btn-sm btn-outline-primary me-2">View Profile</button>
-                                        <button class="btn btn-sm btn-warning me-2">EDD Review</button>
-                                        <button class="btn btn-sm btn-outline-danger">Screening</button>
-                                    </div>
-                                </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="clients-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>ID Number</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Status</th>
+                                            <th>Risk Level</th>
+                                            <th>FICA Status</th>
+                                            <th>Representative</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="clients-table-body">
+                                        <!-- Clients will be loaded dynamically -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-4" id="portfolio-pagination" style="display: none;">
+                    <div>
+                        <span class="text-muted" id="pagination-info">Showing 1-50 of 0</span>
+                    </div>
+                    <nav>
+                        <ul class="pagination mb-0" id="pagination-controls">
+                            <!-- Pagination will be generated dynamically -->
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
@@ -911,6 +889,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://prium.github.io/phoenix/v1.23.0/assets/js/phoenix.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/client-dashboard.js"></script>
+    <script src="../js/client-portfolio.js"></script>
+    <script src="../js/add-client-wizard.js"></script>
+    <script src="../js/fica-verification.js"></script>
+    <script src="../js/risk-assessment.js"></script>
+    <script src="../js/reviews-monitoring.js"></script>
+    <script src="../../../js/data-functions.js"></script>
     <script src="../js/client-dashboard.js"></script>
     <script src="../js/client-portfolio.js"></script>
     <script src="../js/add-client-wizard.js"></script>
