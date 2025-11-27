@@ -1,5 +1,11 @@
 // Settings & Administration JavaScript
 
+// Import data functions if needed
+// Assumes dataFunctions is globally available from data-functions.js
+
+// FSP Configuration State
+let currentFSPConfig = null;
+
 // Sample Data
 const usersData = [
     {
@@ -243,12 +249,212 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
 });
 
-function initializeSettings() {
+async function initializeSettings() {
+    // Load FSP Configuration from database
+    await loadFSPConfiguration();
+    
+    // Load other data
     renderUsersTable();
     renderKeyIndividuals();
     renderIntegrations();
     renderAuditLogs();
     renderBackups();
+}
+
+// ============================================================================
+// FSP CONFIGURATION FUNCTIONS
+// ============================================================================
+
+/**
+ * Load FSP Configuration from Database
+ */
+async function loadFSPConfiguration() {
+    try {
+        // Show loading state
+        showLoadingState('fspInfoForm');
+        
+        // Get FSP configuration from database
+        const result = await dataFunctions.getFspConfiguration();
+        
+        if (result && result.length > 0) {
+            currentFSPConfig = result[0];
+            populateFSPForm(currentFSPConfig);
+            console.log('FSP Configuration loaded successfully:', currentFSPConfig);
+        } else {
+            console.log('No FSP configuration found, form will be empty for initial setup');
+        }
+    } catch (error) {
+        console.error('Error loading FSP configuration:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Failed to load FSP configuration. Please refresh the page.',
+            icon: 'error'
+        });
+    } finally {
+        hideLoadingState('fspInfoForm');
+    }
+}
+
+/**
+ * Populate FSP Form with Data
+ */
+function populateFSPForm(config) {
+    // Basic Information
+    document.getElementById('fspName').value = config.fsp_name || '';
+    document.getElementById('fspLicense').value = config.fsp_license_number || '';
+    document.getElementById('regNumber').value = config.registration_number || '';
+    document.getElementById('vatNumber').value = config.vat_number || '';
+    
+    // Address
+    document.getElementById('street').value = config.address_street || '';
+    document.getElementById('city').value = config.address_city || '';
+    document.getElementById('postalCode').value = config.address_postal_code || '';
+    
+    // Province mapping
+    const provinceMap = {
+        'Western Cape': 'WC',
+        'Eastern Cape': 'EC',
+        'Free State': 'FS',
+        'Gauteng': 'GP',
+        'KwaZulu-Natal': 'KZN',
+        'Limpopo': 'LP',
+        'Mpumalanga': 'MP',
+        'Northern Cape': 'NC',
+        'North West': 'NW'
+    };
+    
+    const provinceCode = provinceMap[config.address_province] || config.address_province;
+    if (provinceCode) {
+        document.getElementById('province').value = provinceCode;
+    }
+    
+    // Contact Information
+    document.getElementById('phone').value = config.phone || '';
+    document.getElementById('email').value = config.email || '';
+    
+    // Website
+    const websiteField = document.getElementById('website');
+    if (websiteField) {
+        websiteField.value = config.website || '';
+    }
+}
+
+/**
+ * Save FSP Configuration to Database
+ */
+async function saveFSPConfiguration(e) {
+    e.preventDefault();
+    
+    try {
+        // Get form data
+        const formData = {
+            fsp_name: document.getElementById('fspName').value.trim(),
+            fsp_license_number: document.getElementById('fspLicense').value.trim(),
+            registration_number: document.getElementById('regNumber').value.trim() || null,
+            vat_number: document.getElementById('vatNumber').value.trim() || null,
+            address_street: document.getElementById('street').value.trim() || null,
+            address_city: document.getElementById('city').value.trim() || null,
+            address_province: document.getElementById('province').options[document.getElementById('province').selectedIndex].text,
+            address_postal_code: document.getElementById('postalCode').value.trim() || null,
+            phone: document.getElementById('phone').value.trim() || null,
+            email: document.getElementById('email').value.trim() || null,
+            website: document.getElementById('website')?.value.trim() || null
+        };
+        
+        // Validate required fields
+        if (!formData.fsp_name || !formData.fsp_license_number) {
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'FSP Name and License Number are required',
+                icon: 'warning'
+            });
+            return;
+        }
+        
+        // Show loading
+        Swal.fire({
+            title: 'Saving...',
+            text: 'Please wait while we save your changes',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        let result;
+        
+        if (currentFSPConfig && currentFSPConfig.id) {
+            // Update existing configuration
+            result = await dataFunctions.updateFspConfiguration(
+                currentFSPConfig.id,
+                formData
+            );
+        } else {
+            // Create new configuration
+            result = await dataFunctions.createFspConfiguration(formData);
+        }
+        
+        if (result && result.success) {
+            // Reload configuration to get latest data
+            await loadFSPConfiguration();
+            
+            Swal.fire({
+                title: 'Success!',
+                text: 'FSP Configuration saved successfully',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            throw new Error(result?.error || 'Failed to save configuration');
+        }
+    } catch (error) {
+        console.error('Error saving FSP configuration:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Failed to save configuration: ${error.message}`,
+            icon: 'error'
+        });
+    }
+}
+
+/**
+ * Show Loading State on Form
+ */
+function showLoadingState(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    
+    const inputs = form.querySelectorAll('input, select, textarea, button');
+    inputs.forEach(input => {
+        input.disabled = true;
+    });
+    
+    // Add loading spinner to submit button
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+    }
+}
+
+/**
+ * Hide Loading State on Form
+ */
+function hideLoadingState(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    
+    const inputs = form.querySelectorAll('input, select, textarea, button');
+    inputs.forEach(input => {
+        input.disabled = false;
+    });
+    
+    // Restore submit button
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.innerHTML = 'Save Changes';
+    }
 }
 
 function renderUsersTable() {
@@ -517,7 +723,7 @@ function setupEventListeners() {
     document.getElementById('clearAuditFilters')?.addEventListener('click', clearAuditFilters);
     
     // Form Submissions
-    document.getElementById('fspInfoForm')?.addEventListener('submit', handleFormSubmit);
+    document.getElementById('fspInfoForm')?.addEventListener('submit', saveFSPConfiguration);
     document.getElementById('localizationForm')?.addEventListener('submit', handleFormSubmit);
     document.getElementById('businessHoursForm')?.addEventListener('submit', handleFormSubmit);
     document.getElementById('complianceCycleForm')?.addEventListener('submit', handleFormSubmit);
@@ -793,6 +999,7 @@ function restoreBackup(date) {
 }
 
 // Make functions globally accessible
+window.loadFSPConfiguration = loadFSPConfiguration;
 window.editUser = editUser;
 window.resetPassword = resetPassword;
 window.viewUser = viewUser;
