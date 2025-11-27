@@ -1,145 +1,130 @@
-// Alerts & Notifications JavaScript
+// Alerts & Notifications JavaScript - Database Integrated
 
-// Sample Alert Data
-const alertsData = [
-    {
-        id: 'ALT-2024-1234',
-        title: "Mike Johnson's RE5 certificate expired",
-        description: "Representative cannot conduct business until certificate is renewed",
-        priority: 'critical',
-        category: 'fit-proper',
-        created: '13/12/2024 08:00',
-        createdBy: 'System (automated)',
-        dueDate: '13/12/2024',
-        overdue: true,
-        daysOverdue: 2,
-        assignedTo: 'Sarah Naidoo',
-        assignedToRole: 'Compliance Officer',
-        cc: ['Thabo Mokoena', 'Mike Johnson'],
-        status: 'acknowledged',
-        acknowledgedDate: '13/12/2024 09:15',
-        acknowledgedBy: 'Sarah Naidoo',
-        progress: 25,
-        representative: {
-            name: 'Mike Johnson',
-            fscar: '123458',
-            initials: 'MJ'
-        },
-        impact: 'high',
-        notifications: {
-            email: true,
-            sms: true,
-            inApp: true
-        }
-    },
-    {
-        id: 'ALT-2024-1235',
-        title: "45 FICA reviews overdue (> 5 years)",
-        description: "Medium-risk clients require 3-year reviews, currently 25 clients are overdue",
-        priority: 'high',
-        category: 'fica',
-        created: '14/12/2024 15:45',
-        createdBy: 'System (automated)',
-        dueDate: '20/12/2024',
-        daysRemaining: 6,
-        assignedTo: 'Compliance Team',
-        status: 'active',
-        impact: 'medium'
-    },
-    {
-        id: 'ALT-2024-1236',
-        title: "Professional Indemnity insurance expires in 30 days",
-        description: "PI policy (Guardrisk, R5M coverage) expires 15/01/2025",
-        priority: 'high',
-        category: 'insurance',
-        created: '15/12/2024 08:00',
-        createdBy: 'System (automated alert rule)',
-        dueDate: '15/01/2025',
-        daysRemaining: 31,
-        assignedTo: 'Thabo Mokoena',
-        assignedToRole: 'FSP Owner',
-        status: 'in-progress',
-        progress: 40,
-        impact: 'high'
-    },
-    {
-        id: 'ALT-2024-1237',
-        title: "3 representatives behind on CPD schedule",
-        description: "Johan Smith (12 hrs), Peter Nel (13 hrs), Mike Johnson (8 hrs)",
-        priority: 'medium',
-        category: 'cpd',
-        created: '01/12/2024 08:00',
-        createdBy: 'System (automated)',
-        dueDate: '31/05/2025',
-        daysRemaining: 167,
-        assignedTo: 'Sarah Naidoo',
-        status: 'monitoring',
-        impact: 'medium'
-    }
-];
+let alertsData = {
+    alerts: [],
+    rules: []
+};
 
-// Sample Alert Rules Data
-const alertRulesData = [
-    {
-        id: 'RULE-F&P-001',
-        name: 'RE5 Certificate Expired',
-        category: 'fit-proper',
-        status: 'active',
-        triggerCondition: "certificate_type = 'RE5' AND expiry_date < TODAY()",
-        triggerPlainEnglish: "When any representative's RE5 certificate expiry date is in the past",
-        checkFrequency: 'Daily at 08:00 SAST',
-        lastChecked: '15/12/2024 08:00',
-        priority: 'critical',
-        recipients: ['Representative (affected)', 'Supervisor (Key Individual)', 'Compliance Officer', 'FSP Owner'],
-        channels: ['SMS', 'Email', 'In-app'],
-        escalation: 'Immediate escalation to FSP Owner',
-        alertsGenerated30Days: 1,
-        alertsGenerated12Months: 3,
-        currentlyActive: 1
-    },
-    {
-        id: 'RULE-F&P-002',
-        name: 'RE5 Certificate Expiring in 30 Days',
-        category: 'fit-proper',
-        status: 'active',
-        triggerCondition: "certificate_type = 'RE5' AND expiry_date BETWEEN TODAY() AND TODAY() + 30 DAYS",
-        triggerPlainEnglish: "When any RE5 certificate will expire within the next 30 days",
-        checkFrequency: 'Daily at 08:00',
-        priority: 'high',
-        recipients: ['Representative (affected)', 'Supervisor', 'Compliance Officer'],
-        channels: ['Email', 'In-app'],
-        alertsGenerated30Days: 2
-    },
-    {
-        id: 'RULE-CPD-001',
-        name: 'CPD Progress Behind Schedule',
-        category: 'cpd',
-        status: 'active',
-        triggerCondition: "(cpd_hours_completed / cpd_hours_required) < 0.50 AND days_to_deadline < 180",
-        triggerPlainEnglish: "When CPD progress is less than 50% and less than 180 days remain to deadline",
-        checkFrequency: 'Weekly (every Monday 08:00)',
-        priority: 'medium',
-        recipients: ['Representative (affected)', 'Supervisor', 'Compliance Officer'],
-        channels: ['Email', 'In-app'],
-        alertsGenerated30Days: 15
-    }
-];
-
-let filteredAlerts = [...alertsData];
+let filteredAlerts = [];
 let selectedAlerts = new Set();
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    initializeAlerts();
+    loadAlerts();
     setupEventListeners();
     updateLastUpdated();
     
     // Auto-refresh every 60 seconds
     setInterval(() => {
         updateLastUpdated();
-        // In production, would fetch fresh data here
+        loadAlerts();
     }, 60000);
 });
+
+/**
+ * Transform database alert to UI format
+ */
+function transformAlert(dbAlert) {
+    const today = new Date();
+    const validFrom = dbAlert.valid_from ? new Date(dbAlert.valid_from) : today;
+    const dueDate = dbAlert.due_date ? new Date(dbAlert.due_date) : null;
+    
+    // Calculate days remaining/overdue
+    let daysRemaining = null;
+    let daysOverdue = null;
+    let overdue = false;
+    
+    if (dueDate) {
+        const diff = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+        if (diff < 0) {
+            overdue = true;
+            daysOverdue = Math.abs(diff);
+        } else {
+            daysRemaining = diff;
+        }
+    }
+    
+    return {
+        id: dbAlert.id || dbAlert.alert_id || `ALT-${dbAlert.id?.substring(0, 8)}`,
+        title: dbAlert.alert_title || dbAlert.title || 'Untitled Alert',
+        description: dbAlert.alert_message || dbAlert.description || '',
+        priority: dbAlert.priority || 'medium',
+        category: dbAlert.entity_type || dbAlert.category || 'system',
+        created: validFrom.toLocaleDateString('en-ZA') + ' ' + validFrom.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' }),
+        createdBy: 'System (automated)',
+        dueDate: dueDate ? dueDate.toLocaleDateString('en-ZA') : null,
+        overdue: overdue,
+        daysOverdue: daysOverdue,
+        daysRemaining: daysRemaining,
+        assignedTo: null, // TODO: Get from assigned_to if available
+        assignedToRole: null,
+        status: dbAlert.status || 'active',
+        acknowledgedDate: dbAlert.acknowledged_at ? new Date(dbAlert.acknowledged_at).toLocaleDateString('en-ZA') : null,
+        acknowledgedBy: null, // TODO: Get user name from acknowledged_by
+        progress: dbAlert.status === 'resolved' ? 100 : (dbAlert.status === 'acknowledged' ? 25 : 0),
+        representative: null, // TODO: Load representative info if representative_id exists
+        impact: dbAlert.priority === 'critical' ? 'high' : (dbAlert.priority === 'high' ? 'medium' : 'low'),
+        notifications: {
+            email: true,
+            sms: false,
+            inApp: true
+        },
+        // Keep original database fields
+        _db: dbAlert
+    };
+}
+
+/**
+ * Load Alerts from Database
+ */
+async function loadAlerts() {
+    try {
+        const dataFunctionsToUse = typeof dataFunctions !== 'undefined' 
+            ? dataFunctions 
+            : (window.dataFunctions || window.parent?.dataFunctions);
+        
+        if (!dataFunctionsToUse) {
+            console.warn('dataFunctions not available, using empty data');
+            alertsData.alerts = [];
+            alertsData.rules = [];
+            filteredAlerts = [];
+            initializeAlerts();
+            return;
+        }
+        
+        // Load alerts
+        const alertsResult = await dataFunctionsToUse.getAlerts('active', null, null, null);
+        let alerts = alertsResult;
+        if (alertsResult && alertsResult.data) {
+            alerts = alertsResult.data;
+        } else if (alertsResult && Array.isArray(alertsResult)) {
+            alerts = alertsResult;
+        }
+        
+        // Transform database alerts to UI format
+        alertsData.alerts = (alerts || []).map(transformAlert);
+        filteredAlerts = [...alertsData.alerts];
+        
+        // Update active count badge
+        const activeCountBadge = document.getElementById('activeCount');
+        if (activeCountBadge) {
+            activeCountBadge.textContent = alertsData.alerts.length;
+        }
+        
+        // Load alert rules (if function exists)
+        // TODO: Implement getAlertRules when available
+        alertsData.rules = [];
+        
+        initializeAlerts();
+        
+    } catch (error) {
+        console.error('Error loading alerts:', error);
+        alertsData.alerts = [];
+        alertsData.rules = [];
+        filteredAlerts = [];
+        initializeAlerts();
+    }
+}
 
 function initializeAlerts() {
     renderAlertsTable();
@@ -286,43 +271,63 @@ function createCategoryColumn(alert) {
 }
 
 function createCreatedColumn(alert) {
-    const dateParts = alert.created.split(' ');
+    // Handle both string and Date formats
+    let dateStr = alert.created;
+    if (alert._db && alert._db.valid_from) {
+        const date = new Date(alert._db.valid_from);
+        dateStr = date.toLocaleDateString('en-ZA') + ' ' + date.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    const dateParts = dateStr ? dateStr.split(' ') : ['N/A', ''];
     return `
         <div>
-            <div class="fw-bold">${dateParts[0]}</div>
-            <div class="small text-muted">${dateParts[1]}</div>
-            <div class="small text-muted">${alert.createdBy}</div>
+            <div class="fw-bold">${dateParts[0] || 'N/A'}</div>
+            ${dateParts[1] ? `<div class="small text-muted">${dateParts[1]}</div>` : ''}
+            <div class="small text-muted">${alert.createdBy || 'System'}</div>
         </div>
     `;
 }
 
 function createDueDateColumn(alert) {
+    if (!alert.dueDate) {
+        return `<div class="text-muted">No due date</div>`;
+    }
+    
     if (alert.overdue) {
         return `
             <div class="due-date overdue">
                 <div>${alert.dueDate}</div>
                 <div class="text-danger fw-bold">OVERDUE</div>
-                <span class="badge bg-danger">${alert.daysOverdue} days</span>
+                ${alert.daysOverdue ? `<span class="badge bg-danger">${alert.daysOverdue} days</span>` : ''}
             </div>
         `;
-    } else if (alert.daysRemaining <= 7) {
+    } else if (alert.daysRemaining !== null && alert.daysRemaining <= 7) {
         return `
             <div class="due-date soon">
                 <div>${alert.dueDate}</div>
                 <div class="text-warning">${alert.daysRemaining} days remaining</div>
             </div>
         `;
-    } else {
+    } else if (alert.daysRemaining !== null) {
         return `
             <div class="due-date current">
                 <div>${alert.dueDate}</div>
                 <div class="text-muted">${alert.daysRemaining} days remaining</div>
             </div>
         `;
+    } else {
+        return `
+            <div class="due-date current">
+                <div>${alert.dueDate}</div>
+            </div>
+        `;
     }
 }
 
 function createAssignedColumn(alert) {
+    if (!alert.assignedTo) {
+        return `<div class="text-muted">Unassigned</div>`;
+    }
     return `
         <div>
             <div class="fw-bold">${alert.assignedTo}</div>

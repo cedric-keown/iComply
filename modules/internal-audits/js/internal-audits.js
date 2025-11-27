@@ -1,32 +1,52 @@
-// Internal Audits JavaScript
+// Internal Audits JavaScript - Database Integrated
 
-// Sample Data
-const auditsData = [
-    {
-        id: 'AUD-2024-012',
-        name: 'CPD Compliance Audit',
-        type: 'cpd',
-        status: 'in-progress',
-        progress: 40,
-        started: '10/12/2024',
-        targetCompletion: '20/12/2024',
-        leadAuditor: 'Thandiwe Mkhize',
-        auditorRole: 'Compliance Officer',
-        team: ['Compliance Officer', '1 Staff Member'],
-        objective: 'Verify CPD compliance across all representatives for 2024/2025 cycle'
-    },
-    {
-        id: 'AUD-2024-011',
-        name: 'Q4 Compliance Audit',
-        type: 'compliance',
-        status: 'complete',
-        score: 94,
-        date: '30/11/2024',
-        leadAuditor: 'Thandiwe Mkhize',
-        findings: 3
+let auditsData = {
+    audits: [],
+    findings: []
+};
+
+/**
+ * Load Audits from Database
+ */
+async function loadAudits() {
+    try {
+        const dataFunctionsToUse = typeof dataFunctions !== 'undefined' 
+            ? dataFunctions 
+            : (window.dataFunctions || window.parent?.dataFunctions);
+        
+        if (!dataFunctionsToUse) {
+            console.warn('dataFunctions not available, using empty data');
+            auditsData.audits = [];
+            auditsData.findings = [];
+            initializeAudits();
+            return;
+        }
+        
+        // Load audits
+        const auditsResult = await dataFunctionsToUse.getInternalAudits(null, null);
+        let audits = auditsResult;
+        if (auditsResult && auditsResult.data) {
+            audits = auditsResult.data;
+        } else if (auditsResult && Array.isArray(auditsResult)) {
+            audits = auditsResult;
+        }
+        
+        auditsData.audits = audits || [];
+        
+        // TODO: Load findings when function is available
+        auditsData.findings = [];
+        
+        initializeAudits();
+        
+    } catch (error) {
+        console.error('Error loading audits:', error);
+        auditsData.audits = [];
+        auditsData.findings = [];
+        initializeAudits();
     }
-];
+}
 
+// Legacy data structure for compatibility
 const findingsData = [
     {
         id: 'FIND-2024-011-003',
