@@ -44,24 +44,46 @@ async function loadCpdDashboardData() {
             // Get progress summary for current user
             // Note: We need to get current user's representative_id
             // For now, we'll get progress for all or use a default
-            const progressResult = await dataFunctions.getCpdProgressSummary(cpdData.cycle.id);
-            let progress = progressResult;
-            if (progressResult && progressResult.data) {
-                progress = progressResult.data;
-            } else if (progressResult && typeof progressResult === 'object') {
-                progress = progressResult;
+            try {
+                const progressResult = await dataFunctions.getCpdProgressSummary(cpdData.cycle.id);
+                let progress = progressResult;
+                if (progressResult && progressResult.data) {
+                    progress = progressResult.data;
+                } else if (progressResult && Array.isArray(progressResult)) {
+                    // If it's an array, take the first item or create a summary
+                    progress = progressResult.length > 0 ? progressResult[0] : null;
+                } else if (progressResult && typeof progressResult === 'object') {
+                    progress = progressResult;
+                }
+                cpdData.progress = progress;
+            } catch (progressError) {
+                console.warn('Error loading CPD progress summary:', progressError);
+                // Set default progress structure to prevent UI errors
+                cpdData.progress = {
+                    total_hours_logged: 0,
+                    ethics_hours_logged: 0,
+                    technical_hours_logged: 0,
+                    activity_count: 0,
+                    progress_percentage: 0,
+                    compliance_status: 'unknown'
+                };
             }
-            cpdData.progress = progress;
             
             // Get recent activities
-            const activitiesResult = await dataFunctions.getCpdActivities(null, cpdData.cycle.id);
-            let activities = activitiesResult;
-            if (activitiesResult && activitiesResult.data) {
-                activities = activitiesResult.data;
-            } else if (activitiesResult && Array.isArray(activitiesResult)) {
-                activities = activitiesResult;
+            try {
+                const activitiesResult = await dataFunctions.getCpdActivities(null, cpdData.cycle.id);
+                let activities = activitiesResult;
+                if (activitiesResult && activitiesResult.data) {
+                    activities = activitiesResult.data;
+                } else if (activitiesResult && Array.isArray(activitiesResult)) {
+                    activities = activitiesResult;
+                }
+                cpdData.activities = activities || [];
+            } catch (activitiesError) {
+                console.warn('Error loading CPD activities:', activitiesError);
+                // Set empty array to prevent UI errors
+                cpdData.activities = [];
             }
-            cpdData.activities = activities || [];
         }
     } catch (error) {
         console.error('Error loading CPD dashboard data:', error);
@@ -102,13 +124,21 @@ function updateProgressCircle() {
     }
     
     // Update progress text
-    const progressValue = document.querySelector('.progress-value');
-    const progressPercentage = document.querySelector('.progress-percentage');
+    const progressValue = document.getElementById('cpdProgressValue') || document.querySelector('.progress-value');
+    const progressPercentage = document.getElementById('cpdProgressPercentage') || document.querySelector('.progress-percentage');
     if (progressValue) {
-        progressValue.textContent = `${Math.round(hoursEarned)} / ${Math.round(hoursRequired)}`;
+        if (hoursEarned > 0 || hoursRequired > 0) {
+            progressValue.textContent = `${Math.round(hoursEarned)} / ${Math.round(hoursRequired)}`;
+        } else {
+            progressValue.textContent = '- / -';
+        }
     }
     if (progressPercentage) {
-        progressPercentage.textContent = `${progress}%`;
+        if (progress > 0) {
+            progressPercentage.textContent = `${progress}%`;
+        } else {
+            progressPercentage.textContent = '-';
+        }
     }
 }
 
@@ -122,65 +152,67 @@ function updateDashboardStats() {
     const cycle = cpdData.cycle || {};
     
     // Update Total Hours card
-    const totalHoursValue = document.querySelector('#dashboard .stat-value');
-    if (totalHoursValue && totalHoursValue.textContent.includes('14')) {
-        const card = totalHoursValue.closest('.stat-card');
-        if (card) {
-            const valueEl = card.querySelector('.stat-value');
-            const sublabelEl = card.querySelector('.stat-sublabel');
-            const progressBar = card.querySelector('.progress-bar');
-            
-            const hoursEarned = parseFloat(progress.total_hours_earned || progress.total_hours || 0);
-            const hoursRequired = parseFloat(cycle.required_hours || 18);
-            const percentage = hoursRequired > 0 ? Math.round((hoursEarned / hoursRequired) * 100) : 0;
-            
-            if (valueEl) valueEl.textContent = Math.round(hoursEarned);
-            if (sublabelEl) sublabelEl.textContent = `of ${Math.round(hoursRequired)} required`;
-            if (progressBar) progressBar.style.width = `${percentage}%`;
+    const totalHoursValueEl = document.getElementById('cpdTotalHoursValue');
+    const totalHoursSublabelEl = document.getElementById('cpdTotalHoursSublabel');
+    const totalHoursProgressEl = document.getElementById('cpdTotalHoursProgress');
+    
+    if (totalHoursValueEl || totalHoursSublabelEl || totalHoursProgressEl) {
+        const hoursEarned = parseFloat(progress.total_hours_earned || progress.total_hours || 0);
+        const hoursRequired = parseFloat(cycle.required_hours || 18);
+        const percentage = hoursRequired > 0 ? Math.round((hoursEarned / hoursRequired) * 100) : 0;
+        
+        if (totalHoursValueEl) {
+            totalHoursValueEl.textContent = hoursEarned > 0 ? Math.round(hoursEarned) : '-';
+        }
+        if (totalHoursSublabelEl) {
+            totalHoursSublabelEl.textContent = `of ${Math.round(hoursRequired)} required`;
+        }
+        if (totalHoursProgressEl) {
+            totalHoursProgressEl.style.width = `${percentage}%`;
         }
     }
     
     // Update Ethics Hours card
-    const ethicsValue = document.querySelectorAll('#dashboard .stat-value')[1];
-    if (ethicsValue) {
-        const card = ethicsValue.closest('.stat-card');
-        if (card) {
-            const valueEl = card.querySelector('.stat-value');
-            const ethicsHours = parseFloat(progress.ethics_hours_earned || progress.ethics_hours || 0);
-            const ethicsRequired = parseFloat(cycle.required_ethics_hours || 3);
-            
-            if (valueEl) valueEl.textContent = Math.round(ethicsHours);
-            
-            const sublabelEl = card.querySelector('.stat-sublabel');
-            if (sublabelEl) {
-                if (ethicsHours >= ethicsRequired) {
-                    sublabelEl.innerHTML = `<span class="badge bg-success">✅ Minimum met (${Math.round(ethicsRequired)} required)</span>`;
-                } else {
-                    sublabelEl.innerHTML = `<span class="badge bg-warning">⚠️ ${Math.round(ethicsRequired - ethicsHours)} hours remaining</span>`;
-                }
+    const ethicsValueEl = document.getElementById('cpdEthicsHoursValue');
+    const ethicsSublabelEl = document.getElementById('cpdEthicsHoursSublabel');
+    
+    if (ethicsValueEl || ethicsSublabelEl) {
+        const ethicsHours = parseFloat(progress.ethics_hours_earned || progress.ethics_hours || 0);
+        const ethicsRequired = parseFloat(cycle.required_ethics_hours || 3);
+        
+        if (ethicsValueEl) {
+            ethicsValueEl.textContent = ethicsHours > 0 ? Math.round(ethicsHours) : '-';
+        }
+        
+        if (ethicsSublabelEl) {
+            if (ethicsHours >= ethicsRequired) {
+                ethicsSublabelEl.innerHTML = `<span class="badge bg-success">✅ Minimum met (${Math.round(ethicsRequired)} required)</span>`;
+            } else {
+                ethicsSublabelEl.innerHTML = `<span class="badge bg-warning">⚠️ ${Math.round(ethicsRequired - ethicsHours)} hours remaining</span>`;
             }
         }
     }
     
     // Update Verifiable Hours card
-    const verifiableValue = document.querySelectorAll('#dashboard .stat-value')[2];
-    if (verifiableValue) {
-        const card = verifiableValue.closest('.stat-card');
-        if (card) {
-            const valueEl = card.querySelector('.stat-value');
-            const verifiableHours = parseFloat(progress.verifiable_hours || 0);
-            const totalHours = parseFloat(progress.total_hours_earned || progress.total_hours || 0);
-            
-            if (valueEl) valueEl.textContent = Math.round(verifiableHours);
-            
-            const sublabelEl = card.querySelector('.stat-sublabel');
-            if (sublabelEl) sublabelEl.textContent = `of ${Math.round(totalHours)} total`;
-            
-            const progressBar = card.querySelector('.progress-bar');
-            if (progressBar && totalHours > 0) {
-                const percentage = Math.round((verifiableHours / totalHours) * 100);
-                progressBar.style.width = `${percentage}%`;
-            }
+    const verifiableValueEl = document.getElementById('cpdVerifiableHoursValue');
+    const verifiableSublabelEl = document.getElementById('cpdVerifiableHoursSublabel');
+    const verifiableProgressEl = document.getElementById('cpdVerifiableHoursProgress');
+    
+    if (verifiableValueEl || verifiableSublabelEl || verifiableProgressEl) {
+        const verifiableHours = parseFloat(progress.verifiable_hours || 0);
+        const totalHours = parseFloat(progress.total_hours_earned || progress.total_hours || 0);
+        
+        if (verifiableValueEl) {
+            verifiableValueEl.textContent = verifiableHours > 0 ? Math.round(verifiableHours) : '-';
+        }
+        
+        if (verifiableSublabelEl) {
+            verifiableSublabelEl.textContent = `of ${totalHours > 0 ? Math.round(totalHours) : 0} total`;
+        }
+        
+        if (verifiableProgressEl && totalHours > 0) {
+            const percentage = Math.round((verifiableHours / totalHours) * 100);
+            verifiableProgressEl.style.width = `${percentage}%`;
         }
     }
     
@@ -196,16 +228,46 @@ function updateDashboardStats() {
     
     // Update cycle info
     if (cpdData.cycle) {
-        const cycleNameEl = document.querySelector('#dashboard .lead');
+        const cycleNameEl = document.getElementById('cpdCycleName') || document.querySelector('#dashboard .lead');
         if (cycleNameEl) {
             cycleNameEl.textContent = cpdData.cycle.cycle_name || 'Current Cycle';
         }
         
-        const cyclePeriodEl = document.querySelector('#dashboard [data-cycle-period]');
+        const cyclePeriodEl = document.getElementById('cpdCyclePeriod') || document.querySelector('#dashboard [data-cycle-period]');
         if (cyclePeriodEl && cpdData.cycle.start_date && cpdData.cycle.end_date) {
             const startDate = new Date(cpdData.cycle.start_date).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
             const endDate = new Date(cpdData.cycle.end_date).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
             cyclePeriodEl.textContent = `${startDate} - ${endDate}`;
+        }
+        
+        // Update days remaining
+        const daysRemainingEl = document.getElementById('cpdDaysRemaining');
+        const daysUntilDeadlineEl = document.getElementById('cpdDaysUntilDeadline');
+        const statusBadgeEl = document.getElementById('cpdStatusBadge');
+        if (cpdData.cycle.end_date) {
+            const cycleEnd = new Date(cpdData.cycle.end_date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const daysRemaining = Math.ceil((cycleEnd - today) / (1000 * 60 * 60 * 24));
+            
+            if (daysRemainingEl) {
+                daysRemainingEl.textContent = `${daysRemaining} days`;
+            }
+            if (daysUntilDeadlineEl) {
+                daysUntilDeadlineEl.textContent = `${daysRemaining} days until deadline`;
+            }
+            if (statusBadgeEl) {
+                if (daysRemaining < 30) {
+                    statusBadgeEl.className = 'badge bg-danger fs-6';
+                    statusBadgeEl.textContent = '⚠️ URGENT';
+                } else if (daysRemaining < 90) {
+                    statusBadgeEl.className = 'badge bg-warning fs-6';
+                    statusBadgeEl.textContent = '⚠️ IN PROGRESS';
+                } else {
+                    statusBadgeEl.className = 'badge bg-info fs-6';
+                    statusBadgeEl.textContent = '✅ ON TRACK';
+                }
+            }
         }
     }
 }

@@ -1,19 +1,19 @@
-// Hope Diamond Transport Admin Portal - Main Application
+// iComply Admin Portal - Main Application
 // Updated to work with new router system
 
 // Global application object
 var _app = {
     // Application configuration
     config: {
-        supabaseUrl: 'https://ekgjuvnrzyacoltcypio.supabase.co',
-        supabaseAnonKey: 'your-anon-key-here', // Replace with actual key
+        supabaseUrl: 'https://mdpblurdxwdbsxnmuhyb.supabase.co',
+        supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kcGJsdXJkeHdkYnN4bm11aHliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4OTA5ODUsImV4cCI6MjA3OTQ2Njk4NX0.qwiO10chWrUKxNIwppMNfGxUwjspkq0skbaC6JxhEBo',
         apiBaseUrl: '/api',
         version: '1.0.0'
     },
 
     // Initialize application
     init: function () {
-        console.log('Initializing Hope Diamond Transport Admin Portal...');
+        console.log('Initializing iComply Admin Portal...');
 
         // Initialize Supabase client
         this.initSupabase();

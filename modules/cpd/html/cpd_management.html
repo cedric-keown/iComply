@@ -80,23 +80,23 @@
                                                     stroke-dasharray="534" stroke-dashoffset="117"></circle>
                                         </svg>
                                         <div class="progress-circle-content">
-                                            <div class="progress-value">14 / 18</div>
+                                            <div class="progress-value" id="cpdProgressValue">- / -</div>
                                             <div class="progress-label">Hours</div>
-                                            <div class="progress-percentage">78%</div>
+                                            <div class="progress-percentage" id="cpdProgressPercentage">-</div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-8">
                                     <h2 class="mb-3">CPD Progress</h2>
-                                    <p class="lead mb-2">2024/2025 Cycle</p>
+                                    <p class="lead mb-2" id="cpdCycleName">Loading...</p>
                                     <div class="row mb-3">
                                         <div class="col-md-6">
-                                            <p class="mb-1"><strong>Cycle Period:</strong> 1 June 2024 - 31 May 2025</p>
-                                            <p class="mb-1"><strong>Days Remaining:</strong> <span class="text-warning">188 days</span></p>
+                                            <p class="mb-1"><strong>Cycle Period:</strong> <span id="cpdCyclePeriod">Loading...</span></p>
+                                            <p class="mb-1"><strong>Days Remaining:</strong> <span class="text-warning" id="cpdDaysRemaining">-</span></p>
                                         </div>
                                         <div class="col-md-6">
-                                            <span class="badge bg-warning fs-6">⚠️ IN PROGRESS</span>
-                                            <p class="mt-2 mb-0"><small>188 days until deadline</small></p>
+                                            <span class="badge bg-warning fs-6" id="cpdStatusBadge">Loading...</span>
+                                            <p class="mt-2 mb-0"><small id="cpdDaysUntilDeadline">Loading...</small></p>
                                         </div>
                                     </div>
                                 </div>
@@ -112,11 +112,11 @@
                             <div class="stat-icon text-primary">
                                 <i class="fas fa-clock fa-3x"></i>
                             </div>
-                            <div class="stat-value">14</div>
+                            <div class="stat-value" id="cpdTotalHoursValue">-</div>
                             <div class="stat-label">Total Hours</div>
-                            <div class="stat-sublabel">of 18 required</div>
+                            <div class="stat-sublabel" id="cpdTotalHoursSublabel">Loading...</div>
                             <div class="progress mt-3" style="height: 8px;">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 78%"></div>
+                                <div class="progress-bar bg-primary" id="cpdTotalHoursProgress" role="progressbar" style="width: 0%"></div>
                             </div>
                         </div>
                     </div>
@@ -125,10 +125,10 @@
                             <div class="stat-icon text-success">
                                 <i class="fas fa-shield-check fa-3x"></i>
                             </div>
-                            <div class="stat-value">3</div>
+                            <div class="stat-value" id="cpdEthicsHoursValue">-</div>
                             <div class="stat-label">Ethics Hours</div>
-                            <div class="stat-sublabel">
-                                <span class="badge bg-success">✅ Minimum met (3 required)</span>
+                            <div class="stat-sublabel" id="cpdEthicsHoursSublabel">
+                                <span class="badge bg-secondary">Loading...</span>
                             </div>
                         </div>
                     </div>
@@ -137,11 +137,11 @@
                             <div class="stat-icon text-info">
                                 <i class="fas fa-certificate fa-3x"></i>
                             </div>
-                            <div class="stat-value">12</div>
+                            <div class="stat-value" id="cpdVerifiableHoursValue">-</div>
                             <div class="stat-label">Verifiable Hours</div>
-                            <div class="stat-sublabel">of 14 total</div>
+                            <div class="stat-sublabel" id="cpdVerifiableHoursSublabel">Loading...</div>
                             <div class="progress mt-3" style="height: 8px;">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: 86%"></div>
+                                <div class="progress-bar bg-info" id="cpdVerifiableHoursProgress" role="progressbar" style="width: 0%"></div>
                             </div>
                         </div>
                     </div>

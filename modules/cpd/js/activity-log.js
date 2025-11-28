@@ -1,7 +1,7 @@
 // Activity Log JavaScript
 
 let cpdActivities = [];
-let currentCpdCycle = null;
+let activityLogCurrentCpdCycle = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize when log tab is shown
@@ -35,11 +35,11 @@ async function loadActivityLog() {
         }
         
         if (cycles && cycles.length > 0) {
-            currentCpdCycle = cycles[0];
+            activityLogCurrentCpdCycle = cycles[0];
             
             // Get activities for current cycle
             // TODO: Filter by current user's representative_id
-            const activitiesResult = await dataFunctions.getCpdActivities(null, currentCpdCycle.id);
+            const activitiesResult = await dataFunctions.getCpdActivities(null, activityLogCurrentCpdCycle.id);
             let activities = activitiesResult;
             if (activitiesResult && activitiesResult.data) {
                 activities = activitiesResult.data;

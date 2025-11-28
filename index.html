@@ -83,6 +83,127 @@
             color: #6c757d;
         }
 
+        /* Search Results Container */
+        .search-results-container {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-height: 500px;
+            overflow-y: auto;
+            z-index: 1050;
+            display: none;
+        }
+
+        .search-results-section {
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .search-results-section:last-child {
+            border-bottom: none;
+        }
+
+        .search-results-header {
+            padding: 10px 15px;
+            background: #f8f9fa;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-results-header i {
+            color: var(--primary-color);
+        }
+
+        .search-results-list {
+            padding: 5px 0;
+        }
+
+        .search-result-item {
+            padding: 0;
+        }
+
+        .search-result-item a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: background-color 0.2s;
+        }
+
+        .search-result-item a:hover,
+        .search-result-item.active a {
+            background-color: #f8f9fa;
+        }
+
+        .search-result-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--light-grey);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--primary-color);
+            flex-shrink: 0;
+        }
+
+        .search-result-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .search-result-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-result-subtitle {
+            font-size: 0.85rem;
+            color: #6c757d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-results-loading,
+        .search-results-empty,
+        .search-results-error {
+            padding: 30px 20px;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .search-results-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .search-results-empty i,
+        .search-results-error i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .search-results-error {
+            color: var(--danger);
+        }
+
         .navbar-actions {
             display: flex;
             align-items: center;
@@ -432,56 +553,62 @@
             
             <!-- Right side -->
             <div class="navbar-actions">
-                <button class="action-button" id="alertsButton" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge">12</span>
-            </button>
-                <ul class="dropdown-menu dropdown-menu-end" style="width: 350px; max-height: 400px; overflow-y: auto;">
-                    <li class="dropdown-header d-flex justify-content-between align-items-center">
-                        <span>Alerts & Notifications</span>
-                        <button class="btn btn-sm btn-link p-0">Mark All</button>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <div class="alert-item critical">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <strong>🔴 CRITICAL</strong>
-                                    <p class="mb-1 small">Mike Johnson's RE5 expired 2 days ago</p>
-                                    <small class="text-muted">2h ago</small>
+                <div class="dropdown">
+                    <button class="action-button" id="alertsButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">12</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                        <li class="dropdown-header d-flex justify-content-between align-items-center">
+                            <span>Alerts & Notifications</span>
+                            <button class="btn btn-sm btn-link p-0">Mark All</button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <div class="alert-item critical">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>🔴 CRITICAL</strong>
+                                        <p class="mb-1 small">Mike Johnson's RE5 expired 2 days ago</p>
+                                        <small class="text-muted">2h ago</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
                                 </div>
-                                <button class="btn btn-sm btn-outline-primary">View</button>
                             </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="alert-item high">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <strong>🟠 HIGH PRIORITY</strong>
-                                    <p class="mb-1 small">45 FICA reviews overdue</p>
-                                    <small class="text-muted">3h ago</small>
+                        </li>
+                        <li>
+                            <div class="alert-item high">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>🟠 HIGH PRIORITY</strong>
+                                        <p class="mb-1 small">45 FICA reviews overdue</p>
+                                        <small class="text-muted">3h ago</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
                                 </div>
-                                <button class="btn btn-sm btn-outline-primary">View</button>
                             </div>
-                        </div>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-center" href="#">View All Alerts</a></li>
-                </ul>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-center" href="#">View All Alerts</a></li>
+                    </ul>
+                </div>
                 
-                <button class="action-button" id="helpButton" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-question-circle"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li class="dropdown-header">Help & Support</li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-book me-2"></i>Documentation</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-video me-2"></i>Video Tutorials</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-keyboard me-2"></i>Keyboard Shortcuts</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-phone me-2"></i>Contact Support</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-star me-2"></i>What's New</a></li>
-                </ul>
+                <div class="dropdown">
+                    <button class="action-button" id="helpButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li class="dropdown-header">Help & Support</li>
+                        <li><a class="dropdown-item" href="#" id="openChatbot"><i class="fas fa-robot me-2"></i>Ask AI Assistant</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-book me-2"></i>Documentation</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-video me-2"></i>Video Tutorials</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-keyboard me-2"></i>Keyboard Shortcuts</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-phone me-2"></i>Contact Support</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-star me-2"></i>What's New</a></li>
+                    </ul>
+                </div>
 
                 <div class="dropdown">
                     <div class="user-menu-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -504,7 +631,7 @@
                             </div>
                         </li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="openMyProfileModal(event)"><i class="fas fa-user me-2"></i>My Profile</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-lock me-2"></i>Change Password</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Preferences</a></li>
                     <li><hr class="dropdown-divider"></li>
@@ -610,13 +737,27 @@
                     </ul>
         <div class="p-3 border-top mt-auto">
             <div class="fw-bold small mb-2">QUICK ACTIONS</div>
-                    <button class="btn btn-primary btn-sm w-100 mb-2" onclick="handleQuickAction('add-representative')">
-                        <i class="fas fa-plus me-1"></i>Add Representative
-                    </button>
-                    <button class="btn btn-outline-primary btn-sm w-100" onclick="handleQuickAction('upload-document')">
-                        <i class="fas fa-upload me-1"></i>Upload Document
-                    </button>
-                </div>
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary btn-sm w-100" onclick="handleQuickAction('add-representative')" title="Add a new representative">
+                    <i class="fas fa-user-plus me-1"></i>Add Representative
+                </button>
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="handleQuickAction('add-client')" title="Add a new client">
+                    <i class="fas fa-user-plus me-1"></i>Add Client
+                </button>
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="handleQuickAction('upload-document')" title="Upload a document">
+                    <i class="fas fa-upload me-1"></i>Upload Document
+                </button>
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="handleQuickAction('log-complaint')" title="Log a new complaint">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Log Complaint
+                </button>
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="handleQuickAction('create-alert')" title="Create a custom alert">
+                    <i class="fas fa-bell me-1"></i>Create Alert
+                </button>
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="handleQuickAction('schedule-audit')" title="Schedule an internal audit">
+                    <i class="fas fa-calendar-check me-1"></i>Schedule Audit
+                </button>
+            </div>
+        </div>
             </nav>
 
     <!-- Main Content -->
@@ -937,7 +1078,16 @@
     <script src="js/auth-service.js"></script>
     <!-- Data Functions -->
     <script src="js/data-functions.js"></script>
+    <script src="js/global-search.js"></script>
+    <!-- Branding Management -->
+    <script src="js/branding.js"></script>
     <script src="js/navbar-badges.js"></script>
+    
+    <!-- AI Chatbot -->
+    <link href="modules/ai-chatbot/css/chatbot-styles.css" rel="stylesheet">
+    <script src="modules/ai-chatbot/js/chatbot-context.js"></script>
+    <script src="modules/ai-chatbot/js/chatbot-service.js"></script>
+    <script src="modules/ai-chatbot/js/chatbot.js"></script>
 
     <script>
         // Navigation State
@@ -1507,14 +1657,20 @@
                 }
             });
 
-            // Global search functionality
-            const searchInput = document.getElementById('globalSearch');
-            if (searchInput) {
-                searchInput.addEventListener('input', function(e) {
-                    const query = e.target.value;
-                    if (query.length > 2) {
-                        // Perform search
-                        console.log('Searching for:', query);
+            // Initialize global search
+            if (typeof GlobalSearch !== 'undefined') {
+                GlobalSearch.init();
+            }
+
+            // AI Chatbot integration
+            const openChatbotLink = document.getElementById('openChatbot');
+            if (openChatbotLink) {
+                openChatbotLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (typeof ChatbotWidget !== 'undefined') {
+                        ChatbotWidget.open();
+                    } else {
+                        console.warn('ChatbotWidget not available');
                     }
                 });
             }
@@ -1627,35 +1783,73 @@
         // Make handleRoute globally accessible for debugging
         // Quick Actions Handler
         window.handleQuickAction = function(action) {
+            console.log('Quick action triggered:', action);
+            
+            // Helper function to switch tab in iframe
+            const switchTabInIframe = (tabId, retries = 10) => {
+                const iframe = document.getElementById('dashboardContent')?.querySelector('iframe');
+                if (iframe && iframe.contentWindow) {
+                    try {
+                        iframe.contentWindow.postMessage({ action: 'switchTab', tab: tabId }, '*');
+                        return true;
+                    } catch (e) {
+                        console.warn('Could not switch tab in iframe:', e);
+                        return false;
+                    }
+                } else if (retries > 0) {
+                    // Retry after a short delay if iframe not ready
+                    setTimeout(() => switchTabInIframe(tabId, retries - 1), 200);
+                    return false;
+                }
+                return false;
+            };
+            
             switch(action) {
                 case 'add-representative':
                     handleRoute('representatives');
-                    // Wait for module to load, then switch to Add New Representative tab
-                    setTimeout(() => {
-                        const iframe = document.getElementById('dashboardContent')?.querySelector('iframe');
-                        if (iframe && iframe.contentWindow) {
-                            try {
-                                iframe.contentWindow.postMessage({ action: 'switchTab', tab: 'add-representative' }, '*');
-                            } catch (e) {
-                                console.warn('Could not switch tab in iframe:', e);
-                            }
-                        }
-                    }, 1000);
+                    setTimeout(() => switchTabInIframe('add-tab'), 800);
                     break;
+                    
+                case 'add-client':
+                    handleRoute('clients');
+                    setTimeout(() => switchTabInIframe('add-client-tab'), 800);
+                    break;
+                    
                 case 'upload-document':
                     handleRoute('documents');
-                    // Wait for module to load, then switch to Upload tab
+                    setTimeout(() => switchTabInIframe('upload-tab'), 800);
+                    break;
+                    
+                case 'log-complaint':
+                    handleRoute('complaints');
+                    setTimeout(() => switchTabInIframe('log-tab'), 800);
+                    break;
+                    
+                case 'create-alert':
+                    handleRoute('alerts');
                     setTimeout(() => {
+                        // Try to find and click the create alert button in the dashboard
                         const iframe = document.getElementById('dashboardContent')?.querySelector('iframe');
                         if (iframe && iframe.contentWindow) {
                             try {
-                                iframe.contentWindow.postMessage({ action: 'switchTab', tab: 'upload' }, '*');
+                                // First switch to dashboard tab if needed
+                                iframe.contentWindow.postMessage({ action: 'switchTab', tab: 'dashboard-tab' }, '*');
+                                // Then trigger create alert button click
+                                setTimeout(() => {
+                                    iframe.contentWindow.postMessage({ action: 'clickButton', buttonId: 'createAlertBtn' }, '*');
+                                }, 500);
                             } catch (e) {
-                                console.warn('Could not switch tab in iframe:', e);
+                                console.warn('Could not trigger create alert:', e);
                             }
                         }
-                    }, 1000);
+                    }, 800);
                     break;
+                    
+                case 'schedule-audit':
+                    handleRoute('audits');
+                    setTimeout(() => switchTabInIframe('schedule-tab'), 800);
+                    break;
+                    
                 default:
                     console.warn('Unknown quick action:', action);
             }
@@ -2112,7 +2306,231 @@
                 sidebar.classList.remove('show');
             }
         });
+        
+        // Open My Profile Modal
+        function openMyProfileModal(event) {
+            if (event) event.preventDefault();
+            
+            const modalElement = document.getElementById('myProfileModal');
+            if (!modalElement) {
+                console.error('My Profile modal element not found');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Profile modal not found. Please refresh the page.'
+                });
+                return;
+            }
+            
+            // Use Bootstrap's getOrCreateInstance to avoid creating multiple instances
+            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+            modal.show();
+        }
     </script>
+    
+    <!-- My Profile Modal Styles -->
+    <link href="modules/my-profile/css/profile-styles.css" rel="stylesheet">
+    
+    <!-- My Profile Modal -->
+    <div class="modal fade" id="myProfileModal" tabindex="-1" aria-labelledby="myProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myProfileModalLabel">
+                        <i class="fas fa-user me-2"></i>My Profile
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Profile Header -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <div class="profile-avatar">
+                                        <i class="fas fa-user fa-4x"></i>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <h2 class="mb-1" id="profileFullName">Loading...</h2>
+                                    <p class="text-muted mb-1" id="profileEmail">-</p>
+                                    <p class="text-muted mb-0" id="profileRole">-</p>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="badge bg-success fs-6" id="profileStatus">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Tabs -->
+                    <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab">
+                                <i class="fas fa-user me-2"></i>Personal Information
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab">
+                                <i class="fas fa-phone me-2"></i>Contact Details
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
+                                <i class="fas fa-lock me-2"></i>Security & Preferences
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="profileTabContent">
+                        <!-- Personal Information Tab -->
+                        <div class="tab-pane fade show active" id="personal" role="tabpanel">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Personal Information</h5>
+                                    <button class="btn btn-sm btn-outline-primary" id="editPersonalBtn" onclick="toggleEditMode('personal')">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <form id="personalInfoForm">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="firstName" required disabled>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="lastName" required disabled>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Email</label>
+                                                <input type="email" class="form-control" id="email" disabled>
+                                                <small class="text-muted">Email cannot be changed</small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">ID Number</label>
+                                                <input type="text" class="form-control" id="idNumber" disabled>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">FSP Number</label>
+                                                <input type="text" class="form-control" id="fspNumber" disabled>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Status</label>
+                                                <input type="text" class="form-control" id="status" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4" id="personalFormActions" style="display: none;">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-1"></i>Save Changes
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" onclick="cancelEdit('personal')">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Details Tab -->
+                        <div class="tab-pane fade" id="contact" role="tabpanel">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Contact Details</h5>
+                                    <button class="btn btn-sm btn-outline-primary" id="editContactBtn" onclick="toggleEditMode('contact')">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <form id="contactInfoForm">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Phone</label>
+                                                <input type="tel" class="form-control" id="phone" disabled>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Mobile</label>
+                                                <input type="tel" class="form-control" id="mobile" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4" id="contactFormActions" style="display: none;">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-1"></i>Save Changes
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" onclick="cancelEdit('contact')">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security & Preferences Tab -->
+                        <div class="tab-pane fade" id="security" role="tabpanel">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Account Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p><strong>User ID:</strong> <span id="userId">-</span></p>
+                                            <p><strong>Account Created:</strong> <span id="accountCreated">-</span></p>
+                                            <p><strong>Last Updated:</strong> <span id="lastUpdated">-</span></p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Last Login:</strong> <span id="lastLogin">-</span></p>
+                                            <p><strong>Role:</strong> <span id="userRole">-</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Change Password</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="changePasswordForm">
+                                        <div class="row g-3">
+                                            <div class="col-md-12">
+                                                <label class="form-label">Current Password</label>
+                                                <input type="password" class="form-control" id="currentPassword" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">New Password</label>
+                                                <input type="password" class="form-control" id="newPassword" required minlength="8">
+                                                <small class="text-muted">Minimum 8 characters</small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Confirm New Password</label>
+                                                <input type="password" class="form-control" id="confirmPassword" required>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-key me-1"></i>Change Password
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- My Profile Modal Script -->
+    <script src="modules/my-profile/js/my-profile.js"></script>
 </body>
 </html>
 

@@ -149,12 +149,41 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-    -- Log access
-    UPDATE documents SET access_count = access_count + 1, updated_at = NOW() WHERE id = p_id;
+    -- Log access - explicitly qualify table name to avoid ambiguity
+    UPDATE public.documents 
+    SET access_count = public.documents.access_count + 1, 
+        updated_at = NOW() 
+    WHERE public.documents.id = p_id;
     
     RETURN QUERY
-    SELECT d.*
-    FROM documents d
+    SELECT 
+        d.id,
+        d.document_owner_type,
+        d.document_owner_id,
+        d.document_name,
+        d.document_type,
+        d.document_category,
+        d.file_name,
+        d.file_size_bytes,
+        d.file_type,
+        d.mime_type,
+        d.storage_bucket,
+        d.storage_path,
+        d.storage_url,
+        d.description,
+        d.tags,
+        d.upload_date,
+        d.document_date,
+        d.expiry_date,
+        d.retention_period_years,
+        d.status,
+        d.is_sensitive,
+        d.requires_encryption,
+        d.uploaded_by,
+        d.access_count,
+        d.created_at,
+        d.updated_at
+    FROM public.documents d
     WHERE d.id = p_id;
 END;
 $$;

@@ -57,6 +57,23 @@ async function loadRetentionData() {
             return daysPast >= 0 && daysPast <= 30; // Within 30 days past deletion date
         });
         
+        // Calculate stats
+        const activeDocs = (documents || []).filter(doc => doc.status === 'active' || !doc.status).length;
+        const holdDocs = (documents || []).filter(doc => doc.status === 'hold' || doc.status === 'legal_hold').length;
+        
+        // Update retention stats
+        const activeCountEl = document.getElementById('retentionActiveCount');
+        if (activeCountEl) activeCountEl.textContent = activeDocs;
+        
+        const expiringCountEl = document.getElementById('retentionExpiringCount');
+        if (expiringCountEl) expiringCountEl.textContent = expiringSoon.length;
+        
+        const eligibleCountEl = document.getElementById('retentionEligibleCount');
+        if (eligibleCountEl) eligibleCountEl.textContent = readyForDeletion.length;
+        
+        const holdCountEl = document.getElementById('retentionHoldCount');
+        if (holdCountEl) holdCountEl.textContent = holdDocs;
+        
         renderRetentionData({
             expiringSoon,
             expired,

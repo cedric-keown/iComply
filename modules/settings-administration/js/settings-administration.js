@@ -190,6 +190,11 @@ async function initializeSettings() {
     renderAuditLogs();
     renderBackups();
     await loadSystemSettings();
+    
+    // Load corporate identity when tab is shown
+    document.getElementById('corporate-identity-tab')?.addEventListener('shown.bs.tab', function() {
+        initializeCorporateIdentity();
+    });
 }
 
 // ============================================================================
@@ -1880,7 +1885,7 @@ async function handleSystemSettingSubmit(e) {
                 setting_key: settingKey,
                 setting_value: parsedValue,
                 setting_type: settingType,
-                setting_category: settingCategory, // Maps to p_setting_category in function
+                setting_category: settingCategory, // Maps to p_category in function
                 description: description || null
             });
         }
@@ -2336,4 +2341,859 @@ async function deleteUserRole(roleId, roleName) {
 window.editUserRole = editUserRole;
 window.deleteUserRole = deleteUserRole;
 window.loadUserRoles = loadUserRoles;
+window.initializeCorporateIdentity = initializeCorporateIdentity;
+window.applyBrandingToPage = applyBrandingToPage;
+
+// ============================================================================
+// CORPORATE IDENTITY / BRANDING FUNCTIONS
+// ============================================================================
+
+/**
+ * Initialize Corporate Identity Tab
+ */
+async function initializeCorporateIdentity() {
+    await loadCorporateIdentitySettings();
+    setupColorPickers();
+    setupFileUploads();
+    setupBrandingForms();
+}
+
+/**
+ * Load Corporate Identity Settings from Database
+ */
+async function loadCorporateIdentitySettings() {
+    try {
+        const settings = await dataFunctions.getSystemSettings();
+        let settingsData = settings;
+        if (settings && settings.data) {
+            settingsData = settings.data;
+        }
+        
+        if (settingsData && Array.isArray(settingsData)) {
+            // Load primary color
+            const primaryColor = settingsData.find(s => s.setting_key === 'branding_primary_color');
+            if (primaryColor) {
+                const color = typeof primaryColor.setting_value === 'string' 
+                    ? primaryColor.setting_value 
+                    : primaryColor.setting_value?.value || '#5CBDB4';
+                document.getElementById('primaryColor').value = color;
+                document.getElementById('primaryColorHex').value = color;
+                updateColorPreview('primaryColorPreview', color);
+            }
+            
+            // Load secondary color
+            const secondaryColor = settingsData.find(s => s.setting_key === 'branding_secondary_color');
+            if (secondaryColor) {
+                const color = typeof secondaryColor.setting_value === 'string' 
+                    ? secondaryColor.setting_value 
+                    : secondaryColor.setting_value?.value || '#6b7280';
+                document.getElementById('secondaryColor').value = color;
+                document.getElementById('secondaryColorHex').value = color;
+                updateColorPreview('secondaryColorPreview', color);
+            }
+            
+            // Load logo
+            const logo = settingsData.find(s => s.setting_key === 'branding_logo_url');
+            if (logo) {
+                const logoUrl = typeof logo.setting_value === 'string' 
+                    ? logo.setting_value 
+                    : logo.setting_value?.url || logo.setting_value?.value;
+                if (logoUrl) {
+                    displayLogo(logoUrl);
+                }
+            }
+            
+            // Load favicon
+            const favicon = settingsData.find(s => s.setting_key === 'branding_favicon_url');
+            if (favicon) {
+                const faviconUrl = typeof favicon.setting_value === 'string' 
+                    ? favicon.setting_value 
+                    : favicon.setting_value?.url || favicon.setting_value?.value;
+                if (faviconUrl) {
+                    displayFavicon(faviconUrl);
+                }
+            }
+            
+            // Load company display name
+            const displayName = settingsData.find(s => s.setting_key === 'branding_company_display_name');
+            if (displayName) {
+                const name = typeof displayName.setting_value === 'string' 
+                    ? displayName.setting_value 
+                    : displayName.setting_value?.value;
+                if (name) {
+                    document.getElementById('companyDisplayName').value = name;
+                }
+            }
+            
+            // Load tagline
+            const tagline = settingsData.find(s => s.setting_key === 'branding_company_tagline');
+            if (tagline) {
+                const taglineValue = typeof tagline.setting_value === 'string' 
+                    ? tagline.setting_value 
+                    : tagline.setting_value?.value;
+                if (taglineValue) {
+                    document.getElementById('companyTagline').value = taglineValue;
+                }
+            }
+            
+            // Apply branding to page
+            applyBrandingToPage();
+        }
+    } catch (error) {
+        console.error('Error loading corporate identity settings:', error);
+    }
+}
+
+/**
+ * Setup Color Pickers with Synchronization
+ */
+function setupColorPickers() {
+    // Primary color picker
+    const primaryColorInput = document.getElementById('primaryColor');
+    const primaryColorHex = document.getElementById('primaryColorHex');
+    
+    if (primaryColorInput && primaryColorHex) {
+        primaryColorInput.addEventListener('input', function() {
+            primaryColorHex.value = this.value;
+            updateColorPreview('primaryColorPreview', this.value);
+            updatePreviewColors();
+        });
+        
+        primaryColorHex.addEventListener('input', function() {
+            if (/^#[0-9A-Fa-f]{6}$/.test(this.value)) {
+                primaryColorInput.value = this.value;
+                updateColorPreview('primaryColorPreview', this.value);
+                updatePreviewColors();
+            }
+        });
+    }
+    
+    // Secondary color picker
+    const secondaryColorInput = document.getElementById('secondaryColor');
+    const secondaryColorHex = document.getElementById('secondaryColorHex');
+    
+    if (secondaryColorInput && secondaryColorHex) {
+        secondaryColorInput.addEventListener('input', function() {
+            secondaryColorHex.value = this.value;
+            updateColorPreview('secondaryColorPreview', this.value);
+            updatePreviewColors();
+        });
+        
+        secondaryColorHex.addEventListener('input', function() {
+            if (/^#[0-9A-Fa-f]{6}$/.test(this.value)) {
+                secondaryColorInput.value = this.value;
+                updateColorPreview('secondaryColorPreview', this.value);
+                updatePreviewColors();
+            }
+        });
+    }
+}
+
+/**
+ * Update Color Preview
+ */
+function updateColorPreview(elementId, color) {
+    const preview = document.getElementById(elementId);
+    if (preview) {
+        preview.style.backgroundColor = color;
+    }
+}
+
+/**
+ * Update Preview Colors in Live Preview
+ */
+function updatePreviewColors() {
+    const primaryColor = document.getElementById('primaryColor')?.value || '#5CBDB4';
+    const secondaryColor = document.getElementById('secondaryColor')?.value || '#6b7280';
+    
+    // Update preview navbar
+    const previewNavbar = document.querySelector('.preview-navbar');
+    if (previewNavbar) {
+        previewNavbar.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    }
+    
+    // Update preview buttons
+    const previewButtons = document.querySelectorAll('.preview-content .btn-primary');
+    previewButtons.forEach(btn => {
+        btn.style.backgroundColor = primaryColor;
+        btn.style.borderColor = primaryColor;
+    });
+    
+    const previewOutlineButtons = document.querySelectorAll('.preview-content .btn-outline-primary');
+    previewOutlineButtons.forEach(btn => {
+        btn.style.color = primaryColor;
+        btn.style.borderColor = primaryColor;
+    });
+    
+    // Update preview progress bar
+    const previewProgress = document.querySelector('.preview-content .mt-3 div');
+    if (previewProgress) {
+        previewProgress.style.backgroundColor = primaryColor;
+    }
+}
+
+/**
+ * Setup File Uploads
+ */
+function setupFileUploads() {
+    // Logo upload
+    const logoFile = document.getElementById('logoFile');
+    if (logoFile) {
+        logoFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    Swal.fire({
+                        title: 'File Too Large',
+                        text: 'Logo file must be less than 2MB',
+                        icon: 'error'
+                    });
+                    this.value = '';
+                    return;
+                }
+                
+                // Preview image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('logoPreview');
+                    const placeholder = document.getElementById('logoPlaceholder');
+                    if (preview) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+                    if (placeholder) {
+                        placeholder.style.display = 'none';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Favicon upload
+    const faviconFile = document.getElementById('faviconFile');
+    if (faviconFile) {
+        faviconFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 100 * 1024) {
+                    Swal.fire({
+                        title: 'File Too Large',
+                        text: 'Favicon file must be less than 100KB',
+                        icon: 'error'
+                    });
+                    this.value = '';
+                    return;
+                }
+                
+                // Preview image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('faviconPreview');
+                    const placeholder = document.getElementById('faviconPlaceholder');
+                    if (preview) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+                    if (placeholder) {
+                        placeholder.style.display = 'none';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+}
+
+/**
+ * Display Logo
+ */
+function displayLogo(url) {
+    const preview = document.getElementById('logoPreview');
+    const placeholder = document.getElementById('logoPlaceholder');
+    const removeBtn = document.getElementById('removeLogoBtn');
+    
+    if (preview && url) {
+        preview.src = url;
+        preview.style.display = 'block';
+        if (placeholder) placeholder.style.display = 'none';
+        if (removeBtn) removeBtn.style.display = 'inline-block';
+        
+        // Update preview
+        const previewLogo = document.getElementById('previewLogo');
+        if (previewLogo) {
+            previewLogo.src = url;
+            previewLogo.style.display = 'block';
+        }
+        
+        // Update preview company name visibility
+        const previewCompanyName = document.getElementById('previewCompanyName');
+        if (previewCompanyName && previewLogo) {
+            previewCompanyName.style.display = 'none';
+        }
+    }
+}
+
+/**
+ * Display Favicon
+ */
+function displayFavicon(url) {
+    const preview = document.getElementById('faviconPreview');
+    const placeholder = document.getElementById('faviconPlaceholder');
+    const removeBtn = document.getElementById('removeFaviconBtn');
+    
+    if (preview && url) {
+        preview.src = url;
+        preview.style.display = 'block';
+        if (placeholder) placeholder.style.display = 'none';
+        if (removeBtn) removeBtn.style.display = 'inline-block';
+        
+        // Update page favicon
+        updatePageFavicon(url);
+    }
+}
+
+/**
+ * Update Page Favicon
+ */
+function updatePageFavicon(url) {
+    let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = url;
+    document.getElementsByTagName('head')[0].appendChild(link);
+}
+
+/**
+ * Setup Branding Forms
+ */
+function setupBrandingForms() {
+    // Brand Colors Form
+    const brandColorsForm = document.getElementById('brandColorsForm');
+    if (brandColorsForm) {
+        brandColorsForm.addEventListener('submit', handleBrandColorsSubmit);
+    }
+    
+    // Logo Form
+    const logoForm = document.getElementById('logoForm');
+    if (logoForm) {
+        logoForm.addEventListener('submit', handleLogoSubmit);
+    }
+    
+    // Favicon Form
+    const faviconForm = document.getElementById('faviconForm');
+    if (faviconForm) {
+        faviconForm.addEventListener('submit', handleFaviconSubmit);
+    }
+    
+    // Branding Details Form
+    const brandingDetailsForm = document.getElementById('brandingDetailsForm');
+    if (brandingDetailsForm) {
+        brandingDetailsForm.addEventListener('submit', handleBrandingDetailsSubmit);
+    }
+    
+    // Reset Colors Button
+    const resetColorsBtn = document.getElementById('resetColorsBtn');
+    if (resetColorsBtn) {
+        resetColorsBtn.addEventListener('click', resetColorsToDefault);
+    }
+    
+    // Remove Logo Button
+    const removeLogoBtn = document.getElementById('removeLogoBtn');
+    if (removeLogoBtn) {
+        removeLogoBtn.addEventListener('click', removeLogo);
+    }
+    
+    // Remove Favicon Button
+    const removeFaviconBtn = document.getElementById('removeFaviconBtn');
+    if (removeFaviconBtn) {
+        removeFaviconBtn.addEventListener('click', removeFavicon);
+    }
+}
+
+/**
+ * Handle Brand Colors Form Submit
+ */
+async function handleBrandColorsSubmit(e) {
+    e.preventDefault();
+    
+    try {
+        const primaryColor = document.getElementById('primaryColor').value;
+        const secondaryColor = document.getElementById('secondaryColor').value;
+        
+        if (!/^#[0-9A-Fa-f]{6}$/.test(primaryColor)) {
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Primary color must be a valid hex color (e.g., #5CBDB4)',
+                icon: 'error'
+            });
+            return;
+        }
+        
+        Swal.fire({
+            title: 'Saving...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Save primary color
+        await saveBrandingSetting('branding_primary_color', primaryColor, 'string', 'branding', 'Primary brand color');
+        
+        // Save secondary color
+        await saveBrandingSetting('branding_secondary_color', secondaryColor, 'string', 'branding', 'Secondary brand color');
+        
+        // Apply branding immediately
+        applyBrandingToPage();
+        
+        Swal.fire({
+            title: 'Success!',
+            text: 'Brand colors saved successfully',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error saving brand colors:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Failed to save colors: ${error.message}`,
+            icon: 'error'
+        });
+    }
+}
+
+/**
+ * Handle Logo Upload
+ */
+async function handleLogoSubmit(e) {
+    e.preventDefault();
+    
+    try {
+        const fileInput = document.getElementById('logoFile');
+        if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+            Swal.fire({
+                title: 'No File Selected',
+                text: 'Please select a logo file to upload',
+                icon: 'warning'
+            });
+            return;
+        }
+        
+        const file = fileInput.files[0];
+        
+        // Validate file type
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml'];
+        if (!allowedTypes.includes(file.type)) {
+            Swal.fire({
+                title: 'Invalid File Type',
+                text: 'Logo must be PNG, JPEG, or SVG format',
+                icon: 'error'
+            });
+            return;
+        }
+        
+        // Show progress
+        const progressBar = document.getElementById('logoUploadProgress');
+        const progressBarInner = progressBar?.querySelector('.progress-bar');
+        if (progressBar) progressBar.style.display = 'block';
+        
+        // Upload to Supabase Storage
+        // Note: This requires Supabase client setup. For now, we'll store the file reference.
+        // In production, implement actual Supabase Storage upload here.
+        
+        Swal.fire({
+            title: 'Uploading...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // For now, create a data URL (in production, upload to Supabase Storage)
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const dataUrl = e.target.result;
+            
+            // Save logo URL to system settings
+            // In production, this would be the Supabase Storage URL
+            await saveBrandingSetting('branding_logo_url', dataUrl, 'string', 'branding', 'Company logo URL');
+            
+            displayLogo(dataUrl);
+            
+            Swal.fire({
+                title: 'Success!',
+                text: 'Logo uploaded successfully',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            
+            if (progressBar) progressBar.style.display = 'none';
+            fileInput.value = '';
+        };
+        reader.readAsDataURL(file);
+        
+    } catch (error) {
+        console.error('Error uploading logo:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Failed to upload logo: ${error.message}`,
+            icon: 'error'
+        });
+    }
+}
+
+/**
+ * Handle Favicon Upload
+ */
+async function handleFaviconSubmit(e) {
+    e.preventDefault();
+    
+    try {
+        const fileInput = document.getElementById('faviconFile');
+        if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+            Swal.fire({
+                title: 'No File Selected',
+                text: 'Please select a favicon file to upload',
+                icon: 'warning'
+            });
+            return;
+        }
+        
+        const file = fileInput.files[0];
+        
+        // Validate file type
+        const allowedTypes = ['image/png', 'image/x-icon', 'image/svg+xml'];
+        if (!allowedTypes.includes(file.type)) {
+            Swal.fire({
+                title: 'Invalid File Type',
+                text: 'Favicon must be ICO, PNG, or SVG format',
+                icon: 'error'
+            });
+            return;
+        }
+        
+        Swal.fire({
+            title: 'Uploading...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Create data URL (in production, upload to Supabase Storage)
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const dataUrl = e.target.result;
+            
+            // Save favicon URL to system settings
+            await saveBrandingSetting('branding_favicon_url', dataUrl, 'string', 'branding', 'Favicon URL');
+            
+            displayFavicon(dataUrl);
+            
+            Swal.fire({
+                title: 'Success!',
+                text: 'Favicon uploaded successfully',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            
+            fileInput.value = '';
+        };
+        reader.readAsDataURL(file);
+        
+    } catch (error) {
+        console.error('Error uploading favicon:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Failed to upload favicon: ${error.message}`,
+            icon: 'error'
+        });
+    }
+}
+
+/**
+ * Handle Branding Details Form Submit
+ */
+async function handleBrandingDetailsSubmit(e) {
+    e.preventDefault();
+    
+    try {
+        const displayName = document.getElementById('companyDisplayName').value.trim();
+        const tagline = document.getElementById('companyTagline').value.trim();
+        
+        Swal.fire({
+            title: 'Saving...',
+            text: 'Please wait',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        if (displayName) {
+            await saveBrandingSetting('branding_company_display_name', displayName, 'string', 'branding', 'Company display name');
+        }
+        
+        if (tagline) {
+            await saveBrandingSetting('branding_company_tagline', tagline, 'string', 'branding', 'Company tagline');
+        }
+        
+        // Update preview
+        const previewName = document.getElementById('previewCompanyName');
+        if (previewName && displayName) {
+            previewName.textContent = displayName;
+            previewName.style.display = 'inline-block';
+        }
+        
+        Swal.fire({
+            title: 'Success!',
+            text: 'Branding details saved successfully',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } catch (error) {
+        console.error('Error saving branding details:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Failed to save details: ${error.message}`,
+            icon: 'error'
+        });
+    }
+}
+
+/**
+ * Save Branding Setting (Helper Function)
+ */
+async function saveBrandingSetting(key, value, type, category, description) {
+    try {
+        // Check if setting exists
+        const settings = await dataFunctions.getSystemSettings();
+        let settingsData = settings;
+        if (settings && settings.data) {
+            settingsData = settings.data;
+        }
+        
+        const existingSetting = settingsData?.find(s => s.setting_key === key);
+        
+        if (existingSetting) {
+            // Update existing
+            await dataFunctions.updateSystemSetting(existingSetting.id, {
+                setting_value: value,
+                description: description || existingSetting.description
+            });
+        } else {
+            // Create new
+            await dataFunctions.createSystemSetting({
+                setting_key: key,
+                setting_value: value,
+                setting_type: type,
+                setting_category: category,
+                description: description
+            });
+        }
+    } catch (error) {
+        console.error(`Error saving branding setting ${key}:`, error);
+        throw error;
+    }
+}
+
+/**
+ * Apply Branding to Page (Updates CSS Variables)
+ */
+function applyBrandingToPage() {
+    // Get branding settings
+    const primaryColor = document.getElementById('primaryColor')?.value || '#5CBDB4';
+    const secondaryColor = document.getElementById('secondaryColor')?.value || '#6b7280';
+    
+    // Update CSS variables
+    const root = document.documentElement;
+    root.style.setProperty('--primary-color', primaryColor);
+    root.style.setProperty('--phoenix-primary', primaryColor);
+    
+    // Calculate RGB values for primary color
+    const rgb = hexToRgb(primaryColor);
+    if (rgb) {
+        root.style.setProperty('--phoenix-primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+    }
+    
+    root.style.setProperty('--secondary-color', secondaryColor);
+    root.style.setProperty('--phoenix-secondary', secondaryColor);
+    
+    // Update navbar gradient
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+        navbar.style.background = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+    }
+    
+    // Update logo in navbar if exists
+    const logoUrl = document.getElementById('logoPreview')?.src;
+    if (logoUrl) {
+        const navbarLogo = document.querySelector('.navbar-brand img');
+        if (navbarLogo) {
+            navbarLogo.src = logoUrl;
+        }
+    }
+}
+
+/**
+ * Convert Hex to RGB
+ */
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+/**
+ * Reset Colors to Default
+ */
+async function resetColorsToDefault() {
+    const result = await Swal.fire({
+        title: 'Reset Colors?',
+        text: 'This will reset brand colors to default values. Continue?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, reset',
+        cancelButtonText: 'Cancel'
+    });
+    
+    if (result.isConfirmed) {
+        document.getElementById('primaryColor').value = '#5CBDB4';
+        document.getElementById('primaryColorHex').value = '#5CBDB4';
+        document.getElementById('secondaryColor').value = '#6b7280';
+        document.getElementById('secondaryColorHex').value = '#6b7280';
+        
+        updateColorPreview('primaryColorPreview', '#5CBDB4');
+        updateColorPreview('secondaryColorPreview', '#6b7280');
+        updatePreviewColors();
+        
+        // Save defaults
+        await handleBrandColorsSubmit({ preventDefault: () => {} });
+    }
+}
+
+/**
+ * Remove Logo
+ */
+async function removeLogo() {
+    const result = await Swal.fire({
+        title: 'Remove Logo?',
+        text: 'This will remove the company logo. Continue?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, remove',
+        cancelButtonText: 'Cancel'
+    });
+    
+    if (result.isConfirmed) {
+        try {
+            // Delete setting
+            const settings = await dataFunctions.getSystemSettings();
+            let settingsData = settings;
+            if (settings && settings.data) {
+                settingsData = settings.data;
+            }
+            
+            const logoSetting = settingsData?.find(s => s.setting_key === 'branding_logo_url');
+            if (logoSetting) {
+                await dataFunctions.deleteSystemSetting(logoSetting.id);
+            }
+            
+            // Clear display
+            const preview = document.getElementById('logoPreview');
+            const placeholder = document.getElementById('logoPlaceholder');
+            const removeBtn = document.getElementById('removeLogoBtn');
+            
+            if (preview) {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+            if (placeholder) placeholder.style.display = 'flex';
+            if (removeBtn) removeBtn.style.display = 'none';
+            
+            Swal.fire({
+                title: 'Removed!',
+                text: 'Logo has been removed',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } catch (error) {
+            console.error('Error removing logo:', error);
+            Swal.fire({
+                title: 'Error',
+                text: `Failed to remove logo: ${error.message}`,
+                icon: 'error'
+            });
+        }
+    }
+}
+
+/**
+ * Remove Favicon
+ */
+async function removeFavicon() {
+    const result = await Swal.fire({
+        title: 'Remove Favicon?',
+        text: 'This will remove the favicon. Continue?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, remove',
+        cancelButtonText: 'Cancel'
+    });
+    
+    if (result.isConfirmed) {
+        try {
+            // Delete setting
+            const settings = await dataFunctions.getSystemSettings();
+            let settingsData = settings;
+            if (settings && settings.data) {
+                settingsData = settings.data;
+            }
+            
+            const faviconSetting = settingsData?.find(s => s.setting_key === 'branding_favicon_url');
+            if (faviconSetting) {
+                await dataFunctions.deleteSystemSetting(faviconSetting.id);
+            }
+            
+            // Clear display
+            const preview = document.getElementById('faviconPreview');
+            const placeholder = document.getElementById('faviconPlaceholder');
+            const removeBtn = document.getElementById('removeFaviconBtn');
+            
+            if (preview) {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+            if (placeholder) placeholder.style.display = 'flex';
+            if (removeBtn) removeBtn.style.display = 'none';
+            
+            Swal.fire({
+                title: 'Removed!',
+                text: 'Favicon has been removed',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } catch (error) {
+            console.error('Error removing favicon:', error);
+            Swal.fire({
+                title: 'Error',
+                text: `Failed to remove favicon: ${error.message}`,
+                icon: 'error'
+            });
+        }
+    }
+}
 

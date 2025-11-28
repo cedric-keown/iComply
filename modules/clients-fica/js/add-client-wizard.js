@@ -1,5 +1,16 @@
 // Add Client Wizard JavaScript
 
+// Listen for postMessage to switch tabs (from Quick Actions)
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.action === 'switchTab') {
+        const tabId = event.data.tab;
+        const tabButton = document.getElementById(tabId);
+        if (tabButton) {
+            tabButton.click();
+        }
+    }
+});
+
 let currentStep = 1;
 const totalSteps = 7;
 let clientType = null;

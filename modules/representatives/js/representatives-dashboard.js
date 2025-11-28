@@ -70,9 +70,41 @@ function calculateDashboardStats() {
         nonCompliant: 0
     };
     
-    // Calculate compliance (placeholder - would need CPD/F&P data)
-    dashboardStats.compliant = Math.floor(dashboardStats.active * 0.92); // Estimate
-    dashboardStats.nonCompliant = dashboardStats.active - dashboardStats.compliant;
+    // Calculate compliance from actual data
+    // Try to get compliance data from team matrix if available
+    if (typeof dataFunctions !== 'undefined' && dataFunctions) {
+        try {
+            dataFunctions.getTeamComplianceMatrix().then(result => {
+                let matrix = result;
+                if (result && result.data) {
+                    matrix = result.data;
+                } else if (result && Array.isArray(result)) {
+                    matrix = result;
+                }
+                
+                if (matrix && Array.isArray(matrix)) {
+                    const activeReps = matrix.filter(r => r.rep_status === 'active');
+                    const compliantReps = activeReps.filter(r => r.compliance_indicator === 'green');
+                    dashboardStats.compliant = compliantReps.length;
+                    dashboardStats.nonCompliant = activeReps.length - compliantReps.length;
+                    updateDashboardUI(); // Update UI with real data
+                }
+            }).catch(err => {
+                console.warn('Could not load compliance matrix, using defaults:', err);
+                // Fallback: set to 0 if we can't get data
+                dashboardStats.compliant = 0;
+                dashboardStats.nonCompliant = dashboardStats.active;
+            });
+        } catch (err) {
+            console.warn('Error loading compliance data:', err);
+            dashboardStats.compliant = 0;
+            dashboardStats.nonCompliant = dashboardStats.active;
+        }
+    } else {
+        // No dataFunctions available, set to 0
+        dashboardStats.compliant = 0;
+        dashboardStats.nonCompliant = dashboardStats.active;
+    }
 }
 
 /**
@@ -80,45 +112,107 @@ function calculateDashboardStats() {
  */
 function updateDashboardUI() {
     // Update Total Representatives Card
-    const totalValue = document.querySelector('#dashboard .stat-value');
-    if (totalValue && document.querySelector('#dashboard .stat-value').parentElement.querySelector('.stat-label').textContent.includes('Total')) {
-        const card = totalValue.closest('.stat-card');
-        if (card) {
-            const valueEl = card.querySelector('.stat-value');
-            const sublabelEl = card.querySelector('.stat-sublabel');
-            if (valueEl) valueEl.textContent = dashboardStats.total;
-            if (sublabelEl) {
-                const activeEl = sublabelEl.nextElementSibling;
-                if (activeEl && activeEl.tagName === 'SMALL') {
-                    activeEl.textContent = `Active: ${dashboardStats.active} | Suspended: ${dashboardStats.suspended} | Terminated: ${dashboardStats.terminated}`;
-                }
-            }
+    const totalValueEl = document.getElementById('repsTotalValue');
+    const statusBreakdownEl = document.getElementById('repsStatusBreakdown');
+    
+    if (totalValueEl) {
+        totalValueEl.textContent = dashboardStats.total;
+    }
+    if (statusBreakdownEl) {
+        statusBreakdownEl.textContent = `Active: ${dashboardStats.active} | Suspended: ${dashboardStats.suspended} | Terminated: ${dashboardStats.terminated}`;
+    }
+    
+    // Update Compliance Status Card
+    const complianceValueEl = document.getElementById('repsComplianceValue');
+    const complianceSublabelEl = document.getElementById('repsComplianceSublabel');
+    const complianceDetailsEl = document.getElementById('repsComplianceDetails');
+    
+    if (complianceValueEl || complianceSublabelEl || complianceDetailsEl) {
+        const compliancePct = dashboardStats.active > 0 
+            ? Math.round((dashboardStats.compliant / dashboardStats.active) * 100) 
+            : 0;
+        
+        if (complianceValueEl) {
+            complianceValueEl.textContent = `${compliancePct}%`;
+            complianceValueEl.className = `stat-value ${compliancePct >= 85 ? 'text-success' : compliancePct >= 70 ? 'text-warning' : 'text-danger'}`;
+        }
+        if (complianceSublabelEl) {
+            complianceSublabelEl.textContent = compliancePct >= 85 ? 'Fully compliant' : compliancePct >= 70 ? 'Mostly compliant' : 'Needs attention';
+        }
+        if (complianceDetailsEl) {
+            complianceDetailsEl.textContent = `${dashboardStats.compliant} of ${dashboardStats.active} compliant`;
         }
     }
     
-    // Update all stat cards
-    const statCards = document.querySelectorAll('#dashboard .stat-card');
-    statCards.forEach(card => {
-        const label = card.querySelector('.stat-label')?.textContent || '';
-        const valueEl = card.querySelector('.stat-value');
-        
-        if (label.includes('Total Representatives') && valueEl) {
-            valueEl.textContent = dashboardStats.total;
-            const smallEl = card.querySelector('small');
-            if (smallEl) {
-                smallEl.textContent = `Active: ${dashboardStats.active} | Suspended: ${dashboardStats.suspended} | Terminated: ${dashboardStats.terminated}`;
-            }
-        } else if (label.includes('Compliance Status') && valueEl) {
-            const compliancePct = dashboardStats.active > 0 
-                ? Math.round((dashboardStats.compliant / dashboardStats.active) * 100) 
-                : 0;
-            valueEl.textContent = `${compliancePct}%`;
-            const smallEl = card.querySelector('small');
-            if (smallEl) {
-                smallEl.textContent = `${dashboardStats.compliant} of ${dashboardStats.active} compliant`;
-            }
+    // Update CPD Due Soon Card (placeholder - would need CPD data)
+    const cpdDueValueEl = document.getElementById('repsCpdDueValue');
+    const cpdDueSublabelEl = document.getElementById('repsCpdDueSublabel');
+    const cpdDaysRemainingEl = document.getElementById('repsCpdDaysRemaining');
+    
+    if (cpdDueValueEl) {
+        cpdDueValueEl.textContent = '-'; // Would need to calculate from CPD data
+    }
+    if (cpdDueSublabelEl) {
+        cpdDueSublabelEl.textContent = 'Loading...';
+    }
+    if (cpdDaysRemainingEl) {
+        cpdDaysRemainingEl.textContent = 'Loading...';
+    }
+    
+    // Update Fit & Proper Renewals Card (placeholder - would need F&P data)
+    const fpRenewalsValueEl = document.getElementById('repsFpRenewalsValue');
+    const fpRenewalsSublabelEl = document.getElementById('repsFpRenewalsSublabel');
+    
+    if (fpRenewalsValueEl) {
+        fpRenewalsValueEl.textContent = '-'; // Would need to calculate from F&P data
+    }
+    if (fpRenewalsSublabelEl) {
+        fpRenewalsSublabelEl.textContent = 'Loading...';
+    }
+    
+    // Update Regulatory Compliance Section
+    const overallStatusEl = document.getElementById('repsOverallStatus');
+    const compliantCountEl = document.getElementById('repsCompliantCount');
+    const compliantPercentageEl = document.getElementById('repsCompliantPercentage');
+    const fpStatusEl = document.getElementById('repsFpStatus');
+    const cpdStatusEl = document.getElementById('repsCpdStatus');
+    
+    if (overallStatusEl) {
+        const compliancePct = dashboardStats.active > 0 
+            ? Math.round((dashboardStats.compliant / dashboardStats.active) * 100) 
+            : 0;
+        if (compliancePct >= 85) {
+            overallStatusEl.className = 'badge bg-success fs-6';
+            overallStatusEl.textContent = '✅ COMPLIANT';
+        } else if (compliancePct >= 70) {
+            overallStatusEl.className = 'badge bg-warning fs-6';
+            overallStatusEl.textContent = '⚠️ ATTENTION REQUIRED';
+        } else {
+            overallStatusEl.className = 'badge bg-danger fs-6';
+            overallStatusEl.textContent = '🔴 CRITICAL';
         }
-    });
+    }
+    
+    if (compliantCountEl) {
+        compliantCountEl.textContent = `${dashboardStats.compliant}/${dashboardStats.active}`;
+    }
+    
+    if (compliantPercentageEl) {
+        const compliancePct = dashboardStats.active > 0 
+            ? Math.round((dashboardStats.compliant / dashboardStats.active) * 100) 
+            : 0;
+        compliantPercentageEl.textContent = `Representatives Compliant (${compliancePct}%)`;
+    }
+    
+    if (fpStatusEl) {
+        fpStatusEl.textContent = 'Loading...'; // Would need F&P data
+        fpStatusEl.className = 'badge bg-secondary';
+    }
+    
+    if (cpdStatusEl) {
+        cpdStatusEl.textContent = 'Loading...'; // Would need CPD data
+        cpdStatusEl.className = 'badge bg-secondary';
+    }
     
     // Update Status Breakdown Cards
     const statusCards = document.querySelectorAll('#dashboard .status-card');

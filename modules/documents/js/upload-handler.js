@@ -4,6 +4,17 @@ let currentFile = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeUploadHandler();
+    
+    // Listen for postMessage to switch tabs (from Quick Actions)
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.action === 'switchTab') {
+            const tabId = event.data.tab;
+            const tabButton = document.getElementById(tabId);
+            if (tabButton) {
+                tabButton.click();
+            }
+        }
+    });
 });
 
 async function initializeUploadHandler() {
@@ -39,12 +50,19 @@ async function loadRepresentatives() {
             repsList = reps;
         }
         
-        const repSelect = document.querySelector('#upload select[placeholder*="representative"], #upload select option:contains("Select representative")')?.closest('select');
-        if (repSelect && repsList) {
+        // Find the representative select dropdown
+        let repSelect = document.getElementById('representativeSelect');
+        if (!repSelect) {
+            // Fallback: try to find by name or attribute
+            repSelect = document.querySelector('#upload select[name*="representative"], #upload select[id*="representative"], #documentDetailsForm select');
+        }
+        if (repSelect && repsList && Array.isArray(repsList) && repsList.length > 0) {
             repSelect.innerHTML = '<option value="">Select representative...</option>' +
                 repsList.map(rep => 
-                    `<option value="${rep.id}">${rep.first_name} ${rep.surname}</option>`
+                    `<option value="${rep.id}">${rep.first_name || ''} ${rep.surname || ''}</option>`
                 ).join('');
+        } else if (repSelect) {
+            repSelect.innerHTML = '<option value="">No representatives available</option>';
         }
     } catch (error) {
         console.error('Error loading representatives:', error);
@@ -310,13 +328,20 @@ async function submitDocument() {
         const formData = new FormData(form);
         const documentName = form.querySelector('input[type="text"][placeholder*="name"], input[name*="name"]')?.value || currentFile.name;
         const category = form.querySelector('select[name*="category"]')?.value || 'other';
-        const documentDate = form.querySelector('input[type="date"][placeholder*="Document Date"]')?.value || null;
-        const expiryDate = form.querySelector('input[type="date"][placeholder*="Expiry"]')?.value || null;
+        const documentDateInput = form.querySelector('input[type="date"]');
+        const documentDate = documentDateInput?.value || null;
+        const expiryDateInput = form.querySelectorAll('input[type="date"]')[1];
+        const expiryDate = expiryDateInput?.value || null;
+        
+        // Update retention info if document date is provided
+        if (documentDate) {
+            updateRetentionInfo(documentDate);
+        }
         const description = form.querySelector('textarea')?.value || null;
         const tagsInput = form.querySelector('input[placeholder*="tags"]')?.value || '';
         const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : null;
         const isSensitive = form.querySelector('#sensitiveDoc')?.checked || false;
-        const representativeId = form.querySelector('select[placeholder*="representative"]')?.value || null;
+        const representativeId = form.querySelector('#representativeSelect, select[name*="representative"]')?.value || null;
         
         // Determine owner type and ID
         let ownerType = 'fsp';
@@ -400,6 +425,41 @@ function resetUploadForm() {
         form.reset();
     }
 }
+
+/**
+ * Update Retention Information Display
+ */
+function updateRetentionInfo(documentDate) {
+    if (!documentDate) return;
+    
+    const retentionInfo = document.getElementById('retentionInfo');
+    const retentionDateText = document.getElementById('retentionDateText');
+    const retentionDaysText = document.getElementById('retentionDaysText');
+    
+    if (!retentionInfo || !retentionDateText || !retentionDaysText) return;
+    
+    const docDate = new Date(documentDate);
+    const retentionYears = 5;
+    const deleteAfterDate = new Date(docDate);
+    deleteAfterDate.setFullYear(docDate.getFullYear() + retentionYears);
+    
+    const today = new Date();
+    const daysRemaining = Math.ceil((deleteAfterDate - today) / (1000 * 60 * 60 * 24));
+    
+    retentionDateText.textContent = `This document will be retained until: ${deleteAfterDate.toLocaleDateString('en-ZA')} (${retentionYears} years from document date)`;
+    retentionDaysText.textContent = `Retention period: ${daysRemaining} days remaining`;
+    retentionInfo.style.display = 'block';
+}
+
+// Add event listener for document date changes
+document.addEventListener('DOMContentLoaded', function() {
+    const documentDateInput = document.querySelector('#documentDetailsForm input[type="date"]');
+    if (documentDateInput) {
+        documentDateInput.addEventListener('change', function() {
+            updateRetentionInfo(this.value);
+        });
+    }
+});
 
 // Export for global access
 window.removeFile = removeFile;

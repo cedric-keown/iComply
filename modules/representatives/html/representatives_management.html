@@ -74,10 +74,10 @@
                             <div class="stat-icon text-primary">
                                 <i class="fas fa-users fa-3x"></i>
                             </div>
-                            <div class="stat-value">12</div>
+                            <div class="stat-value" id="repsTotalValue">-</div>
                             <div class="stat-label">Total Representatives</div>
                             <div class="stat-sublabel">Active representatives</div>
-                            <small class="text-muted d-block mt-2">Active: 12 | Suspended: 0 | Terminated: 0</small>
+                            <small class="text-muted d-block mt-2" id="repsStatusBreakdown">Loading...</small>
                             <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchRepsTab('directory-tab')">View All</a>
                         </div>
                     </div>
@@ -86,10 +86,10 @@
                             <div class="stat-icon text-success">
                                 <i class="fas fa-shield-check fa-3x"></i>
                             </div>
-                            <div class="stat-value text-success">92%</div>
+                            <div class="stat-value text-success" id="repsComplianceValue">-</div>
                             <div class="stat-label">Compliance Status</div>
-                            <div class="stat-sublabel">Fully compliant</div>
-                            <small class="text-muted d-block mt-2">11 of 12 compliant</small>
+                            <div class="stat-sublabel" id="repsComplianceSublabel">Loading...</div>
+                            <small class="text-muted d-block mt-2" id="repsComplianceDetails">Loading...</small>
                             <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchRepsTab('compliance-tab')">View Issues</a>
                         </div>
                     </div>
@@ -98,11 +98,11 @@
                             <div class="stat-icon text-info">
                                 <i class="fas fa-clock fa-3x"></i>
                             </div>
-                            <div class="stat-value text-info">3</div>
+                            <div class="stat-value text-info" id="repsCpdDueValue">-</div>
                             <div class="stat-label">CPD Due Soon</div>
-                            <div class="stat-sublabel">Deadline May 31st</div>
+                            <div class="stat-sublabel" id="repsCpdDueSublabel">Loading...</div>
                             <div class="alert alert-info mb-0 mt-2">
-                                <small><strong>167 days remaining</strong></small>
+                                <small><strong id="repsCpdDaysRemaining">Loading...</strong></small>
                             </div>
                             <a href="#" class="btn btn-sm btn-info mt-2">Review CPD</a>
                         </div>
@@ -112,9 +112,9 @@
                             <div class="stat-icon text-warning">
                                 <i class="fas fa-award fa-3x"></i>
                             </div>
-                            <div class="stat-value text-warning">2</div>
+                            <div class="stat-value text-warning" id="repsFpRenewalsValue">-</div>
                             <div class="stat-label">Fit & Proper Renewals</div>
-                            <div class="stat-sublabel">Due this quarter</div>
+                            <div class="stat-sublabel" id="repsFpRenewalsSublabel">Loading...</div>
                             <a href="#" class="btn btn-sm btn-link mt-2" onclick="switchRepsTab('compliance-tab')">Review F&P</a>
                         </div>
                     </div>
@@ -128,19 +128,19 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0"><span class="badge bg-warning fs-6">⚠️ ATTENTION REQUIRED</span></div>
+                                <div class="h4 mb-0"><span class="badge bg-secondary fs-6" id="repsOverallStatus">Loading...</span></div>
                                 <small class="text-muted">Overall Status</small>
                             </div>
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0">11/12</div>
-                                <small class="text-muted">Representatives Compliant (92%)</small>
+                                <div class="h4 mb-0" id="repsCompliantCount">-</div>
+                                <small class="text-muted" id="repsCompliantPercentage">Loading...</small>
                             </div>
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0"><span class="badge bg-success">✅ Current</span></div>
+                                <div class="h4 mb-0"><span class="badge bg-secondary" id="repsFpStatus">Loading...</span></div>
                                 <small class="text-muted">All Fit & Proper</small>
                             </div>
                             <div class="col-md-3 text-center">
-                                <div class="h4 mb-0"><span class="badge bg-warning">⚠️ 1 behind</span></div>
+                                <div class="h4 mb-0"><span class="badge bg-secondary" id="repsCpdStatus">Loading...</span></div>
                                 <small class="text-muted">All CPD Current</small>
                             </div>
                         </div>

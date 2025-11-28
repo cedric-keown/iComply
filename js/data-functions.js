@@ -269,6 +269,12 @@ var _dataFunctions = function () {
             }, token);
         },
 
+        getUserProfile: async function (userId, token = null) {
+            return await this.callFunction('get_user_profile', {
+                p_id: userId
+            }, token);
+        },
+
         updateUserProfile: async function (id, data, token = null) {
             return await this.callFunction('update_user_profile', {
                 p_id: id,
@@ -823,14 +829,23 @@ var _dataFunctions = function () {
         createAlertRule: async function (data, token = null) {
             return await this.callFunction('create_alert_rule', {
                 p_rule_name: data.rule_name,
-                p_rule_description: data.rule_description,
+                p_rule_description: data.rule_description || null,
                 p_rule_type: data.rule_type,
                 p_target_entity: data.target_entity,
                 p_conditions: data.conditions,
                 p_priority: data.priority,
                 p_alert_frequency: data.alert_frequency || 'once',
                 p_send_email: data.send_email !== undefined ? data.send_email : true,
+                p_send_sms: data.send_sms !== undefined ? data.send_sms : false,
                 p_send_in_app: data.send_in_app !== undefined ? data.send_in_app : true,
+                p_notify_representative: data.notify_representative !== undefined ? data.notify_representative : true,
+                p_notify_key_individual: data.notify_key_individual !== undefined ? data.notify_key_individual : true,
+                p_notify_compliance_officer: data.notify_compliance_officer !== undefined ? data.notify_compliance_officer : true,
+                p_notify_fsp_owner: data.notify_fsp_owner !== undefined ? data.notify_fsp_owner : false,
+                p_escalation_enabled: data.escalation_enabled !== undefined ? data.escalation_enabled : false,
+                p_escalation_delay_hours: data.escalation_delay_hours || null,
+                p_escalation_to_role: data.escalation_to_role || null,
+                p_is_active: data.is_active !== undefined ? data.is_active : true,
                 p_created_by: data.created_by || null
             }, token);
         },

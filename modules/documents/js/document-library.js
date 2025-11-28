@@ -4,7 +4,9 @@ let documentsData = {
     documents: [],
     filters: {
         category: 'all',
-        status: 'active',
+        status: 'all',
+        documentType: 'all',
+        quickFilter: null,
         search: ''
     },
     currentView: 'grid'
@@ -60,7 +62,8 @@ async function loadDocuments() {
         updateDocumentStats();
         renderDocuments();
         updateSidebarCounts();
-        initializeCharts();
+        // Charts are handled by storage-analytics.js for the storage tab
+        updateActiveFilterStates();
         
     } catch (error) {
         console.error('Error loading documents:', error);
@@ -79,49 +82,81 @@ function updateDocumentStats() {
     const docs = documentsData.documents;
     
     // Total documents
-    const totalEl = document.querySelector('#library .stat-value');
+    const totalEl = document.getElementById('totalDocumentsCount');
     if (totalEl) {
         totalEl.textContent = docs.length;
     }
     
-    // Expiring soon (next 30 days)
+    // Calculate documents added this month
     const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const thisMonth = docs.filter(doc => {
+        if (!doc.upload_date) return false;
+        const uploadDate = new Date(doc.upload_date);
+        return uploadDate >= firstDayOfMonth;
+    }).length;
+    
+    const trendEl = document.getElementById('documentsTrend');
+    if (trendEl) {
+        if (thisMonth > 0) {
+            trendEl.textContent = `+${thisMonth} this month`;
+            trendEl.className = 'text-success';
+        } else {
+            trendEl.textContent = 'No new documents this month';
+            trendEl.className = 'text-muted';
+        }
+    }
+    
+    // Expiring soon (next 30 days) - based on delete_after_date or expiry_date
     const thirtyDaysFromNow = new Date(today);
     thirtyDaysFromNow.setDate(today.getDate() + 30);
     
     const expiringSoon = docs.filter(doc => {
-        if (!doc.expiry_date) return false;
-        const expiry = new Date(doc.expiry_date);
+        const expiryDate = doc.delete_after_date || doc.expiry_date;
+        if (!expiryDate) return false;
+        const expiry = new Date(expiryDate);
         return expiry >= today && expiry <= thirtyDaysFromNow;
     }).length;
     
-    const expiringEl = document.querySelectorAll('#library .stat-value')[2];
+    const expiringEl = document.getElementById('expiringSoonCount');
     if (expiringEl) {
         expiringEl.textContent = expiringSoon;
+    }
+    
+    // Pending review (documents with status 'pending')
+    const pendingReview = docs.filter(doc => doc.status === 'pending').length;
+    const pendingEl = document.getElementById('pendingReviewCount');
+    if (pendingEl) {
+        pendingEl.textContent = pendingReview;
     }
     
     // Calculate storage used
     const totalSize = docs.reduce((sum, doc) => sum + (doc.file_size_bytes || 0), 0);
     const totalSizeGB = totalSize / (1024 * 1024 * 1024);
     const maxSizeGB = 10; // 10GB limit
-    const percentUsed = (totalSizeGB / maxSizeGB) * 100;
+    const percentUsed = Math.min((totalSizeGB / maxSizeGB) * 100, 100);
     
-    // Update storage progress
-    const progressCircle = document.querySelector('.progress-circle-small circle.progress-bar');
+    // Update storage progress circle
+    const progressCircle = document.querySelector('#library .progress-circle-small circle.progress-bar');
     if (progressCircle) {
         const circumference = 2 * Math.PI * 35;
         const offset = circumference - (percentUsed / 100) * circumference;
         progressCircle.style.strokeDashoffset = offset;
     }
     
-    const progressText = document.querySelector('.progress-text');
+    const progressText = document.querySelector('#library .progress-text');
     if (progressText) {
         progressText.textContent = Math.round(percentUsed) + '%';
     }
     
-    const storageLabel = document.querySelectorAll('#library .stat-sublabel')[1];
+    const storageLabel = document.getElementById('storageUsed');
     if (storageLabel) {
         storageLabel.textContent = `${totalSizeGB.toFixed(2)} GB / ${maxSizeGB} GB`;
+    }
+    
+    const storagePercent = document.getElementById('storagePercent');
+    if (storagePercent) {
+        storagePercent.textContent = Math.round(percentUsed) + '%';
     }
 }
 
@@ -131,10 +166,17 @@ function updateDocumentStats() {
 function updateSidebarCounts() {
     const docs = documentsData.documents;
     
+    // Count by document type
+    const documentTypeCounts = {};
+    docs.forEach(doc => {
+        const docType = (doc.document_type || '').toLowerCase();
+        documentTypeCounts[docType] = (documentTypeCounts[docType] || 0) + 1;
+    });
+    
     // Count by category
     const categoryCounts = {};
     docs.forEach(doc => {
-        const cat = doc.document_category || 'other';
+        const cat = (doc.document_category || 'other').toLowerCase();
         categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
     });
     
@@ -144,10 +186,60 @@ function updateSidebarCounts() {
         const link = badge.closest('a');
         if (link) {
             const filter = link.getAttribute('data-filter');
-            if (filter && filter !== 'all' && filter !== 'active' && filter !== 'expiring' && filter !== 'expired' && filter !== 'archived' && filter !== 'pending') {
-                const count = categoryCounts[filter] || 0;
-                badge.textContent = count;
+            const filterType = link.getAttribute('data-filter-type');
+            
+            if (!filter || filter === 'all') {
+                return; // Skip "all" filter
             }
+            
+            let count = 0;
+            
+            if (filterType === 'document_type') {
+                // Count by document type
+                Object.keys(documentTypeCounts).forEach(docType => {
+                    if (docType.includes(filter.toLowerCase()) || filter.toLowerCase().includes(docType)) {
+                        count += documentTypeCounts[docType];
+                    }
+                });
+            } else if (filterType === 'category') {
+                // Count by category
+                count = categoryCounts[filter.toLowerCase()] || 0;
+            } else if (filterType === 'quick') {
+                // Count for quick filters
+                const today = new Date();
+                const sevenDaysAgo = new Date(today);
+                sevenDaysAgo.setDate(today.getDate() - 7);
+                const userId = getCurrentUserId();
+                
+                switch (filter) {
+                    case 'my-docs':
+                        if (userId) {
+                            count = docs.filter(d => d.uploaded_by === userId).length;
+                        } else {
+                            count = docs.length;
+                        }
+                        break;
+                    case 'shared':
+                        if (userId) {
+                            count = docs.filter(d => d.uploaded_by !== userId).length;
+                        } else {
+                            count = docs.length;
+                        }
+                        break;
+                    case 'recent':
+                        count = docs.filter(d => {
+                            if (!d.upload_date && !d.created_at) return false;
+                            const uploadDate = new Date(d.upload_date || d.created_at);
+                            return uploadDate >= sevenDaysAgo;
+                        }).length;
+                        break;
+                    case 'favorites':
+                        count = docs.filter(d => (d.access_count || 0) > 5).length;
+                        break;
+                }
+            }
+            
+            badge.textContent = count;
         }
     });
     
@@ -158,12 +250,24 @@ function updateSidebarCounts() {
     }
     
     // Update status badges
+    const today = new Date();
+    const thirtyDaysFromNow = new Date(today);
+    thirtyDaysFromNow.setDate(today.getDate() + 30);
+    
     const activeDocs = docs.filter(d => d.status === 'active' || !d.status).length;
     const expiredDocs = docs.filter(d => {
-        if (!d.expiry_date) return false;
-        return new Date(d.expiry_date) < new Date();
+        const expiryDate = d.delete_after_date || d.expiry_date;
+        if (!expiryDate) return false;
+        return new Date(expiryDate) < today;
     }).length;
     const archivedDocs = docs.filter(d => d.status === 'archived').length;
+    const expiringDocs = docs.filter(d => {
+        const expiryDate = d.delete_after_date || d.expiry_date;
+        if (!expiryDate) return false;
+        const expiry = new Date(expiryDate);
+        return expiry >= today && expiry <= thirtyDaysFromNow;
+    }).length;
+    const pendingDocs = docs.filter(d => d.status === 'pending').length;
     
     const activeBadge = document.querySelector('[data-filter="active"] .badge');
     if (activeBadge) activeBadge.textContent = activeDocs;
@@ -173,6 +277,12 @@ function updateSidebarCounts() {
     
     const archivedBadge = document.querySelector('[data-filter="archived"] .badge');
     if (archivedBadge) archivedBadge.textContent = archivedDocs;
+    
+    const expiringBadge = document.querySelector('[data-filter="expiring"] .badge');
+    if (expiringBadge) expiringBadge.textContent = expiringDocs;
+    
+    const pendingBadge = document.querySelector('[data-filter="pending"] .badge');
+    if (pendingBadge) pendingBadge.textContent = pendingDocs;
 }
 
 /**
@@ -197,7 +307,17 @@ function renderDocuments() {
 function getFilteredDocuments() {
     let docs = documentsData.documents;
     
-    // Filter by category
+    // Filter by document type (e.g., cpd_certificate, id_document, etc.)
+    if (documentsData.filters.documentType && documentsData.filters.documentType !== 'all') {
+        docs = docs.filter(d => {
+            const docType = (d.document_type || '').toLowerCase();
+            const filterType = documentsData.filters.documentType.toLowerCase();
+            // Handle partial matches (e.g., "agreement" matches "client_agreement")
+            return docType.includes(filterType) || filterType.includes(docType);
+        });
+    }
+    
+    // Filter by category (compliance, regulatory, operational)
     if (documentsData.filters.category && documentsData.filters.category !== 'all') {
         docs = docs.filter(d => {
             const cat = (d.document_category || '').toLowerCase();
@@ -212,17 +332,67 @@ function getFilteredDocuments() {
             const thirtyDaysFromNow = new Date(today);
             thirtyDaysFromNow.setDate(today.getDate() + 30);
             docs = docs.filter(d => {
-                if (!d.expiry_date) return false;
-                const expiry = new Date(d.expiry_date);
+                const expiryDate = d.delete_after_date || d.expiry_date;
+                if (!expiryDate) return false;
+                const expiry = new Date(expiryDate);
                 return expiry >= today && expiry <= thirtyDaysFromNow;
             });
         } else if (documentsData.filters.status === 'expired') {
             docs = docs.filter(d => {
-                if (!d.expiry_date) return false;
-                return new Date(d.expiry_date) < new Date();
+                const expiryDate = d.delete_after_date || d.expiry_date;
+                if (!expiryDate) return false;
+                return new Date(expiryDate) < new Date();
             });
         } else {
             docs = docs.filter(d => (d.status || 'active') === documentsData.filters.status);
+        }
+    }
+    
+    // Quick filters
+    if (documentsData.filters.quickFilter) {
+        const today = new Date();
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(today.getDate() - 7);
+        
+        switch (documentsData.filters.quickFilter) {
+            case 'my-docs':
+                // Filter by current user (if available)
+                const userId = getCurrentUserId();
+                if (userId) {
+                    docs = docs.filter(d => d.uploaded_by === userId);
+                } else {
+                    // If no user ID, show all active documents
+                    docs = docs.filter(d => d.status === 'active' || !d.status);
+                }
+                break;
+            case 'shared':
+                // Documents shared with current user (placeholder - would need sharing table)
+                // For now, show documents not uploaded by current user
+                const currentUserId = getCurrentUserId();
+                if (currentUserId) {
+                    docs = docs.filter(d => d.uploaded_by !== currentUserId);
+                }
+                break;
+            case 'recent':
+                // Documents uploaded in last 7 days
+                docs = docs.filter(d => {
+                    if (!d.upload_date && !d.created_at) return false;
+                    const uploadDate = new Date(d.upload_date || d.created_at);
+                    return uploadDate >= sevenDaysAgo;
+                });
+                // Sort by most recent first
+                docs.sort((a, b) => {
+                    const dateA = new Date(a.upload_date || a.created_at || 0);
+                    const dateB = new Date(b.upload_date || b.created_at || 0);
+                    return dateB - dateA;
+                });
+                break;
+            case 'favorites':
+                // Documents marked as favorites (placeholder - would need favorites table)
+                // For now, show documents with high access count (frequently viewed)
+                docs = docs.filter(d => (d.access_count || 0) > 5);
+                docs.sort((a, b) => (b.access_count || 0) - (a.access_count || 0));
+                break;
         }
     }
     
@@ -232,11 +402,33 @@ function getFilteredDocuments() {
         docs = docs.filter(d => {
             return (d.document_name || '').toLowerCase().includes(searchLower) ||
                    (d.description || '').toLowerCase().includes(searchLower) ||
-                   (d.file_name || '').toLowerCase().includes(searchLower);
+                   (d.file_name || '').toLowerCase().includes(searchLower) ||
+                   ((d.tags || []).some(tag => tag.toLowerCase().includes(searchLower)));
         });
     }
     
     return docs;
+}
+
+/**
+ * Get Current User ID
+ */
+function getCurrentUserId() {
+    try {
+        // Try to get from authService
+        if (typeof authService !== 'undefined' && authService.user && authService.user.id) {
+            return authService.user.id;
+        }
+        // Try to get from localStorage
+        const userInfo = localStorage.getItem('user_info');
+        if (userInfo) {
+            const user = JSON.parse(userInfo);
+            return user.id || user.user_id || null;
+        }
+    } catch (e) {
+        console.warn('Could not get current user ID:', e);
+    }
+    return null;
 }
 
 /**
@@ -537,9 +729,11 @@ function setupSidebar() {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const filter = this.getAttribute('data-filter');
+            const filterType = this.getAttribute('data-filter-type');
             
-            // Update active state
-            sidebarLinks.forEach(l => l.classList.remove('active'));
+            // Update active state - only remove active from same filter type group
+            const sameTypeLinks = document.querySelectorAll(`[data-filter-type="${filterType}"]`);
+            sameTypeLinks.forEach(l => l.classList.remove('active'));
             this.classList.add('active');
             
             // Apply filter
@@ -562,17 +756,75 @@ function applyFilters() {
 }
 
 function applyFilter(filter) {
-    // Determine if it's a category or status filter
-    const categoryFilters = ['all', 'fica', 'agreements', 'cpd', 'qualifications', 'compliance', 'risk', 'insurance', 'financial', 'correspondence', 'other'];
-    const statusFilters = ['active', 'expiring', 'expired', 'archived', 'pending'];
+    // Get the filter type from the clicked element
+    const clickedLink = document.querySelector(`[data-filter="${filter}"]`);
+    const filterType = clickedLink?.getAttribute('data-filter-type') || 'category';
     
-    if (categoryFilters.includes(filter)) {
-        documentsData.filters.category = filter;
-    } else if (statusFilters.includes(filter)) {
+    // Reset only the filter type being changed, keep others active
+    if (filterType === 'category') {
+        documentsData.filters.category = filter === 'all' ? 'all' : filter;
+        // Reset document type when changing category
+        if (filter === 'all') {
+            documentsData.filters.documentType = 'all';
+        }
+    } else if (filterType === 'status') {
         documentsData.filters.status = filter;
+    } else if (filterType === 'document_type') {
+        documentsData.filters.documentType = filter;
+        // Reset category when changing document type
+        documentsData.filters.category = 'all';
+    } else if (filterType === 'quick') {
+        documentsData.filters.quickFilter = filter;
+        // Reset other filters when using quick filter
+        documentsData.filters.category = 'all';
+        documentsData.filters.documentType = 'all';
+        documentsData.filters.status = 'all';
+    }
+    
+    // Clear search when applying sidebar filter
+    documentsData.filters.search = '';
+    const searchInput = document.querySelector('#searchBar input[type="text"]');
+    if (searchInput) {
+        searchInput.value = '';
     }
     
     renderDocuments();
+    
+    // Update active states based on current filters
+    updateActiveFilterStates();
+}
+
+/**
+ * Update Active Filter States in Sidebar
+ */
+function updateActiveFilterStates() {
+    // Remove all active states first
+    const allLinks = document.querySelectorAll('.sidebar-menu a');
+    allLinks.forEach(link => link.classList.remove('active'));
+    
+    // Set active state for current filters
+    if (documentsData.filters.category && documentsData.filters.category !== 'all') {
+        const categoryLink = document.querySelector(`[data-filter="${documentsData.filters.category}"][data-filter-type="category"]`);
+        if (categoryLink) categoryLink.classList.add('active');
+    } else if (documentsData.filters.category === 'all') {
+        const allLink = document.querySelector('[data-filter="all"][data-filter-type="category"]');
+        if (allLink) allLink.classList.add('active');
+    }
+    
+    if (documentsData.filters.status && documentsData.filters.status !== 'all') {
+        const statusLink = document.querySelector(`[data-filter="${documentsData.filters.status}"][data-filter-type="status"]`);
+        if (statusLink) statusLink.classList.add('active');
+    }
+    
+    if (documentsData.filters.documentType && documentsData.filters.documentType !== 'all') {
+        const typeLink = document.querySelector(`[data-filter="${documentsData.filters.documentType}"][data-filter-type="document_type"]`);
+        if (typeLink) typeLink.classList.add('active');
+    }
+    
+    if (documentsData.filters.quickFilter) {
+        const quickLink = document.querySelector(`[data-filter="${documentsData.filters.quickFilter}"][data-filter-type="quick"]`);
+        if (quickLink) quickLink.classList.add('active');
+    }
 }
 
 function setupSearch() {
@@ -595,48 +847,9 @@ function setupSearch() {
 }
 
 function initializeCharts() {
-    // Storage by Category Chart
-    const ctx = document.getElementById('storageCategoryChart');
-    if (ctx && typeof Chart !== 'undefined') {
-        const docs = documentsData.documents;
-        const categoryCounts = {};
-        
-        docs.forEach(doc => {
-            const cat = doc.document_category || 'Other';
-            categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
-        });
-        
-        const labels = Object.keys(categoryCounts);
-        const data = Object.values(categoryCounts);
-        
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: labels.length > 0 ? labels : ['No Data'],
-                datasets: [{
-                    data: data.length > 0 ? data : [1],
-                    backgroundColor: [
-                        '#5CBDB4',
-                        '#17A2B8',
-                        '#28A745',
-                        '#FFC107',
-                        '#DC3545',
-                        '#6c757d'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
+    // Note: The storageCategoryChart canvas is only in the Storage Analytics tab
+    // and is managed by storage-analytics.js, so we don't create charts here
+    // This function is kept for potential future chart needs in the library tab
 }
 
 async function viewDocument(id) {
@@ -777,3 +990,5 @@ window.switchDocTab = switchDocTab;
 window.viewDocument = viewDocument;
 window.downloadDocument = downloadDocument;
 window.loadDocuments = loadDocuments;
+window.formatFileSize = formatFileSize;
+window.getFileIconForType = getFileIconForType;

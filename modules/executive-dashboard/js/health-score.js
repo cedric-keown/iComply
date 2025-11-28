@@ -16,8 +16,8 @@ function createHealthScoreChart(score = null) {
     const ctx = document.getElementById('healthScoreChart');
     if (!ctx) return;
     
-    // If score is provided, use it; otherwise use default
-    const healthScore = score !== null ? score : 87;
+    // If score is provided, use it; otherwise show loading state
+    const healthScore = score !== null ? score : 0;
     const color = healthScore >= 85 ? '#28A745' : healthScore >= 70 ? '#FFC107' : '#DC3545';
     
     // Destroy existing chart if it exists
@@ -56,12 +56,32 @@ function createHealthScoreChart(score = null) {
     // Update score text
     const scoreElement = document.getElementById('healthScoreValue');
     if (scoreElement) {
-        scoreElement.textContent = Math.round(healthScore);
+        scoreElement.textContent = healthScore > 0 ? Math.round(healthScore) : '-';
     }
     
     // Update score label color
     if (scoreElement) {
-        scoreElement.style.color = color;
+        scoreElement.style.color = healthScore > 0 ? color : '#6c757d';
+    }
+    
+    // Update status text and color based on score
+    const statusElement = document.getElementById('healthScoreStatus');
+    if (statusElement) {
+        if (healthScore > 0) {
+            if (healthScore >= 85) {
+                statusElement.textContent = 'Good Standing';
+                statusElement.className = 'health-score-status text-success';
+            } else if (healthScore >= 70) {
+                statusElement.textContent = 'Needs Attention';
+                statusElement.className = 'health-score-status text-warning';
+            } else {
+                statusElement.textContent = 'Critical';
+                statusElement.className = 'health-score-status text-danger';
+            }
+        } else {
+            statusElement.textContent = 'Loading...';
+            statusElement.className = 'health-score-status text-muted';
+        }
     }
 }
 
@@ -77,6 +97,21 @@ function updateHealthScoreChart(score) {
         if (scoreElement) {
             scoreElement.textContent = Math.round(score);
             scoreElement.style.color = color;
+        }
+        
+        // Update status text and color based on score
+        const statusElement = document.getElementById('healthScoreStatus');
+        if (statusElement) {
+            if (score >= 85) {
+                statusElement.textContent = 'Good Standing';
+                statusElement.className = 'health-score-status text-success';
+            } else if (score >= 70) {
+                statusElement.textContent = 'Needs Attention';
+                statusElement.className = 'health-score-status text-warning';
+            } else {
+                statusElement.textContent = 'Critical';
+                statusElement.className = 'health-score-status text-danger';
+            }
         }
     } else {
         createHealthScoreChart(score);

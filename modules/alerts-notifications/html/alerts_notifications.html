@@ -83,10 +83,10 @@
                     <!-- Card 1: Total Active Alerts -->
                     <div class="col-md-6 col-lg-2">
                         <div class="alert-summary-card" data-filter="all">
-                            <div class="summary-number">17</div>
+                            <div class="summary-number" id="summary-total-active">-</div>
                             <div class="summary-label">Active Alerts</div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
-                                <small class="text-success">+4 since yesterday <i class="fas fa-arrow-up"></i></small>
+                                <small class="text-muted" id="summary-total-trend">Loading...</small>
                                 <i class="fas fa-bell fa-2x text-primary"></i>
                             </div>
                             <div class="mt-2">
@@ -98,7 +98,7 @@
                     <!-- Card 2: Critical Alerts -->
                     <div class="col-md-6 col-lg-2">
                         <div class="alert-summary-card critical" data-filter="critical">
-                            <div class="summary-number text-danger pulse">1</div>
+                            <div class="summary-number text-danger pulse" id="summary-critical">-</div>
                             <div class="summary-label">CRITICAL</div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <small class="text-danger">Requires immediate action</small>
@@ -110,7 +110,7 @@
                     <!-- Card 3: High Priority -->
                     <div class="col-md-6 col-lg-2">
                         <div class="alert-summary-card high" data-filter="high">
-                            <div class="summary-number text-warning">3</div>
+                            <div class="summary-number text-warning" id="summary-high">-</div>
                             <div class="summary-label">HIGH PRIORITY</div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <small class="text-warning">Action within 7 days</small>
@@ -122,7 +122,7 @@
                     <!-- Card 4: Medium Priority -->
                     <div class="col-md-6 col-lg-2">
                         <div class="alert-summary-card medium" data-filter="medium">
-                            <div class="summary-number text-info">5</div>
+                            <div class="summary-number text-info" id="summary-medium">-</div>
                             <div class="summary-label">MEDIUM PRIORITY</div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <small class="text-info">Action within 30 days</small>
@@ -134,7 +134,7 @@
                     <!-- Card 5: Overdue -->
                     <div class="col-md-6 col-lg-2">
                         <div class="alert-summary-card overdue" data-filter="overdue">
-                            <div class="summary-number text-danger pulse">1</div>
+                            <div class="summary-number text-danger pulse" id="summary-overdue">-</div>
                             <div class="summary-label">OVERDUE</div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <small class="text-danger">Past due date</small>
@@ -146,7 +146,7 @@
                     <!-- Card 6: Acknowledged -->
                     <div class="col-md-6 col-lg-2">
                         <div class="alert-summary-card acknowledged" data-filter="acknowledged">
-                            <div class="summary-number text-success">8</div>
+                            <div class="summary-number text-success" id="summary-acknowledged">-</div>
                             <div class="summary-label">ACKNOWLEDGED</div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <small class="text-success">Awaiting completion</small>
@@ -162,7 +162,7 @@
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
                             <div class="stat-content">
-                                <div class="stat-number">4</div>
+                                <div class="stat-number" id="alerts-today">-</div>
                                 <div class="stat-label">Alerts Today</div>
                                 <small class="text-muted">Same as yesterday</small>
                             </div>
@@ -172,7 +172,7 @@
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-stopwatch"></i></div>
                             <div class="stat-content">
-                                <div class="stat-number">2.5 hrs</div>
+                                <div class="stat-number" id="avg-response-time">-</div>
                                 <div class="stat-label">Avg Response Time</div>
                                 <small class="text-success">-0.5 hrs <i class="fas fa-arrow-down"></i></small>
                             </div>
@@ -182,7 +182,7 @@
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-check"></i></div>
                             <div class="stat-content">
-                                <div class="stat-number">12</div>
+                                <div class="stat-number" id="dismissed-7days">-</div>
                                 <div class="stat-label">Dismissed (7 Days)</div>
                                 <small class="text-success">+2 vs previous week</small>
                             </div>
@@ -192,7 +192,7 @@
                         <div class="stat-card">
                             <div class="stat-icon"><i class="fas fa-arrow-up"></i></div>
                             <div class="stat-content">
-                                <div class="stat-number">3</div>
+                                <div class="stat-number" id="escalated-30days">-</div>
                                 <div class="stat-label">Escalated (30 Days)</div>
                                 <small class="text-warning">+1 vs previous month</small>
                             </div>
