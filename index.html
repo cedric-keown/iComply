@@ -268,6 +268,38 @@
             left: auto !important;
             margin-top: 8px;
         }
+        
+        /* Recent Activities Styles */
+        .recent-activity-item {
+            padding: 10px 15px;
+            transition: background-color 0.2s;
+        }
+        
+        .recent-activity-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .recent-activity-item .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: var(--light-grey, #f0f0f0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color, #5CBDB4);
+            flex-shrink: 0;
+        }
+        
+        .recent-activity-item .fw-semibold {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-color, #333);
+        }
+        
+        .recent-activity-item small {
+            font-size: 0.75rem;
+        }
 
         .avatar-sm {
             width: 32px;
@@ -607,6 +639,26 @@
                         <li><a class="dropdown-item" href="#"><i class="fas fa-phone me-2"></i>Contact Support</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-star me-2"></i>What's New</a></li>
+                    </ul>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="action-button" id="recentActivitiesButton" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Recent Activities">
+                        <i class="fas fa-history"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 320px; max-height: 450px; overflow-y: auto;">
+                        <li class="dropdown-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-history me-2"></i>Recent Activities</span>
+                            <button class="btn btn-sm btn-link p-0 text-muted" id="clearRecentActivities" title="Clear all">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li id="recentActivitiesList">
+                            <div class="dropdown-item text-muted text-center py-3">
+                                <i class="fas fa-history me-2"></i>No recent activities
+                            </div>
+                        </li>
                     </ul>
                 </div>
 
@@ -1079,6 +1131,8 @@
     <!-- Data Functions -->
     <script src="js/data-functions.js"></script>
     <script src="js/global-search.js"></script>
+    <!-- Recent Activities Tracker -->
+    <script src="js/recent-activities.js"></script>
     <!-- Branding Management -->
     <script src="js/branding.js"></script>
     <script src="js/navbar-badges.js"></script>
@@ -1115,39 +1169,111 @@
                 const userInfoStr = localStorage.getItem('user_info');
                 if (!userInfoStr) {
                     console.warn('No user info in localStorage');
+                    // Still try to update UI with default values
+                    navigationState.currentUser.name = 'User';
+                    navigationState.currentUser.role_name = 'User';
+                    updateUserUI();
                     return;
                 }
 
                 const userInfo = JSON.parse(userInfoStr);
                 console.log('User info from localStorage:', userInfo);
 
-                // Update navigation state with basic info
-                navigationState.currentUser.id = userInfo.id;
-                navigationState.currentUser.email = userInfo.email;
-
-                // Fetch full user profile from database
-                const response = await dataFunctions.getUserProfiles('active');
-                console.log('User profiles response:', response);
-
-                // Handle different response formats
-                let profiles = [];
-                if (response && response.get_user_profiles) {
-                    profiles = response.get_user_profiles;
-                } else if (Array.isArray(response)) {
-                    profiles = response;
+                // Parse name field if first_name/last_name not available
+                let firstName = userInfo.first_name || userInfo.firstName || '';
+                let lastName = userInfo.last_name || userInfo.lastName || '';
+                
+                // If we have a name field but no first_name/last_name, parse it
+                if ((!firstName && !lastName) && userInfo.name && typeof userInfo.name === 'string') {
+                    const nameParts = userInfo.name.trim().split(/\s+/);
+                    if (nameParts.length > 0) {
+                        firstName = nameParts[0];
+                        if (nameParts.length > 1) {
+                            lastName = nameParts.slice(1).join(' ');
+                        }
+                    }
                 }
 
-                // Find current user's profile
-                const currentUserProfile = profiles.find(p => p.id === userInfo.id || p.email === userInfo.email);
+                // Get user ID
+                const userId = userInfo.id || userInfo.user_id;
+                if (!userId) {
+                    console.warn('No user ID found in user info');
+                    // Use localStorage data as fallback
+                    navigationState.currentUser.first_name = firstName;
+                    navigationState.currentUser.last_name = lastName;
+                    // Always use first_name and last_name if available
+                    if (firstName || lastName) {
+                        navigationState.currentUser.name = `${firstName} ${lastName}`.trim();
+                    } else {
+                        navigationState.currentUser.name = userInfo.email || 'User';
+                    }
+                    navigationState.currentUser.role_name = userInfo.role_name || userInfo.role || 'User';
+                    navigationState.currentUser.email = userInfo.email || '';
+                    updateUserUI();
+                    return;
+                }
+
+                // Update navigation state with basic info
+                navigationState.currentUser.id = userId;
+                navigationState.currentUser.email = userInfo.email || '';
+
+                // Try to fetch full user profile from database using getUserProfile
+                let currentUserProfile = null;
+                try {
+                    if (dataFunctions && dataFunctions.getUserProfile) {
+                        const profileResponse = await dataFunctions.getUserProfile(userId);
+                        console.log('User profile response:', profileResponse);
+                        
+                        // Handle different response structures
+                        if (profileResponse) {
+                            if (Array.isArray(profileResponse) && profileResponse.length > 0) {
+                                currentUserProfile = profileResponse[0];
+                            } else if (profileResponse.data) {
+                                currentUserProfile = Array.isArray(profileResponse.data) ? profileResponse.data[0] : profileResponse.data;
+                            } else if (profileResponse.id) {
+                                currentUserProfile = profileResponse;
+                            }
+                        }
+                    }
+                } catch (profileError) {
+                    console.warn('Error fetching user profile, trying fallback:', profileError);
+                    // Try fallback: get all profiles and find current user
+                    try {
+                        const allProfilesResponse = await dataFunctions.getUserProfiles(null);
+                        let allProfiles = [];
+                        if (Array.isArray(allProfilesResponse)) {
+                            allProfiles = allProfilesResponse;
+                        } else if (allProfilesResponse && allProfilesResponse.data) {
+                            allProfiles = Array.isArray(allProfilesResponse.data) ? allProfilesResponse.data : [allProfilesResponse.data];
+                        }
+                        currentUserProfile = allProfiles.find(p => p.id === userId || p.email === userInfo.email);
+                    } catch (fallbackError) {
+                        console.warn('Fallback also failed:', fallbackError);
+                    }
+                }
                 
                 if (currentUserProfile) {
                     console.log('Found user profile:', currentUserProfile);
                     
                     // Update navigation state with full profile
-                    navigationState.currentUser.first_name = currentUserProfile.first_name;
-                    navigationState.currentUser.last_name = currentUserProfile.last_name;
-                    navigationState.currentUser.name = `${currentUserProfile.first_name} ${currentUserProfile.last_name}`;
-                    navigationState.currentUser.role_name = currentUserProfile.role_name || userInfo.role_name || 'User';
+                    navigationState.currentUser.first_name = currentUserProfile.first_name || '';
+                    navigationState.currentUser.last_name = currentUserProfile.last_name || '';
+                    // Always use first_name and last_name if available
+                    const profileFirstName = currentUserProfile.first_name || '';
+                    const profileLastName = currentUserProfile.last_name || '';
+                    if (profileFirstName || profileLastName) {
+                        navigationState.currentUser.name = `${profileFirstName} ${profileLastName}`.trim();
+                    } else {
+                        // Fallback to localStorage first_name/last_name, then email
+                        const fallbackFirstName = userInfo.first_name || userInfo.firstName || '';
+                        const fallbackLastName = userInfo.last_name || userInfo.lastName || '';
+                        if (fallbackFirstName || fallbackLastName) {
+                            navigationState.currentUser.name = `${fallbackFirstName} ${fallbackLastName}`.trim();
+                        } else {
+                            navigationState.currentUser.name = userInfo.email || 'User';
+                        }
+                    }
+                    navigationState.currentUser.role_name = currentUserProfile.role_name || userInfo.role_name || userInfo.role || 'User';
                     navigationState.currentUser.job_title = currentUserProfile.job_title;
                     navigationState.currentUser.department = currentUserProfile.department;
                     
@@ -1156,12 +1282,17 @@
                 } else {
                     console.warn('User profile not found in database, using localStorage data');
                     // Fallback to localStorage data
-                    navigationState.currentUser.first_name = userInfo.first_name || 'User';
-                    navigationState.currentUser.last_name = userInfo.last_name || '';
-                    navigationState.currentUser.name = userInfo.first_name ? 
-                        `${userInfo.first_name} ${userInfo.last_name || ''}`.trim() : 
-                        userInfo.email;
-                    navigationState.currentUser.role_name = userInfo.role_name || 'User';
+                    navigationState.currentUser.first_name = userInfo.first_name || userInfo.firstName || '';
+                    navigationState.currentUser.last_name = userInfo.last_name || userInfo.lastName || '';
+                    // Always use first_name and last_name if available
+                    const fallbackFirstName = userInfo.first_name || userInfo.firstName || '';
+                    const fallbackLastName = userInfo.last_name || userInfo.lastName || '';
+                    if (fallbackFirstName || fallbackLastName) {
+                        navigationState.currentUser.name = `${fallbackFirstName} ${fallbackLastName}`.trim();
+                    } else {
+                        navigationState.currentUser.name = userInfo.email || 'User';
+                    }
+                    navigationState.currentUser.role_name = userInfo.role_name || userInfo.role || 'User';
                     updateUserUI();
                 }
 
@@ -1169,56 +1300,158 @@
                 console.error('Error loading user profile:', error);
                 
                 // Handle RBAC permission denied errors
-                if (error.code === 'RBAC_PERMISSION_DENIED') {
+                if (error.code === 'RBAC_PERMISSION_DENIED' && typeof authService !== 'undefined' && authService) {
                     console.warn('RBAC permission denied for user profile:', error);
-                    authService.showRBACError(error);
-                    // Still try to use localStorage data as fallback
+                    if (authService.showRBACError) {
+                        authService.showRBACError(error);
+                    }
                 }
                 
                 // Fallback to localStorage data
                 try {
-                    const userInfo = JSON.parse(localStorage.getItem('user_info'));
-                    navigationState.currentUser.name = userInfo.first_name ? 
-                        `${userInfo.first_name} ${userInfo.last_name || ''}`.trim() : 
-                        userInfo.email;
-                    navigationState.currentUser.role_name = userInfo.role_name || 'User';
+                    const userInfo = JSON.parse(localStorage.getItem('user_info') || '{}');
+                    let fallbackFirstName = userInfo.first_name || userInfo.firstName || '';
+                    let fallbackLastName = userInfo.last_name || userInfo.lastName || '';
+                    
+                    // If we have a name field but no first_name/last_name, parse it
+                    if ((!fallbackFirstName && !fallbackLastName) && userInfo.name && typeof userInfo.name === 'string') {
+                        const nameParts = userInfo.name.trim().split(/\s+/);
+                        if (nameParts.length > 0) {
+                            fallbackFirstName = nameParts[0];
+                            if (nameParts.length > 1) {
+                                fallbackLastName = nameParts.slice(1).join(' ');
+                            }
+                        }
+                    }
+                    
+                    navigationState.currentUser.first_name = fallbackFirstName;
+                    navigationState.currentUser.last_name = fallbackLastName;
+                    // Always use first_name and last_name if available
+                    if (fallbackFirstName || fallbackLastName) {
+                        navigationState.currentUser.name = `${fallbackFirstName} ${fallbackLastName}`.trim();
+                    } else {
+                        navigationState.currentUser.name = userInfo.email || 'User';
+                    }
+                    navigationState.currentUser.role_name = userInfo.role_name || userInfo.role || 'User';
+                    navigationState.currentUser.email = userInfo.email || '';
                     updateUserUI();
                 } catch (e) {
                     console.error('Error parsing user info:', e);
+                    // Last resort: set default values
+                    navigationState.currentUser.name = 'User';
+                    navigationState.currentUser.role_name = 'User';
+                    updateUserUI();
                 }
             }
         }
 
         // Update User UI Elements
         function updateUserUI() {
+            // Ensure navigationState exists
+            if (!navigationState || !navigationState.currentUser) {
+                console.warn('navigationState not initialized, trying to get from localStorage');
+                // Try to get from localStorage directly
+                try {
+                    const userInfo = JSON.parse(localStorage.getItem('user_info') || '{}');
+                    if (userInfo && (userInfo.first_name || userInfo.firstName || userInfo.last_name || userInfo.lastName || userInfo.email)) {
+                        const firstName = userInfo.first_name || userInfo.firstName || '';
+                        const lastName = userInfo.last_name || userInfo.lastName || '';
+                        // Always use first_name and last_name if available
+                        const name = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : (userInfo.email || 'User');
+                        const role = userInfo.role_name || userInfo.role || 'User';
+                        
+                        updateUserUIDirectly(name, firstName, lastName, role);
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Error getting user info from localStorage:', e);
+                }
+                return;
+            }
+            
             const user = navigationState.currentUser;
             
-            // Get initials for avatar
-            const initials = user.first_name && user.last_name ? 
-                `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase() : 
-                user.name.charAt(0).toUpperCase();
+            if (!user || !user.name) {
+                console.warn('No user data available for UI update, trying localStorage');
+                // Try localStorage as fallback
+                try {
+                    const userInfo = JSON.parse(localStorage.getItem('user_info') || '{}');
+                    if (userInfo && (userInfo.first_name || userInfo.firstName || userInfo.last_name || userInfo.lastName || userInfo.email)) {
+                        const firstName = userInfo.first_name || userInfo.firstName || '';
+                        const lastName = userInfo.last_name || userInfo.lastName || '';
+                        // Always use first_name and last_name if available
+                        const name = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : (userInfo.email || 'User');
+                        const role = userInfo.role_name || userInfo.role || 'User';
+                        
+                        updateUserUIDirectly(name, firstName, lastName, role);
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Error in fallback:', e);
+                }
+                return;
+            }
             
-            // Short name for navbar (First name + Last initial)
-            const shortName = user.first_name && user.last_name ?
-                `${user.first_name} ${user.last_name.charAt(0)}.` :
-                user.name;
+            // Get initials for avatar
+            let initials = 'U';
+            if (user.first_name && user.last_name) {
+                initials = `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase();
+            } else if (user.name && user.name.length > 0) {
+                initials = user.name.charAt(0).toUpperCase();
+            }
+            
+            // Short name for navbar (First name + Last initial, or full name if short)
+            // Prioritize first_name and last_name over user.name
+            let shortName = 'User';
+            if (user.first_name && user.last_name) {
+                // Show "First L." format
+                shortName = `${user.first_name} ${user.last_name.charAt(0)}.`;
+            } else if (user.first_name) {
+                shortName = user.first_name;
+            } else if (user.last_name) {
+                shortName = user.last_name;
+            } else if (user.name && !user.name.includes('@') && user.name !== 'User') {
+                // Use name if it's not an email and not the default "User"
+                shortName = user.name;
+            } else if (user.email && !user.email.includes('@')) {
+                // Fallback to email if it's not actually an email (shouldn't happen)
+                shortName = user.email;
+            }
             
             // Update navbar user name
             const navbarUserName = document.querySelector('.user-name');
             if (navbarUserName) {
                 navbarUserName.textContent = shortName;
+            } else {
+                console.warn('Navbar user name element not found');
             }
 
-            // Update dropdown header name
+            // Update dropdown header name (show full name: First Last)
             const dropdownUserName = document.querySelector('.dropdown-header .fw-bold');
             if (dropdownUserName) {
-                dropdownUserName.textContent = user.name;
+                // Prefer first_name + last_name over user.name (which might be email or "User")
+                let displayName = 'User';
+                if (user.first_name && user.last_name) {
+                    displayName = `${user.first_name} ${user.last_name}`;
+                } else if (user.first_name) {
+                    displayName = user.first_name;
+                } else if (user.last_name) {
+                    displayName = user.last_name;
+                } else if (user.name && !user.name.includes('@') && user.name !== 'User') {
+                    // Use name if it's not an email and not the default "User"
+                    displayName = user.name;
+                }
+                dropdownUserName.textContent = displayName;
+            } else {
+                console.warn('Dropdown user name element not found');
             }
 
             // Update dropdown header role
             const dropdownUserRole = document.querySelector('.dropdown-header .text-muted');
             if (dropdownUserRole) {
                 dropdownUserRole.textContent = user.job_title || user.role_name || 'User';
+            } else {
+                console.warn('Dropdown user role element not found');
             }
 
             // Update avatar initials (all instances)
@@ -1227,11 +1460,95 @@
                 // Replace icon with initials
                 const icon = avatar.querySelector('i');
                 if (icon) {
-                    avatar.innerHTML = initials;
+                    avatar.innerHTML = `<span class="avatar-name">${initials}</span>`;
+                } else {
+                    // If no icon, just set the content
+                    avatar.innerHTML = `<span class="avatar-name">${initials}</span>`;
                 }
             });
 
             console.log('UI updated with user info:', user);
+        }
+        
+        // Helper function to update UI directly with provided values
+        function updateUserUIDirectly(name, firstName, lastName, role) {
+            console.log('Updating UI directly with:', { name, firstName, lastName, role });
+            
+            // Get initials for avatar
+            let initials = 'U';
+            if (firstName && lastName) {
+                initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+            } else if (firstName) {
+                initials = firstName.charAt(0).toUpperCase();
+            } else if (lastName) {
+                initials = lastName.charAt(0).toUpperCase();
+            } else if (name && name.length > 0 && !name.includes('@')) {
+                // Only use name if it's not an email
+                initials = name.charAt(0).toUpperCase();
+            }
+            
+            // Short name for navbar (First name + Last initial)
+            let shortName = name;
+            if (firstName && lastName) {
+                shortName = `${firstName} ${lastName.charAt(0)}.`;
+            } else if (firstName) {
+                shortName = firstName;
+            } else if (lastName) {
+                shortName = lastName;
+            } else if (name && name.includes('@')) {
+                // If name is an email, show "User" instead
+                shortName = 'User';
+            }
+            
+            // Update navbar user name
+            const navbarUserName = document.querySelector('.user-name');
+            if (navbarUserName) {
+                navbarUserName.textContent = shortName;
+                console.log('Updated navbar user name to:', shortName);
+            } else {
+                console.warn('Navbar user name element (.user-name) not found');
+            }
+
+            // Update dropdown header name (show full name: First Last)
+            const dropdownUserName = document.querySelector('.dropdown-header .fw-bold');
+            if (dropdownUserName) {
+                // Prefer first_name + last_name over name (which might be email)
+                let displayName = name;
+                if (firstName && lastName) {
+                    displayName = `${firstName} ${lastName}`;
+                } else if (firstName) {
+                    displayName = firstName;
+                } else if (lastName) {
+                    displayName = lastName;
+                } else if (name && name.includes('@')) {
+                    // If name is an email, show "User" instead
+                    displayName = 'User';
+                }
+                dropdownUserName.textContent = displayName;
+                console.log('Updated dropdown user name to:', displayName);
+            } else {
+                console.warn('Dropdown user name element (.dropdown-header .fw-bold) not found');
+            }
+
+            // Update dropdown header role
+            const dropdownUserRole = document.querySelector('.dropdown-header .text-muted');
+            if (dropdownUserRole) {
+                dropdownUserRole.textContent = role;
+                console.log('Updated dropdown user role to:', role);
+            } else {
+                console.warn('Dropdown user role element (.dropdown-header .text-muted) not found');
+            }
+
+            // Update avatar initials (all instances)
+            const avatars = document.querySelectorAll('.avatar-sm');
+            avatars.forEach((avatar, index) => {
+                avatar.innerHTML = `<span class="avatar-name">${initials}</span>`;
+                console.log(`Updated avatar ${index} with initials:`, initials);
+            });
+            
+            if (avatars.length === 0) {
+                console.warn('No avatar elements (.avatar-sm) found');
+            }
         }
 
         // Load FSP Configuration from Database
@@ -1323,6 +1640,96 @@
             }
         });
 
+        // Initialize - Try to load user info immediately from localStorage
+        function loadUserInfoImmediately() {
+            try {
+                const userInfo = JSON.parse(localStorage.getItem('user_info') || '{}');
+                if (userInfo && (userInfo.first_name || userInfo.firstName || userInfo.last_name || userInfo.lastName || userInfo.name || userInfo.email)) {
+                    let firstName = userInfo.first_name || userInfo.firstName || '';
+                    let lastName = userInfo.last_name || userInfo.lastName || '';
+                    
+                    // If we have a name field but no first_name/last_name, parse it
+                    if ((!firstName && !lastName) && userInfo.name && typeof userInfo.name === 'string') {
+                        const nameParts = userInfo.name.trim().split(/\s+/);
+                        if (nameParts.length > 0) {
+                            firstName = nameParts[0];
+                            if (nameParts.length > 1) {
+                                lastName = nameParts.slice(1).join(' ');
+                            }
+                        }
+                    }
+                    
+                    // Always use first_name and last_name if available
+                    const name = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : (userInfo.email || 'User');
+                    const role = userInfo.role_name || userInfo.role || 'User';
+                    
+                    // Update navigationState
+                    if (navigationState && navigationState.currentUser) {
+                        navigationState.currentUser.first_name = firstName;
+                        navigationState.currentUser.last_name = lastName;
+                        navigationState.currentUser.name = name;
+                        navigationState.currentUser.role_name = role;
+                        navigationState.currentUser.email = userInfo.email || '';
+                    }
+                    
+                    // Update UI immediately
+                    if (typeof updateUserUIDirectly === 'function') {
+                        updateUserUIDirectly(name, firstName, lastName, role);
+                    } else {
+                        // If function doesn't exist yet, update directly
+                        setTimeout(() => {
+                            const navbarUserName = document.querySelector('.user-name');
+                            if (navbarUserName) {
+                                let shortName = name;
+                                if (firstName && lastName) {
+                                    shortName = `${firstName} ${lastName.charAt(0)}.`;
+                                } else if (firstName) {
+                                    shortName = firstName;
+                                } else if (lastName) {
+                                    shortName = lastName;
+                                } else if (name && name.includes('@')) {
+                                    shortName = 'User';
+                                }
+                                navbarUserName.textContent = shortName;
+                            }
+                            
+                            const dropdownUserName = document.querySelector('.dropdown-header .fw-bold');
+                            if (dropdownUserName) {
+                                let displayName = name;
+                                if (firstName && lastName) {
+                                    displayName = `${firstName} ${lastName}`;
+                                } else if (firstName) {
+                                    displayName = firstName;
+                                } else if (lastName) {
+                                    displayName = lastName;
+                                } else if (name && name.includes('@')) {
+                                    displayName = 'User';
+                                }
+                                dropdownUserName.textContent = displayName;
+                            }
+                            
+                            const dropdownUserRole = document.querySelector('.dropdown-header .text-muted');
+                            if (dropdownUserRole) {
+                                dropdownUserRole.textContent = role;
+                            }
+                        }, 50);
+                    }
+                    console.log('User info loaded immediately from localStorage:', { name, firstName, lastName, role });
+                }
+            } catch (e) {
+                console.error('Error loading user info immediately:', e);
+            }
+        }
+        
+        // Try to load immediately (before DOMContentLoaded)
+        if (document.readyState === 'loading') {
+            // DOM is still loading, wait for it
+            document.addEventListener('DOMContentLoaded', loadUserInfoImmediately);
+        } else {
+            // DOM is already loaded
+            loadUserInfoImmediately();
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             // Check if env=DEV is present in URL - if so, skip authentication check completely
@@ -1383,8 +1790,51 @@
             setupKeyboardShortcuts();
             
             // Load user profile and FSP configuration from database
-            loadUserProfile();
-            loadFspConfiguration();
+            // Wait a bit to ensure dataFunctions is loaded
+            setTimeout(() => {
+                console.log('Starting to load user profile...');
+                loadUserProfile().catch(err => {
+                    console.error('Error in loadUserProfile:', err);
+                    // Still try to update UI with localStorage data
+                    try {
+                        const userInfo = JSON.parse(localStorage.getItem('user_info') || '{}');
+                        if (userInfo && (userInfo.first_name || userInfo.firstName || userInfo.last_name || userInfo.lastName || userInfo.email)) {
+                            const firstName = userInfo.first_name || userInfo.firstName || '';
+                            const lastName = userInfo.last_name || userInfo.lastName || '';
+                            // Always use first_name and last_name if available
+                            const name = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : (userInfo.email || 'User');
+                            const role = userInfo.role_name || userInfo.role || 'User';
+                            updateUserUIDirectly(name, firstName, lastName, role);
+                        }
+                    } catch (e) {
+                        console.error('Error in fallback update:', e);
+                    }
+                });
+                loadFspConfiguration();
+            }, 100);
+            
+            // Test function to verify profile loading (can be called from console)
+            window.testUserProfile = function() {
+                console.log('=== Testing User Profile Loading ===');
+                console.log('navigationState:', navigationState);
+                console.log('localStorage user_info:', localStorage.getItem('user_info'));
+                const navbarUserName = document.querySelector('.user-name');
+                const dropdownUserName = document.querySelector('.dropdown-header .fw-bold');
+                console.log('Navbar element:', navbarUserName, 'Text:', navbarUserName?.textContent);
+                console.log('Dropdown element:', dropdownUserName, 'Text:', dropdownUserName?.textContent);
+                
+                // Try to reload
+                console.log('Attempting to reload profile...');
+                loadUserInfoImmediately();
+                if (typeof loadUserProfile === 'function') {
+                    loadUserProfile().then(() => {
+                        console.log('Profile reloaded. Check UI elements above.');
+                    }).catch(err => {
+                        console.error('Error reloading:', err);
+                    });
+                }
+                console.log('=== End Test ===');
+            };
             
             // Initialize navbar badges after a short delay to ensure dataFunctions is loaded
             setTimeout(() => {
@@ -1661,6 +2111,11 @@
             if (typeof GlobalSearch !== 'undefined') {
                 GlobalSearch.init();
             }
+            
+            // Initialize recent activities tracker
+            if (typeof RecentActivities !== 'undefined') {
+                RecentActivities.init();
+            }
 
             // AI Chatbot integration
             const openChatbotLink = document.getElementById('openChatbot');
@@ -1679,6 +2134,14 @@
         // Route Handler
         function handleRoute(route) {
             console.log('=== handleRoute called with:', route, '===');
+            
+            // Track activity (skip for dashboard/home to avoid clutter)
+            if (route && route !== 'dashboard' && route !== 'executive' && route !== 'executive-dashboard') {
+                if (typeof RecentActivities !== 'undefined' && RecentActivities.addActivity) {
+                    RecentActivities.addActivity(route);
+                }
+            }
+            
             const dashboardContent = document.getElementById('dashboardContent');
             const breadcrumbNav = document.querySelector('.breadcrumb-nav');
             

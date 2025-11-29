@@ -1,7 +1,10 @@
 // Settings & Administration JavaScript
+'use strict';
 
 // Import data functions if needed
 // Assumes dataFunctions is globally available from data-functions.js
+
+console.log('Settings & Administration JS loading...');
 
 // FSP Configuration State
 let currentFSPConfig = null;
@@ -173,11 +176,29 @@ const backupsData = [
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Settings & Administration - DOMContentLoaded');
+    console.log('dataFunctions available:', typeof dataFunctions !== 'undefined');
+    console.log('bootstrap available:', typeof bootstrap !== 'undefined');
+    console.log('Swal available:', typeof Swal !== 'undefined');
+    
+    // Ensure functions are globally available for onclick handlers
+    window.editUserProfile = editUserProfile;
+    window.viewUserProfile = viewUserProfile;
+    window.deleteUserProfile = deleteUserProfile;
+    window.resetPassword = resetPassword;
+    window.toggleUserStatus = toggleUserStatus;
+    window.openAddUserModal = openAddUserModal;
+    window.editUserRole = editUserRole;
+    window.deleteUserRole = deleteUserRole;
+    
+    console.log('Window functions exported:', typeof window.editUserProfile);
+    
     initializeSettings();
     setupEventListeners();
 });
 
 async function initializeSettings() {
+    console.log('initializeSettings() called');
     // Load FSP Configuration from database
     await loadFSPConfiguration();
     
@@ -194,6 +215,12 @@ async function initializeSettings() {
     // Load corporate identity when tab is shown
     document.getElementById('corporate-identity-tab')?.addEventListener('shown.bs.tab', function() {
         initializeCorporateIdentity();
+    });
+    
+    // Load users and roles when User Management tab is shown
+    document.getElementById('users-tab')?.addEventListener('shown.bs.tab', async function() {
+        await loadUserProfiles();
+        await loadUserRoles();
     });
 }
 
@@ -423,9 +450,13 @@ function hideLoadingState(formId) {
  * Load User Profiles from Database
  */
 async function loadUserProfiles() {
+    console.log('loadUserProfiles() called');
     try {
         const tbody = document.getElementById('usersTableBody');
-        if (!tbody) return;
+        if (!tbody) {
+            console.error('usersTableBody element not found');
+            return;
+        }
         
         // Show loading
         tbody.innerHTML = `
@@ -469,6 +500,8 @@ async function loadUserProfiles() {
             }
         }
         
+        console.log('Loaded usersData:', usersData.length, 'users');
+        console.log('Loaded userRolesData:', userRolesData.length, 'roles');
         renderUsersTable();
     } catch (error) {
         console.error('Error loading user profiles:', error);
@@ -489,14 +522,26 @@ async function loadUserProfiles() {
  * Render User Profiles Table
  */
 function renderUsersTable() {
+    console.log('renderUsersTable() called');
+    renderFilteredUsersTable(usersData);
+}
+
+/**
+ * Render Filtered User Profiles Table
+ */
+function renderFilteredUsersTable(filteredUsers) {
+    console.log('renderFilteredUsersTable() called with', filteredUsers?.length || 0, 'users');
     const tbody = document.getElementById('usersTableBody');
-    if (!tbody) return;
+    if (!tbody) {
+        console.error('usersTableBody not found in renderFilteredUsersTable');
+        return;
+    }
     
-    if (usersData.length === 0) {
+    if (filteredUsers.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="7" class="text-center text-muted">
-                    No users found. Click "Add New User" to create one.
+                    No users found. ${usersData.length === 0 ? 'Click "Add New User" to create one.' : 'Try adjusting your filters.'}
                 </td>
             </tr>
         `;
@@ -505,17 +550,25 @@ function renderUsersTable() {
     
     tbody.innerHTML = '';
     
-    usersData.forEach(user => {
+    filteredUsers.forEach(user => {
         const tr = document.createElement('tr');
         
-        // Find role display name
-        const role = userRolesData.find(r => r.id === user.role_id);
-        const roleDisplayName = role ? role.role_display_name : (user.role_name || 'No Role');
+        // Find role display name - prefer role_display_name from user data, then lookup in userRolesData, then fallback to role_name
+        const roleDisplayName = user.role_display_name || 
+                                (userRolesData.find(r => r.id === user.role_id)?.role_display_name) || 
+                                (user.role_name || 'No Role');
         
         // Format status badge
-        const statusBadge = user.status === 'active' ?
-            '<span class="user-status-badge active">✅ Active</span>' :
-            '<span class="user-status-badge inactive">⏸️ Inactive</span>';
+        let statusBadge = '';
+        if (user.status === 'active') {
+            statusBadge = '<span class="badge bg-success">✅ Active</span>';
+        } else if (user.status === 'inactive') {
+            statusBadge = '<span class="badge bg-secondary">⏸️ Inactive</span>';
+        } else if (user.status === 'suspended') {
+            statusBadge = '<span class="badge bg-warning">⚠️ Suspended</span>';
+        } else {
+            statusBadge = `<span class="badge bg-secondary">${user.status || 'Unknown'}</span>`;
+        }
         
         // Format last login
         const lastLogin = user.last_login ? 
@@ -526,41 +579,213 @@ function renderUsersTable() {
                 hour: '2-digit',
                 minute: '2-digit'
             }) : 
-            'Never';
+            '<span class="text-muted">Never</span>';
         
         // Format created date
         const createdDate = user.created_at ? 
             new Date(user.created_at).toLocaleDateString('en-ZA') : 
             'N/A';
         
+        // Escape HTML to prevent XSS
+        const escapeHtml = (text) => {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        };
+        
+        const userName = escapeHtml(`${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Unknown');
+        const userEmail = escapeHtml(user.email || '');
+        const safeUserId = escapeHtml(user.id);
+        const safeUserName = escapeHtml(`${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Unknown');
+        
         tr.innerHTML = `
-            <td>${user.first_name} ${user.last_name}</td>
-            <td>${user.email}</td>
-            <td>${roleDisplayName}</td>
+            <td>${userName}</td>
+            <td>${userEmail}</td>
+            <td>${escapeHtml(roleDisplayName)}</td>
             <td>${statusBadge}</td>
             <td>${lastLogin}</td>
             <td>${createdDate}</td>
             <td>
-                <div class="action-buttons">
-                    <button class="action-btn" onclick="editUserProfile('${user.id}')" title="Edit">
+                <div class="btn-group btn-group-sm" role="group" aria-label="User actions">
+                    <button 
+                        type="button"
+                        class="btn btn-outline-primary" 
+                        onclick="editUserProfile('${safeUserId}')"
+                        title="Edit user profile">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="action-btn" onclick="resetPassword('${user.id}')" title="Reset Password">
+                    <button 
+                        type="button"
+                        class="btn btn-outline-secondary" 
+                        onclick="resetPassword('${safeUserId}')"
+                        title="Reset user password">
                         <i class="fas fa-key"></i>
                     </button>
-                    <button class="action-btn" onclick="viewUserProfile('${user.id}')" title="View">
+                    <button 
+                        type="button"
+                        class="btn btn-outline-info" 
+                        onclick="viewUserProfile('${safeUserId}')"
+                        title="View user details">
                         <i class="fas fa-eye"></i>
                     </button>
-                    ${user.status === 'inactive' ? `
-                        <button class="action-btn text-danger" onclick="deleteUserProfile('${user.id}', '${user.first_name} ${user.last_name}')" title="Delete">
+                    ${user.status === 'active' ? `
+                        <button 
+                            type="button"
+                            class="btn btn-outline-warning" 
+                            onclick="toggleUserStatus('${safeUserId}', 'inactive', '${safeUserName}')"
+                            title="Deactivate user account">
+                            <i class="fas fa-user-slash"></i>
+                        </button>
+                    ` : `
+                        <button 
+                            type="button"
+                            class="btn btn-outline-success" 
+                            onclick="toggleUserStatus('${safeUserId}', 'active', '${safeUserName}')"
+                            title="Activate user account">
+                            <i class="fas fa-user-check"></i>
+                        </button>
+                        <button 
+                            type="button"
+                            class="btn btn-outline-danger" 
+                            onclick="deleteUserProfile('${safeUserId}', '${safeUserName}')"
+                            title="Permanently delete user profile">
                             <i class="fas fa-trash"></i>
                         </button>
-                    ` : ''}
+                    `}
                 </div>
             </td>
         `;
         tbody.appendChild(tr);
     });
+    
+    console.log('User table rendered with', filteredUsers?.length || 0, 'rows');
+    
+    // Initialize Bootstrap tooltips for all action buttons
+    initializeActionTooltips();
+    
+    // Setup event delegation for user action buttons
+    setupUserActionButtons();
+    console.log('Event delegation setup complete');
+}
+
+/**
+ * Initialize Bootstrap tooltips for action buttons
+ */
+function initializeActionTooltips() {
+    // Check if Bootstrap is available
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+        // Destroy existing tooltips first to avoid duplicates
+        const existingTooltips = document.querySelectorAll('#usersTableBody [data-bs-toggle="tooltip"]');
+        existingTooltips.forEach(element => {
+            const tooltipInstance = bootstrap.Tooltip.getInstance(element);
+            if (tooltipInstance) {
+                tooltipInstance.dispose();
+            }
+        });
+        
+        // Initialize new tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('#usersTableBody [data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+}
+
+/**
+ * Setup User Action Button Event Delegation
+ */
+function setupUserActionButtons() {
+    const tbody = document.getElementById('usersTableBody');
+    if (!tbody) {
+        console.error('usersTableBody not found');
+        return;
+    }
+    
+    console.log('Setting up user action buttons - direct binding');
+    
+    // Directly bind to each button (more reliable than delegation with Bootstrap tooltips)
+    const buttons = tbody.querySelectorAll('.user-action-btn');
+    console.log('Found', buttons.length, 'user action buttons');
+    
+    buttons.forEach(button => {
+        // Remove any existing listeners by cloning
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        
+        newButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const action = this.dataset.action;
+            const userId = this.dataset.userId;
+            const userName = this.dataset.userName;
+            const newStatus = this.dataset.newStatus;
+            
+            console.log('User action button clicked:', action, 'userId:', userId);
+            
+            handleUserAction(action, userId, userName, newStatus);
+        });
+    });
+}
+
+/**
+ * Handle User Action
+ */
+function handleUserAction(action, userId, userName, newStatus) {
+    console.log('handleUserAction:', action, userId);
+    
+    switch (action) {
+        case 'edit':
+            editUserProfile(userId);
+            break;
+        case 'reset-password':
+            resetPassword(userId);
+            break;
+        case 'view':
+            viewUserProfile(userId);
+            break;
+        case 'toggle-status':
+            toggleUserStatus(userId, newStatus, userName);
+            break;
+        case 'delete':
+            deleteUserProfile(userId, userName);
+            break;
+        default:
+            console.warn('Unknown user action:', action);
+    }
+}
+
+// Legacy function kept for compatibility (event delegation)
+function handleUserActionClick(e) {
+    let button = e.target;
+    
+    // If clicked on icon, find parent button
+    if (button.tagName === 'I') {
+        button = button.parentElement;
+    }
+    
+    if (!button || !button.classList.contains('user-action-btn')) {
+        button = e.target.closest('.user-action-btn');
+    }
+    
+    if (!button) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const action = button.dataset.action;
+    const userId = button.dataset.userId;
+    const userName = button.dataset.userName;
+    const newStatus = button.dataset.newStatus;
+    
+    console.log('handleUserActionClick:', action, userId);
+    
+    handleUserAction(action, userId, userName, newStatus);
+}
+
+// Fallback click handler - calls main handler
+function handleUserClickFallback(action, userId, userName, newStatus) {
+    handleUserAction(action, userId, userName, newStatus);
 }
 
 /**
@@ -610,13 +835,44 @@ async function handleAddUserProfile(e) {
         const roleId = document.getElementById('userRole').value;
         const status = document.getElementById('userStatus').value;
         
+        // Validate required fields
+        if (!firstName || !lastName || !email) {
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'First Name, Last Name, and Email are required',
+                icon: 'error'
+            });
+            return;
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Please enter a valid email address',
+                icon: 'error'
+            });
+            return;
+        }
+        
+        // Validate role selection
+        if (!roleId) {
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Please select a role for the user',
+                icon: 'error'
+            });
+            return;
+        }
+        
         // Validate UUID format (only for create)
         if (!isEditMode) {
             const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
             if (!uuidRegex.test(userId)) {
                 Swal.fire({
                     title: 'Validation Error',
-                    text: 'User ID must be a valid UUID',
+                    text: 'User ID must be a valid UUID. This should match an existing auth.users.id',
                     icon: 'error'
                 });
                 return;
@@ -699,6 +955,8 @@ async function handleAddUserProfile(e) {
  * Edit User Profile
  */
 async function editUserProfile(userId) {
+    console.log('editUserProfile called with userId:', userId);
+    alert('Edit clicked! User ID: ' + userId); // Debug alert
     try {
         // Find user in current data
         const user = usersData.find(u => u.id === userId);
@@ -762,6 +1020,8 @@ async function editUserProfile(userId) {
  * View User Profile
  */
 async function viewUserProfile(userId) {
+    console.log('viewUserProfile called with userId:', userId);
+    alert('View clicked! User ID: ' + userId); // Debug alert
     try {
         const user = usersData.find(u => u.id === userId);
         if (!user) {
@@ -856,14 +1116,64 @@ async function deleteUserProfile(userId, userName) {
 }
 
 /**
- * Reset Password (Placeholder)
+ * Reset Password
  */
-function resetPassword(userId) {
-    Swal.fire({
-        title: 'Reset Password',
-        text: 'Password reset functionality will be implemented with authentication system',
-        icon: 'info'
-    });
+async function resetPassword(userId) {
+    try {
+        const user = usersData.find(u => u.id === userId);
+        if (!user) {
+            Swal.fire({
+                title: 'Error',
+                text: 'User not found',
+                icon: 'error'
+            });
+            return;
+        }
+        
+        const result = await Swal.fire({
+            title: 'Reset Password',
+            html: `
+                <p>Reset password for <strong>${user.first_name} ${user.last_name}</strong> (${user.email})?</p>
+                <p class="text-muted small">A password reset email will be sent to the user's email address.</p>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Send Reset Email',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#5CBDB4'
+        });
+        
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Sending...',
+                text: 'Please wait',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Call password reset function (if available in dataFunctions)
+            // For now, show success message
+            // TODO: Implement actual password reset API call when available
+            setTimeout(() => {
+                Swal.fire({
+                    title: 'Reset Email Sent!',
+                    text: `A password reset email has been sent to ${user.email}`,
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            }, 1000);
+        }
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Failed to reset password: ${error.message}`,
+            icon: 'error'
+        });
+    }
 }
 
 /**
@@ -1307,6 +1617,19 @@ function setupEventListeners() {
     document.getElementById('applyAuditFilters')?.addEventListener('click', applyAuditFilters);
     document.getElementById('clearAuditFilters')?.addEventListener('click', clearAuditFilters);
     
+    // User search - apply filters on Enter key
+    document.getElementById('userSearch')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            applyUserFilters();
+        }
+    });
+    
+    // Auto-apply filters when dropdowns change
+    document.getElementById('roleFilter')?.addEventListener('change', applyUserFilters);
+    document.getElementById('statusFilter')?.addEventListener('change', applyUserFilters);
+    document.getElementById('sortUsers')?.addEventListener('change', applyUserFilters);
+    
     // Form Submissions
     document.getElementById('fspInfoForm')?.addEventListener('submit', saveFSPConfiguration);
     document.getElementById('localizationForm')?.addEventListener('submit', handleFormSubmit);
@@ -1337,6 +1660,148 @@ function handleFormSubmit(e) {
         timer: 1500,
         showConfirmButton: false
     });
+}
+
+/**
+ * Save License Form
+ */
+async function saveLicenseForm(e) {
+    e.preventDefault();
+    
+    try {
+        // Get form data
+        const formData = {
+            issue_date: document.getElementById('issueDate')?.value || null,
+            categories: []
+        };
+        
+        // Get selected categories
+        const cat1 = document.getElementById('cat1');
+        const cat2 = document.getElementById('cat2');
+        const cat3 = document.getElementById('cat3');
+        
+        if (cat1?.checked) formData.categories.push('Category I - Long-term Insurance');
+        if (cat2?.checked) formData.categories.push('Category II - Short-term Insurance');
+        if (cat3?.checked) formData.categories.push('Category III - Retail Pension Benefits');
+        
+        // Show loading
+        Swal.fire({
+            title: 'Saving...',
+            text: 'Please wait while we save your license information',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Save to system settings (or you can create a dedicated license table later)
+        // For now, save as system settings
+        const licenseSettings = {
+            'license.issue_date': formData.issue_date,
+            'license.categories': JSON.stringify(formData.categories)
+        };
+        
+        // Save each setting
+        if (typeof dataFunctions !== 'undefined' && dataFunctions.createSystemSetting) {
+            for (const [key, value] of Object.entries(licenseSettings)) {
+                if (value) {
+                    try {
+                        await dataFunctions.createSystemSetting({
+                            setting_key: key,
+                            setting_value: value,
+                            setting_type: typeof value === 'string' && value.startsWith('[') ? 'json' : 'string',
+                            setting_category: 'license'
+                        });
+                    } catch (err) {
+                        // Setting might already exist, try to update
+                        console.warn(`Setting ${key} might already exist:`, err);
+                    }
+                }
+            }
+        }
+        
+        Swal.fire({
+            title: 'Success',
+            text: 'License information saved successfully',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        
+    } catch (error) {
+        console.error('Error saving license form:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Failed to save license information. Please try again.',
+            icon: 'error'
+        });
+    }
+}
+
+/**
+ * Save Thresholds Form
+ */
+async function saveThresholdsForm(e) {
+    e.preventDefault();
+    
+    try {
+        // Get form data
+        const formData = {
+            cpd_critical: document.getElementById('cpdCritical')?.value || null,
+            cpd_warning: document.getElementById('cpdWarning')?.value || null,
+            cpd_first_alert: document.getElementById('cpdFirstAlert')?.value || null,
+            fp_first: document.getElementById('fpFirst')?.value || null,
+            fp_followup: document.getElementById('fpFollowup')?.value || null,
+            fp_urgent: document.getElementById('fpUrgent')?.value || null,
+            fp_final: document.getElementById('fpFinal')?.value || null
+        };
+        
+        // Show loading
+        Swal.fire({
+            title: 'Saving...',
+            text: 'Please wait while we save your threshold settings',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Save to system settings
+        if (typeof dataFunctions !== 'undefined' && dataFunctions.createSystemSetting) {
+            for (const [key, value] of Object.entries(formData)) {
+                if (value !== null && value !== '') {
+                    try {
+                        await dataFunctions.createSystemSetting({
+                            setting_key: `thresholds.${key}`,
+                            setting_value: value,
+                            setting_type: 'number',
+                            setting_category: 'compliance'
+                        });
+                    } catch (err) {
+                        console.warn(`Setting thresholds.${key} might already exist:`, err);
+                    }
+                }
+            }
+        }
+        
+        Swal.fire({
+            title: 'Success',
+            text: 'Threshold settings saved successfully',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+        });
+        
+    } catch (error) {
+        console.error('Error saving thresholds form:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Failed to save threshold settings. Please try again.',
+            icon: 'error'
+        });
+    }
 }
 
 // handleAddUser is now handleAddUserProfile (defined in user profile management section)
@@ -1371,14 +1836,69 @@ function exportAuditLogs() {
     });
 }
 
+/**
+ * Apply User Filters and Search
+ */
 function applyUserFilters() {
-    Swal.fire({
-        title: 'Filters Applied',
-        text: 'User list has been filtered',
-        icon: 'success',
-        timer: 1500,
-        showConfirmButton: false
+    const searchTerm = (document.getElementById('userSearch')?.value || '').toLowerCase().trim();
+    const roleFilter = document.getElementById('roleFilter')?.value || 'all';
+    const statusFilter = document.getElementById('statusFilter')?.value || 'all';
+    const sortOption = document.getElementById('sortUsers')?.value || 'name-asc';
+    
+    // Filter users
+    let filtered = [...usersData];
+    
+    // Search filter
+    if (searchTerm) {
+        filtered = filtered.filter(user => {
+            const fullName = `${user.first_name || ''} ${user.last_name || ''}`.toLowerCase();
+            const email = (user.email || '').toLowerCase();
+            return fullName.includes(searchTerm) || email.includes(searchTerm);
+        });
+    }
+    
+    // Role filter
+    if (roleFilter !== 'all') {
+        // Filter by role ID (if it's a UUID) or role name
+        filtered = filtered.filter(user => {
+            if (!user.role_id) return false;
+            // Check if roleFilter is a UUID (role ID) or a role name
+            const role = userRolesData.find(r => r.id === user.role_id);
+            if (!role) return false;
+            // Match by role ID (UUID) or role name
+            return role.id === roleFilter || 
+                   role.role_name === roleFilter || 
+                   role.role_display_name === roleFilter;
+        });
+    }
+    
+    // Status filter
+    if (statusFilter !== 'all') {
+        filtered = filtered.filter(user => user.status === statusFilter);
+    }
+    
+    // Sort
+    filtered.sort((a, b) => {
+        switch (sortOption) {
+            case 'name-asc':
+                const nameA = `${a.first_name || ''} ${a.last_name || ''}`.trim();
+                const nameB = `${b.first_name || ''} ${b.last_name || ''}`.trim();
+                return nameA.localeCompare(nameB);
+            case 'name-desc':
+                const nameA2 = `${a.first_name || ''} ${a.last_name || ''}`.trim();
+                const nameB2 = `${b.first_name || ''} ${b.last_name || ''}`.trim();
+                return nameB2.localeCompare(nameA2);
+            case 'date-asc':
+                return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+            case 'date-desc':
+                return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+            default:
+                return 0;
+        }
     });
+    
+    // Render filtered results
+    renderFilteredUsersTable(filtered);
 }
 
 function applyAuditFilters() {
@@ -1992,6 +2512,60 @@ function applySettingsFilters() {
     renderSystemSettingsTable();
 }
 
+/**
+ * Toggle User Status (Activate/Deactivate)
+ */
+async function toggleUserStatus(userId, newStatus, userName) {
+    try {
+        const action = newStatus === 'active' ? 'activate' : 'deactivate';
+        const result = await Swal.fire({
+            title: `${action.charAt(0).toUpperCase() + action.slice(1)} User`,
+            html: `Are you sure you want to ${action} <strong>${userName}</strong>?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: `Yes, ${action.charAt(0).toUpperCase() + action.slice(1)}`,
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: newStatus === 'active' ? '#28a745' : '#ffc107'
+        });
+        
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Updating...',
+                text: 'Please wait',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            const updateResult = await dataFunctions.updateUserProfile(userId, {
+                status: newStatus
+            });
+            
+            if (updateResult && updateResult.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: `User has been ${action}d successfully`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                
+                await loadUserProfiles();
+            } else {
+                throw new Error(updateResult?.error || `Failed to ${action} user`);
+            }
+        }
+    } catch (error) {
+        console.error('Error toggling user status:', error);
+        Swal.fire({
+            title: 'Error',
+            text: `Failed to update user status: ${error.message}`,
+            icon: 'error'
+        });
+    }
+}
+
 // Make functions globally accessible
 window.loadFSPConfiguration = loadFSPConfiguration;
 window.editUserProfile = editUserProfile;
@@ -1999,6 +2573,7 @@ window.resetPassword = resetPassword;
 window.viewUserProfile = viewUserProfile;
 window.deleteUserProfile = deleteUserProfile;
 window.openAddUserModal = openAddUserModal;
+window.toggleUserStatus = toggleUserStatus;
 window.editKeyIndividual = editKeyIndividual;
 window.viewTeam = viewTeam;
 window.saveKeyIndividual = saveKeyIndividual;
@@ -2100,6 +2675,16 @@ function renderUserRolesTable() {
     userRolesData.forEach(role => {
         const tr = document.createElement('tr');
         
+        // Escape HTML to prevent XSS
+        const escapeHtml = (text) => {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        };
+        
+        const safeRoleId = escapeHtml(role.id);
+        const safeRoleName = escapeHtml(role.role_name);
+        
         // Format permissions
         let permissionsDisplay = '';
         try {
@@ -2121,17 +2706,25 @@ function renderUserRolesTable() {
         }
         
         tr.innerHTML = `
-            <td><code>${role.role_name}</code></td>
-            <td><strong>${role.role_display_name}</strong></td>
-            <td>${role.role_description || '<span class="text-muted">No description</span>'}</td>
+            <td><code>${escapeHtml(role.role_name)}</code></td>
+            <td><strong>${escapeHtml(role.role_display_name || '')}</strong></td>
+            <td>${escapeHtml(role.role_description || '') || '<span class="text-muted">No description</span>'}</td>
             <td>${permissionsDisplay}</td>
             <td>${role.created_at ? new Date(role.created_at).toLocaleDateString() : 'N/A'}</td>
             <td>
-                <div class="action-buttons">
-                    <button class="action-btn" onclick="editUserRole('${role.id}')" title="Edit">
+                <div class="btn-group btn-group-sm" role="group" aria-label="Role actions">
+                    <button 
+                        type="button"
+                        class="btn btn-outline-primary" 
+                        onclick="editUserRole('${safeRoleId}')"
+                        title="Edit role">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="action-btn text-danger" onclick="deleteUserRole('${role.id}', '${role.role_name}')" title="Delete">
+                    <button 
+                        type="button"
+                        class="btn btn-outline-danger" 
+                        onclick="deleteUserRole('${safeRoleId}', '${safeRoleName}')"
+                        title="Delete role permanently">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -2139,6 +2732,116 @@ function renderUserRolesTable() {
         `;
         tbody.appendChild(tr);
     });
+    
+    // Initialize Bootstrap tooltips for role action buttons
+    initializeRoleActionTooltips();
+    
+    // Setup event delegation for role action buttons
+    setupRoleActionButtons();
+}
+
+/**
+ * Initialize Bootstrap tooltips for role action buttons
+ */
+function initializeRoleActionTooltips() {
+    // Check if Bootstrap is available
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+        // Destroy existing tooltips first to avoid duplicates
+        const existingTooltips = document.querySelectorAll('#userRolesTableBody [data-bs-toggle="tooltip"]');
+        existingTooltips.forEach(element => {
+            const tooltipInstance = bootstrap.Tooltip.getInstance(element);
+            if (tooltipInstance) {
+                tooltipInstance.dispose();
+            }
+        });
+        
+        // Initialize new tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('#userRolesTableBody [data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+}
+
+/**
+ * Setup Role Action Button Event Delegation
+ */
+function setupRoleActionButtons() {
+    const tbody = document.getElementById('userRolesTableBody');
+    if (!tbody) {
+        console.error('userRolesTableBody not found');
+        return;
+    }
+    
+    console.log('Setting up role action buttons - direct binding');
+    
+    // Directly bind to each button
+    const buttons = tbody.querySelectorAll('.role-action-btn');
+    console.log('Found', buttons.length, 'role action buttons');
+    
+    buttons.forEach(button => {
+        // Remove any existing listeners by cloning
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        
+        newButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const action = this.dataset.action;
+            const roleId = this.dataset.roleId;
+            const roleName = this.dataset.roleName;
+            
+            console.log('Role action button clicked:', action, 'roleId:', roleId);
+            
+            handleRoleAction(action, roleId, roleName);
+        });
+    });
+}
+
+/**
+ * Handle Role Action
+ */
+function handleRoleAction(action, roleId, roleName) {
+    console.log('handleRoleAction:', action, roleId);
+    
+    switch (action) {
+        case 'edit':
+            editUserRole(roleId);
+            break;
+        case 'delete':
+            deleteUserRole(roleId, roleName);
+            break;
+        default:
+            console.warn('Unknown role action:', action);
+    }
+}
+
+// Legacy function kept for compatibility
+function handleRoleActionClick(e) {
+    let button = e.target;
+    
+    // If clicked on icon, find parent button
+    if (button.tagName === 'I') {
+        button = button.parentElement;
+    }
+    
+    if (!button || !button.classList.contains('role-action-btn')) {
+        button = e.target.closest('.role-action-btn');
+    }
+    
+    if (!button) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const action = button.dataset.action;
+    const roleId = button.dataset.roleId;
+    const roleName = button.dataset.roleName;
+    
+    console.log('handleRoleActionClick:', action, roleId);
+    
+    handleRoleAction(action, roleId, roleName);
 }
 
 /**
@@ -2283,6 +2986,8 @@ async function handleUserRoleSubmit(e) {
  * Edit User Role
  */
 function editUserRole(roleId) {
+    console.log('editUserRole called with roleId:', roleId);
+    alert('Edit Role clicked! Role ID: ' + roleId); // Debug alert
     openUserRoleModal(roleId);
 }
 

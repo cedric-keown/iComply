@@ -185,10 +185,12 @@ var GlobalSearch = (function() {
     async function searchRepresentatives(query) {
         try {
             if (typeof dataFunctions === 'undefined' || !dataFunctions.getRepresentatives) {
+                console.warn('dataFunctions.getRepresentatives not available');
                 return [];
             }
 
-            const result = await dataFunctions.getRepresentatives('all');
+            // Get all representatives - pass null to get all statuses
+            const result = await dataFunctions.getRepresentatives(null);
             let reps = result;
             
             // Handle different response formats
@@ -196,25 +198,43 @@ var GlobalSearch = (function() {
                 reps = result.data;
             } else if (Array.isArray(result)) {
                 reps = result;
+            } else if (result && typeof result === 'object') {
+                // Try to extract array from object
+                reps = Object.values(result).find(v => Array.isArray(v)) || [];
             } else {
                 reps = [];
             }
 
+            // Debug logging
+            if (reps.length === 0) {
+                console.warn('No representatives loaded for search. Result:', result);
+            }
+
             // Filter by search query
             const lowerQuery = query.toLowerCase();
-            return reps.filter(rep => {
-                const name = `${rep.first_name || ''} ${rep.last_name || ''}`.toLowerCase();
-                const fspNumber = (rep.fsp_number_new || rep.fsp_number || '').toLowerCase();
+            const filtered = reps.filter(rep => {
+                if (!rep) return false;
+                
+                const firstName = (rep.first_name || '').toLowerCase();
+                const surname = (rep.surname || rep.last_name || '').toLowerCase();
+                const fullName = `${firstName} ${surname}`.trim();
+                const fspNumber = (rep.fsp_number_new || rep.fsp_number || rep.representative_number || '').toLowerCase();
                 const email = (rep.email || '').toLowerCase();
                 const idNumber = (rep.id_number || '').toLowerCase();
 
-                return name.includes(lowerQuery) ||
+                return fullName.includes(lowerQuery) ||
+                       firstName.includes(lowerQuery) ||
+                       surname.includes(lowerQuery) ||
                        fspNumber.includes(lowerQuery) ||
                        email.includes(lowerQuery) ||
                        idNumber.includes(lowerQuery);
             }).slice(0, 5); // Limit to 5 results
+
+            console.log(`Search for "${query}": Found ${filtered.length} representatives from ${reps.length} total`);
+            return filtered;
         } catch (error) {
             console.error('Error searching representatives:', error);
+            console.error('Error details:', error.stack);
             return [];
         }
     }
@@ -243,15 +263,20 @@ var GlobalSearch = (function() {
             // Filter by search query
             const lowerQuery = query.toLowerCase();
             return clients.filter(client => {
-                const name = `${client.first_name || ''} ${client.last_name || ''}`.toLowerCase();
+                // Handle both individual and corporate clients
+                const name = client.client_type === 'corporate' 
+                    ? (client.company_name || '').toLowerCase()
+                    : `${client.first_name || ''} ${client.last_name || ''}`.toLowerCase();
                 const idNumber = (client.id_number || '').toLowerCase();
                 const email = (client.email || '').toLowerCase();
-                const phone = (client.phone || '').toLowerCase();
+                const phone = (client.phone || client.mobile || '').toLowerCase();
+                const registrationNumber = (client.registration_number || '').toLowerCase();
 
                 return name.includes(lowerQuery) ||
                        idNumber.includes(lowerQuery) ||
                        email.includes(lowerQuery) ||
-                       phone.includes(lowerQuery);
+                       phone.includes(lowerQuery) ||
+                       registrationNumber.includes(lowerQuery);
             }).slice(0, 5); // Limit to 5 results
         } catch (error) {
             console.error('Error searching clients:', error);
@@ -340,8 +365,8 @@ var GlobalSearch = (function() {
                                         <i class="fas fa-user-tie"></i>
                                     </div>
                                     <div class="search-result-content">
-                                        <div class="search-result-title">${escapeHtml(`${rep.first_name || ''} ${rep.last_name || ''}`.trim())}</div>
-                                        <div class="search-result-subtitle">${escapeHtml(rep.fsp_number_new || rep.fsp_number || 'N/A')}</div>
+                                        <div class="search-result-title">${escapeHtml(`${rep.first_name || ''} ${rep.surname || rep.last_name || ''}`.trim())}</div>
+                                        <div class="search-result-subtitle">${escapeHtml(rep.fsp_number_new || rep.fsp_number || rep.representative_number || 'N/A')}</div>
                                     </div>
                                 </a>
                             </div>
@@ -367,8 +392,8 @@ var GlobalSearch = (function() {
                                         <i class="fas fa-user"></i>
                                     </div>
                                     <div class="search-result-content">
-                                        <div class="search-result-title">${escapeHtml(`${client.first_name || ''} ${client.last_name || ''}`.trim())}</div>
-                                        <div class="search-result-subtitle">${escapeHtml(client.id_number || 'N/A')}</div>
+                                        <div class="search-result-title">${escapeHtml(client.client_type === 'corporate' ? (client.company_name || 'Corporate Client') : `${client.first_name || ''} ${client.last_name || ''}`.trim())}</div>
+                                        <div class="search-result-subtitle">${escapeHtml(client.client_type === 'corporate' ? (client.registration_number || 'N/A') : (client.id_number || 'N/A'))}</div>
                                     </div>
                                 </a>
                             </div>
@@ -477,18 +502,161 @@ var GlobalSearch = (function() {
     }
 
     /**
+     * Helper function to switch tab in iframe and execute action
+     */
+    function switchTabAndExecute(dashboardContent, tabId, actionFn, retries = 15) {
+        const iframe = dashboardContent?.querySelector('iframe');
+        
+        if (iframe && iframe.contentWindow) {
+            try {
+                // Try postMessage first
+                iframe.contentWindow.postMessage({ action: 'switchTab', tab: tabId }, '*');
+                
+                // Wait a bit for tab to switch, then execute action
+                setTimeout(() => {
+                    if (actionFn && typeof actionFn === 'function') {
+                        actionFn(iframe.contentWindow);
+                    }
+                }, 300);
+                
+                return true;
+            } catch (e) {
+                console.warn('Could not communicate with iframe:', e);
+                return false;
+            }
+        } else if (retries > 0) {
+            // Retry after a short delay if iframe not ready
+            setTimeout(() => switchTabAndExecute(dashboardContent, tabId, actionFn, retries - 1), 200);
+            return false;
+        }
+        return false;
+    }
+
+    /**
      * Navigate to representative
      */
     function navigateToRepresentative(id) {
         closeSearch();
-        if (typeof _appRouter !== 'undefined') {
-            _appRouter.routeTo('representatives-grid');
-            // TODO: Navigate to specific representative detail page
-            setTimeout(() => {
-                // Could trigger a filter or highlight
-                console.log('Navigate to representative:', id);
-            }, 500);
+        console.log('🔍 Navigating to representative:', id);
+        
+        // Store the ID for later use
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem('pendingViewRepId', id);
         }
+        
+        const dashboardContent = document.getElementById('dashboardContent') || document.getElementById('content-area');
+        
+        // Navigate to representatives module
+        if (typeof handleRoute !== 'undefined') {
+            handleRoute('representatives');
+        } else if (window.location.hash !== '#representatives') {
+            window.location.hash = '#representatives';
+        }
+        
+        // Wait for iframe to load, then switch to directory tab and view profile
+        let retryCount = 0;
+        const maxRetries = 25;
+        
+        const attemptNavigation = () => {
+            retryCount++;
+            const currentDashboardContent = document.getElementById('dashboardContent') || document.getElementById('content-area');
+            const iframe = currentDashboardContent?.querySelector('iframe');
+            
+            if (!iframe || !iframe.contentWindow) {
+                if (retryCount < maxRetries) {
+                    setTimeout(attemptNavigation, 200);
+                } else {
+                    console.error('❌ Failed to find iframe after', maxRetries, 'retries');
+                }
+                return;
+            }
+            
+            const iframeWindow = iframe.contentWindow;
+            const iframeDoc = iframe.contentDocument || iframeWindow.document;
+            
+            console.log('✅ Iframe found, attempting to switch tab');
+            
+            try {
+                // Listen for tab shown event in iframe
+                const directoryTab = iframeDoc?.getElementById('directory-tab');
+                if (directoryTab) {
+                    // Add one-time event listener for when tab is shown
+                    const handleTabShown = () => {
+                        console.log('📑 Directory tab shown, waiting for data...');
+                        // Remove listener
+                        directoryTab.removeEventListener('shown.bs.tab', handleTabShown);
+                        
+                        // Wait a bit for data to load, then view profile
+                        const viewProfileAfterLoad = (attempts = 0) => {
+                            if (attempts > 20) {
+                                console.error('❌ Timeout waiting for data to load');
+                                return;
+                            }
+                            
+                            if (iframeWindow.viewRepProfile) {
+                                console.log('✅ viewRepProfile available, calling with ID:', id);
+                                // Call viewRepProfile - it will handle loading data if needed
+                                try {
+                                    iframeWindow.viewRepProfile(id);
+                                    // Clear stored ID
+                                    if (typeof sessionStorage !== 'undefined') {
+                                        sessionStorage.removeItem('pendingViewRepId');
+                                    }
+                                } catch (error) {
+                                    console.error('❌ Error calling viewRepProfile:', error);
+                                }
+                            } else {
+                                console.log('⏳ Waiting for viewRepProfile, attempt:', attempts + 1);
+                                setTimeout(() => viewProfileAfterLoad(attempts + 1), 200);
+                            }
+                        };
+                        
+                        setTimeout(() => viewProfileAfterLoad(), 500);
+                    };
+                    
+                    directoryTab.addEventListener('shown.bs.tab', handleTabShown);
+                }
+                
+                // Switch to directory tab
+                if (iframeWindow.switchRepsTab) {
+                    console.log('🔄 Using switchRepsTab function');
+                    iframeWindow.switchRepsTab('directory-tab');
+                } else if (directoryTab) {
+                    console.log('🔄 Using Bootstrap tab API');
+                    try {
+                        if (iframeWindow.bootstrap && iframeWindow.bootstrap.Tab) {
+                            const tab = new iframeWindow.bootstrap.Tab(directoryTab);
+                            tab.show();
+                        } else {
+                            directoryTab.click();
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ Error using Bootstrap Tab API, clicking tab:', e);
+                        directoryTab.click();
+                    }
+                } else {
+                    console.warn('⚠️ Could not find directory tab element');
+                    // Fallback: try to view profile anyway after delay
+                    setTimeout(() => {
+                        if (iframeWindow.viewRepProfile) {
+                            iframeWindow.viewRepProfile(id);
+                        }
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error navigating to representative:', error);
+                // Fallback: try to view profile anyway
+                setTimeout(() => {
+                    if (iframeWindow.viewRepProfile) {
+                        iframeWindow.viewRepProfile(id);
+                    }
+                }, 2000);
+            }
+        };
+        
+        // Start attempting navigation after initial delay
+        setTimeout(attemptNavigation, 1200);
     }
 
     /**
@@ -496,8 +664,35 @@ var GlobalSearch = (function() {
      */
     function navigateToClient(id) {
         closeSearch();
-        // TODO: Navigate to client detail page
-        console.log('Navigate to client:', id);
+        
+        const dashboardContent = document.getElementById('dashboardContent') || document.getElementById('content-area');
+        
+        // Navigate to clients-fica module
+        if (typeof handleRoute !== 'undefined') {
+            handleRoute('clients-fica');
+        } else if (window.location.hash !== '#clients-fica') {
+            window.location.hash = '#clients-fica';
+        }
+        
+        // Wait for iframe to load, then switch to portfolio tab and view profile
+        setTimeout(() => {
+            const currentDashboardContent = document.getElementById('dashboardContent') || document.getElementById('content-area');
+            switchTabAndExecute(currentDashboardContent, 'portfolio-tab', (iframeWindow) => {
+                // Try direct function calls
+                if (iframeWindow.switchClientsFicaTab) {
+                    iframeWindow.switchClientsFicaTab('portfolio-tab');
+                }
+                
+                // Wait a bit more for tab to fully switch, then view profile
+                setTimeout(() => {
+                    if (iframeWindow.viewClientProfile) {
+                        iframeWindow.viewClientProfile(id);
+                    } else {
+                        console.log('viewClientProfile function not found in iframe');
+                    }
+                }, 400);
+            });
+        }, 1000);
     }
 
     /**
@@ -505,7 +700,21 @@ var GlobalSearch = (function() {
      */
     function navigateToDocument(id) {
         closeSearch();
-        // TODO: Navigate to document detail page
+        
+        // Navigate to documents module
+        if (typeof handleRoute !== 'undefined') {
+            handleRoute('documents');
+        } else if (window.location.hash !== '#documents') {
+            window.location.hash = '#documents';
+        }
+        
+        // Store document ID for potential future use
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem('selectedDocumentId', id);
+        }
+        
+        // TODO: Implement document detail view when available
+        // For now, just navigate to documents module
         console.log('Navigate to document:', id);
     }
 

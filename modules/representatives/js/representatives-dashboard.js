@@ -10,6 +10,16 @@ let dashboardStats = {
     nonCompliant: 0
 };
 
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     initializeRepresentativesDashboard();
 });
@@ -239,8 +249,16 @@ function updateDashboardUI() {
  * Update Compliance Matrix Table
  */
 function updateComplianceMatrix() {
-    const tbody = document.querySelector('#dashboard .table tbody');
-    if (!tbody) return;
+    // Try multiple selectors to find the compliance matrix table
+    const tbody = document.querySelector('#dashboard .table tbody') ||
+                 document.querySelector('#dashboard table tbody') ||
+                 document.querySelector('.compliance-matrix tbody') ||
+                 document.querySelector('#dashboard .card-body table tbody');
+    
+    if (!tbody) {
+        console.warn('Compliance matrix table body not found');
+        return;
+    }
     
     // Clear existing rows (keep header)
     tbody.innerHTML = '';
@@ -255,24 +273,64 @@ function updateComplianceMatrix() {
         .filter(r => r.status === 'active')
         .slice(0, 10);
     
-    activeReps.forEach(rep => {
+    activeReps.forEach((rep, index) => {
         const name = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
         const row = document.createElement('tr');
+        const repId = rep.id || '';
+        
+        // Ensure rep.id is valid
+        if (!repId) {
+            console.warn('Representative missing ID:', rep);
+            return;
+        }
         
         // Placeholder compliance status (would need CPD/F&P data)
         row.innerHTML = `
-            <td>${name}</td>
+            <td>${escapeHtml(name)}</td>
             <td><span class="badge bg-success">✅ Current</span></td>
             <td><span class="badge bg-success">✅ Current</span></td>
             <td><span class="badge bg-success">✅ Verified</span></td>
             <td><span class="badge ${rep.is_debarred ? 'bg-danger' : 'bg-success'}">${rep.is_debarred ? '❌ Debarred' : '✅ Clear'}</span></td>
             <td><span class="badge bg-success">✅ Compliant</span></td>
             <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="viewRepresentative('${rep.id}')">View</button>
+                <button class="btn btn-sm btn-outline-primary view-rep-btn" data-rep-id="${repId}" type="button">View</button>
             </td>
         `;
         tbody.appendChild(row);
+        
+        // Attach event listener directly to avoid closure issues
+        const viewBtn = row.querySelector('.view-rep-btn');
+        if (viewBtn) {
+            // Store repId in a local variable to capture it in the closure
+            const capturedRepId = repId;
+            
+            viewBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Get ID from data attribute (most reliable)
+                const clickedRepId = this.getAttribute('data-rep-id') || capturedRepId;
+                
+                if (clickedRepId) {
+                    console.log('View button clicked for rep ID:', clickedRepId, 'Name:', name);
+                    viewRepresentative(clickedRepId);
+                } else {
+                    console.error('No representative ID found on button. Captured ID:', capturedRepId);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Representative ID not found'
+                        });
+                    }
+                }
+            });
+        } else {
+            console.error('View button not found in row for rep:', repId, name);
+        }
     });
+    
+    console.log(`Compliance matrix updated with ${activeReps.length} representatives`);
 }
 
 function setupActivityFeed() {
@@ -304,11 +362,194 @@ function switchRepsTab(tabId) {
     }
 }
 
-function viewRepresentative(id) {
-    // Switch to directory tab and show representative
-    switchRepsTab('directory-tab');
-    // Would load representative details
-    console.log('View representative:', id);
+async function viewRepresentative(id) {
+    try {
+        // Find the representative in our data
+        const rep = representativesData.find(r => r.id === id);
+        if (!rep) {
+            // If not in local data, try to fetch it
+            try {
+                const result = await dataFunctions.getRepresentative(id);
+                let repData = result;
+                if (result && result.data) {
+                    repData = result.data;
+                } else if (result && typeof result === 'object') {
+                    repData = result;
+                }
+                
+                if (repData) {
+                    showRepresentativeDetails(repData);
+                    return;
+                }
+            } catch (fetchError) {
+                console.error('Error fetching representative:', fetchError);
+            }
+            
+            // If we can't find or fetch the rep, show error
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Representative not found'
+                });
+            }
+            return;
+        }
+        
+        // Show representative details
+        showRepresentativeDetails(rep);
+    } catch (error) {
+        console.error('Error viewing representative:', error);
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load representative details'
+            });
+        }
+    }
+}
+
+/**
+ * Show Representative Details Modal
+ */
+function showRepresentativeDetails(rep) {
+    const name = `${rep.first_name || ''} ${rep.surname || rep.last_name || ''}`.trim() || 'Unknown';
+    const fspNumber = rep.fsp_number_new || rep.fsp_number || rep.representative_number || 'N/A';
+    const idNumber = rep.id_number || 'N/A';
+    // Email and phone may not be in representatives table - would need to join with user_profiles
+    const email = rep.email || 'N/A';
+    const phone = rep.phone || rep.mobile || 'N/A';
+    const status = rep.status || 'unknown';
+    const statusBadge = status === 'active' ? 'success' : 
+                       status === 'suspended' ? 'warning' : 
+                       status === 'terminated' ? 'secondary' : 'secondary';
+    
+    const onboardingDate = rep.onboarding_date 
+        ? new Date(rep.onboarding_date).toLocaleDateString('en-ZA')
+        : 'N/A';
+    const authDate = rep.authorization_date 
+        ? new Date(rep.authorization_date).toLocaleDateString('en-ZA')
+        : 'N/A';
+    
+    // Get compliance status (if available from matrix data)
+    let complianceStatus = 'Loading...';
+    let complianceBadge = 'secondary';
+    if (typeof dataFunctions !== 'undefined') {
+        dataFunctions.getTeamComplianceMatrix().then(result => {
+            let matrix = result;
+            if (result && result.data) {
+                matrix = result.data;
+            } else if (result && Array.isArray(result)) {
+                matrix = result;
+            }
+            
+            if (matrix && Array.isArray(matrix)) {
+                const matrixRep = matrix.find(r => r.representative_id === rep.id);
+                if (matrixRep) {
+                    complianceStatus = matrixRep.compliance_status || 'Unknown';
+                    complianceBadge = matrixRep.compliance_indicator === 'green' ? 'success' :
+                                     matrixRep.compliance_indicator === 'amber' ? 'warning' :
+                                     matrixRep.compliance_indicator === 'red' ? 'danger' : 'secondary';
+                }
+            }
+        }).catch(err => {
+            console.warn('Could not load compliance status:', err);
+        });
+    }
+    
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: name,
+            html: `
+                <div class="text-start">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Personal Information</h6>
+                            <p><strong>Representative Number:</strong> ${fspNumber}</p>
+                            <p><strong>ID Number:</strong> ${idNumber}</p>
+                            <p><strong>Email:</strong> ${email}</p>
+                            <p><strong>Phone:</strong> ${phone}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-${statusBadge}">${status.toUpperCase()}</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3">Compliance Information</h6>
+                            <p><strong>Onboarding Date:</strong> ${onboardingDate}</p>
+                            <p><strong>Authorization Date:</strong> ${authDate}</p>
+                            <p><strong>Compliance Status:</strong> <span class="badge bg-${complianceBadge}" id="complianceStatusBadge">${complianceStatus}</span></p>
+                            <p><strong>Debarment Status:</strong> <span class="badge ${rep.is_debarred ? 'bg-danger' : 'bg-success'}">${rep.is_debarred ? '❌ Debarred' : '✅ Clear'}</span></p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-2">Authorized Categories</h6>
+                            <ul class="list-unstyled">
+                                ${rep.class_1_long_term ? '<li><i class="fas fa-check-circle text-success me-2"></i>Category I - Long-term Insurance</li>' : ''}
+                                ${rep.class_2_short_term ? '<li><i class="fas fa-check-circle text-success me-2"></i>Category II - Short-term Insurance</li>' : ''}
+                                ${rep.class_3_pension ? '<li><i class="fas fa-check-circle text-success me-2"></i>Category III - Pension Benefits</li>' : ''}
+                                ${!rep.class_1_long_term && !rep.class_2_short_term && !rep.class_3_pension ? '<li class="text-muted"><i class="fas fa-times-circle me-2"></i>No categories assigned</li>' : ''}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `,
+            width: '700px',
+            showCancelButton: true,
+            confirmButtonText: 'View Full Profile',
+            cancelButtonText: 'Close',
+            confirmButtonColor: '#5CBDB4',
+            didOpen: () => {
+                // Update compliance status if it loads after modal opens
+                setTimeout(() => {
+                    if (typeof dataFunctions !== 'undefined') {
+                        dataFunctions.getTeamComplianceMatrix().then(result => {
+                            let matrix = result;
+                            if (result && result.data) {
+                                matrix = result.data;
+                            } else if (result && Array.isArray(result)) {
+                                matrix = result;
+                            }
+                            
+                            if (matrix && Array.isArray(matrix)) {
+                                const matrixRep = matrix.find(r => r.representative_id === rep.id);
+                                if (matrixRep) {
+                                    const badgeEl = document.getElementById('complianceStatusBadge');
+                                    if (badgeEl) {
+                                        const status = matrixRep.compliance_status || 'Unknown';
+                                        const badgeClass = matrixRep.compliance_indicator === 'green' ? 'success' :
+                                                         matrixRep.compliance_indicator === 'amber' ? 'warning' :
+                                                         matrixRep.compliance_indicator === 'red' ? 'danger' : 'secondary';
+                                        badgeEl.className = `badge bg-${badgeClass}`;
+                                        badgeEl.textContent = status;
+                                    }
+                                }
+                            }
+                        }).catch(err => {
+                            console.warn('Could not update compliance status:', err);
+                        });
+                    }
+                }, 500);
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Switch to directory tab and show full profile
+                switchRepsTab('directory-tab');
+                // Wait for tab to switch, then trigger view in directory
+                setTimeout(() => {
+                    if (typeof viewRepProfile === 'function') {
+                        viewRepProfile(rep.id);
+                    } else {
+                        // Fallback: just switch to directory tab
+                        console.log('Switched to directory tab for representative:', rep.id);
+                    }
+                }, 300);
+            }
+        });
+    } else {
+        // Fallback if SweetAlert is not available
+        alert(`Representative: ${name}\nFSP Number: ${fspNumber}\nStatus: ${status}`);
+    }
 }
 
 // Export for global access

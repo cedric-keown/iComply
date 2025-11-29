@@ -421,7 +421,38 @@ function updateRepCount() {
  */
 async function viewRepProfile(id) {
     try {
-        const rep = allRepresentatives.find(r => r.id === id);
+        let rep = allRepresentatives.find(r => r.id === id);
+        
+        // If rep not found in local array, try to fetch it
+        if (!rep) {
+            console.log('Representative not found in local array, fetching from API...');
+            try {
+                const dataFunctionsToUse = typeof dataFunctions !== 'undefined' 
+                    ? dataFunctions 
+                    : (window.dataFunctions || window.parent?.dataFunctions);
+                
+                if (dataFunctionsToUse && dataFunctionsToUse.getRepresentative) {
+                    const result = await dataFunctionsToUse.getRepresentative(id);
+                    let repData = result;
+                    if (result && result.data) {
+                        repData = result.data;
+                    } else if (result && typeof result === 'object') {
+                        repData = result;
+                    }
+                    
+                    if (repData) {
+                        rep = repData;
+                        // Add to local array for future use
+                        if (!allRepresentatives.find(r => r.id === id)) {
+                            allRepresentatives.push(rep);
+                        }
+                    }
+                }
+            } catch (fetchError) {
+                console.error('Error fetching representative:', fetchError);
+            }
+        }
+        
         if (!rep) {
             Swal.fire({
                 icon: 'error',

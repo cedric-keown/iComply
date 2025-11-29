@@ -34,7 +34,14 @@ function setupModalListeners() {
 
 async function initializeMyProfile() {
     // Check if user is authenticated
-    if (!authService || !authService.isAuthenticated()) {
+    const authServiceAvailable = typeof authService !== 'undefined' && authService;
+    const isAuthenticated = authServiceAvailable && authService.isAuthenticated();
+    
+    // Also check localStorage as fallback
+    const hasToken = localStorage.getItem('lambda_token');
+    const hasUserInfo = localStorage.getItem('user_info');
+    
+    if (!isAuthenticated && (!hasToken || !hasUserInfo)) {
         Swal.fire({
             icon: 'error',
             title: 'Authentication Required',
@@ -42,16 +49,20 @@ async function initializeMyProfile() {
             confirmButtonText: 'OK'
         }).then(() => {
             // Close modal if not authenticated
-            const modal = bootstrap.Modal.getInstance(document.getElementById('myProfileModal'));
-            if (modal) modal.hide();
+            const modalElement = document.getElementById('myProfileModal');
+            if (modalElement) {
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) modal.hide();
+            }
         });
         return;
     }
     
-    // Check if modal is visible
+    // Check if modal element exists
     const modalElement = document.getElementById('myProfileModal');
-    if (!modalElement || !modalElement.classList.contains('show')) {
-        return; // Don't load if modal isn't visible
+    if (!modalElement) {
+        console.warn('My Profile modal element not found');
+        return;
     }
     
     await loadUserProfile();

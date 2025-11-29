@@ -320,8 +320,10 @@ var _dataFunctions = function () {
         },
 
         getRepresentatives: async function (status = 'active', token = null) {
+            // If status is explicitly null or undefined, pass null to get all
+            const statusParam = (status === null || status === undefined) ? null : status;
             return await this.callFunction('get_representatives', {
-                p_status: status
+                p_status: statusParam
             }, token);
         },
 
