@@ -8,6 +8,12 @@ class AuthService {
         this.proxyUrl = 'https://o4n4qwc7mtdgzqhjkscuheyvji0seljg.lambda-url.af-south-1.on.aws';
         this.token = localStorage.getItem('lambda_token');
         this.userInfo = this.getUserInfo();
+        
+        // Session timeout configuration
+        this.sessionCheckInterval = 5 * 60 * 1000; // Check every 5 minutes
+        this.sessionCheckTimer = null;
+        this.lastActivityTime = Date.now();
+        this.sessionTimeoutWarned = false;
 
         // If we have user info but no role_name, fetch complete info
         if (this.userInfo && !this.userInfo.role_name && this.userInfo.role_id) {
@@ -19,7 +25,13 @@ class AuthService {
             this.validateSession().catch(err => {
                 console.warn('Session validation warning:', err);
             });
+            
+            // Start periodic session validation
+            this.startSessionMonitoring();
         }
+        
+        // Track user activity
+        this.setupActivityTracking();
     }
 
     /**
@@ -197,14 +209,28 @@ class AuthService {
      * Sign out user
      */
     signOut() {
+        console.log('AuthService.signOut() called');
+        
+        // Stop session monitoring
+        this.stopSessionMonitoring();
+        
         // Get cc parameter from localStorage (stored as client_guid during sign-in)
         const ccParam = localStorage.getItem('client_guid');
 
+        // Clear authentication data
         localStorage.removeItem('lambda_token');
         localStorage.removeItem('user_info');
+        localStorage.removeItem('recent_activities');
+        
+        // Clear session storage
+        sessionStorage.clear();
+        
+        // Clear instance variables
         this.token = null;
         this.userInfo = null;
 
+        console.log('Auth data cleared, redirecting to signin...');
+        
         // Preserve cc parameter in redirect
         const signinUrl = ccParam ? `signin.html?cc=${encodeURIComponent(ccParam)}` : 'signin.html';
         window.location.href = signinUrl;
@@ -233,6 +259,7 @@ class AuthService {
                 if (response.status === 401) {
                     // Token expired or invalid
                     console.warn('Session validation failed: token expired');
+                    this.handleSessionTimeout();
                     return false;
                 }
 
@@ -243,11 +270,130 @@ class AuthService {
             }
 
             const result = await response.json();
-            return result.status === 'healthy' || result.authenticated === true;
+            const isValid = result.status === 'healthy' || result.authenticated === true;
+            
+            if (!isValid) {
+                this.handleSessionTimeout();
+            }
+            
+            return isValid;
         } catch (error) {
             console.error('Session validation error:', error);
             return false;
         }
+    }
+    
+    /**
+     * Start periodic session validation
+     */
+    startSessionMonitoring() {
+        // Clear any existing timer
+        if (this.sessionCheckTimer) {
+            clearInterval(this.sessionCheckTimer);
+        }
+        
+        console.log('Session monitoring started - checking every 5 minutes');
+        
+        // Check session periodically
+        this.sessionCheckTimer = setInterval(async () => {
+            console.log('Performing periodic session validation...');
+            const isValid = await this.validateSession();
+            
+            if (!isValid) {
+                console.warn('Session is no longer valid');
+                this.stopSessionMonitoring();
+            }
+        }, this.sessionCheckInterval);
+    }
+    
+    /**
+     * Stop session monitoring
+     */
+    stopSessionMonitoring() {
+        if (this.sessionCheckTimer) {
+            clearInterval(this.sessionCheckTimer);
+            this.sessionCheckTimer = null;
+            console.log('Session monitoring stopped');
+        }
+    }
+    
+    /**
+     * Track user activity to update last activity time
+     */
+    setupActivityTracking() {
+        const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+        
+        const updateActivity = () => {
+            this.lastActivityTime = Date.now();
+        };
+        
+        activityEvents.forEach(event => {
+            document.addEventListener(event, updateActivity, { passive: true });
+        });
+        
+        console.log('Activity tracking enabled');
+    }
+    
+    /**
+     * Handle session timeout - show message and redirect to signin
+     */
+    handleSessionTimeout() {
+        // Prevent multiple calls
+        if (this.sessionTimeoutWarned) {
+            return;
+        }
+        
+        this.sessionTimeoutWarned = true;
+        this.stopSessionMonitoring();
+        
+        console.log('Session timeout detected - signing out user');
+        
+        // Show timeout message
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Session Expired',
+                text: 'Your session has expired. Please sign in again.',
+                confirmButtonColor: '#5CBDB4',
+                confirmButtonText: 'Sign In',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then(() => {
+                this.signOutDueToTimeout();
+            });
+        } else {
+            // Fallback if SweetAlert not available
+            alert('Your session has expired. Please sign in again.');
+            this.signOutDueToTimeout();
+        }
+    }
+    
+    /**
+     * Sign out due to session timeout (no confirmation needed)
+     */
+    signOutDueToTimeout() {
+        console.log('Signing out due to session timeout');
+        
+        // Get cc parameter from localStorage
+        const ccParam = localStorage.getItem('client_guid');
+
+        // Clear authentication data
+        localStorage.removeItem('lambda_token');
+        localStorage.removeItem('user_info');
+        localStorage.removeItem('recent_activities');
+        
+        // Clear session storage
+        sessionStorage.clear();
+        
+        // Clear instance variables
+        this.token = null;
+        this.userInfo = null;
+
+        // Redirect to signin with timeout parameter
+        const signinUrl = ccParam ? 
+            `signin.html?cc=${encodeURIComponent(ccParam)}&timeout=1` : 
+            'signin.html?timeout=1';
+        window.location.href = signinUrl;
     }
 
     /**
@@ -282,8 +428,9 @@ class AuthService {
                 const errorData = await response.json().catch(() => ({}));
 
                 if (response.status === 401) {
-                    // Token expired or invalid
-                    this.signOut();
+                    // Token expired or invalid - handle as session timeout
+                    console.warn('Received 401 Unauthorized - session expired');
+                    this.handleSessionTimeout();
                     throw new Error('Authentication expired. Please sign in again.');
                 }
 

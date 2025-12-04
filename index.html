@@ -28,6 +28,69 @@
             --danger: #DC3545;
             --info: #17A2B8;
         }
+        
+        /* CRITICAL: Ensure logout button is always clickable */
+        #logoutButton {
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 2147483647 !important;
+            user-select: none !important;
+        }
+        
+        #logoutButton:hover {
+            background-color: #f8f9fa !important;
+        }
+        
+        /* Prevent dropdown from closing when clicking logout */
+        .dropdown-menu {
+            pointer-events: auto !important;
+            position: relative !important;
+        }
+        
+        /* Make dropdown menu higher z-index */
+        .dropdown-menu.show {
+            z-index: 2147483646 !important; /* Second highest possible */
+        }
+        
+        /* Force dropdown items to be clickable */
+        .dropdown-menu .dropdown-item {
+            position: relative !important;
+            z-index: inherit !important;
+        }
+        
+        /* Disable pointer events on potential blockers */
+        .modal-backdrop,
+        .offcanvas-backdrop,
+        [class*="overlay"],
+        [class*="backdrop"] {
+            pointer-events: none !important;
+        }
+        
+        /* CRITICAL: Ensure SweetAlert is always on top and clickable */
+        .swal2-container {
+            z-index: 2147483647 !important; /* Maximum z-index */
+        }
+        
+        .swal2-popup {
+            z-index: 2147483647 !important;
+            pointer-events: auto !important;
+        }
+        
+        .swal2-actions {
+            z-index: 2147483647 !important;
+            pointer-events: auto !important;
+        }
+        
+        .swal2-confirm,
+        .swal2-cancel,
+        .swal2-deny {
+            z-index: 2147483647 !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            position: relative !important;
+        }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -689,7 +752,7 @@
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-moon me-2"></i>Dark Mode</a></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#" onclick="handleLogout(event)"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation(); handleLogout(event); return false;" id="logoutButton" style="cursor: pointer !important; opacity: 1 !important; pointer-events: auto !important; z-index: 10000; position: relative;" data-logout="true"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                 </ul>
                 </div>
             </div>
@@ -1144,6 +1207,404 @@
     <script src="modules/ai-chatbot/js/chatbot.js"></script>
 
     <script>
+        // ===================================================================
+        // LOGOUT FUNCTION - Defined at top to ensure it's always available
+        // ===================================================================
+        function handleLogout(event) {
+            console.log('handleLogout called');
+            
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            // Show confirmation dialog
+            Swal.fire({
+                title: 'Sign Out?',
+                text: 'Are you sure you want to sign out?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, sign out',
+                cancelButtonText: 'Cancel',
+                didOpen: () => {
+                    // Auto-fix button blockers when dialog opens
+                    setTimeout(() => {
+                        if (typeof window.fixSweetAlertButtons === 'function') {
+                            window.fixSweetAlertButtons();
+                        }
+                    }, 100);
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log('User confirmed logout');
+                    
+                    // Use authService.signOut if available (preferred method)
+                    if (typeof authService !== 'undefined' && authService && typeof authService.signOut === 'function') {
+                        console.log('Using authService.signOut()');
+                        authService.signOut();
+                        return;
+                    }
+                    
+                    // Fallback: Manual logout
+                    console.log('Using manual logout');
+                    const clientGuid = localStorage.getItem('client_guid');
+                    
+                    // Clear all authentication data
+                    localStorage.removeItem('lambda_token');
+                    localStorage.removeItem('user_info');
+                    localStorage.removeItem('recent_activities');
+                    
+                    // Clear any session storage
+                    sessionStorage.clear();
+                    
+                    // Show success message and redirect
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Signed Out',
+                        text: 'You have been successfully signed out.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        // Redirect to signin page with client guid
+                        const signinUrl = clientGuid ? `signin.html?cc=${encodeURIComponent(clientGuid)}` : 'signin.html';
+                        console.log('Redirecting to:', signinUrl);
+                        window.location.href = signinUrl;
+                    });
+                } else {
+                    console.log('User cancelled logout');
+                }
+            });
+        }
+        
+        // Make handleLogout globally available IMMEDIATELY
+        window.handleLogout = handleLogout;
+        console.log('handleLogout function registered globally');
+        
+        // GLOBAL SAFETY NET: Intercept ALL clicks and check for logout intent
+        document.addEventListener('click', function(e) {
+            const target = e.target;
+            // Check if click is on or inside logout button
+            if (target.id === 'logoutButton' || 
+                target.closest('#logoutButton') || 
+                target.getAttribute('data-logout') === 'true' ||
+                target.closest('[data-logout="true"]')) {
+                console.log('GLOBAL INTERCEPTOR: Logout click detected!');
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                handleLogout(e);
+            }
+        }, true); // Use capture phase to intercept early
+        
+        // Additional mousedown interceptor (only log logout-related)
+        document.addEventListener('mousedown', function(e) {
+            const target = e.target;
+            if (target.id === 'logoutButton' || 
+                target.closest('#logoutButton') ||
+                target.getAttribute('data-logout') === 'true' ||
+                target.closest('[data-logout="true"]')) {
+                console.log('🔴 GLOBAL MOUSEDOWN INTERCEPTOR: Logout detected!');
+            }
+        }, true);
+        
+        // Attach logout handler to button (MULTIPLE methods for maximum reliability)
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutBtn = document.getElementById('logoutButton');
+            if (logoutBtn) {
+                console.log('Attaching multiple event handlers to logout button');
+                
+                // Method 1: Click event
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    console.log('Logout clicked via click event');
+                    handleLogout(e);
+                }, true); // Use capture phase
+                
+                // Method 2: Mousedown event (fires before click and before dropdown closes)
+                logoutBtn.addEventListener('mousedown', function(e) {
+                    console.log('Logout mousedown detected');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    // Small delay to ensure this is a real click, not just a hover
+                    setTimeout(() => {
+                        console.log('Logout triggered via mousedown');
+                        handleLogout(e);
+                    }, 10);
+                }, true);
+                
+                // Method 3: Touchstart for mobile devices
+                logoutBtn.addEventListener('touchstart', function(e) {
+                    console.log('Logout touched (mobile)');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleLogout(e);
+                }, true);
+                
+                // Ensure button is not disabled
+                logoutBtn.removeAttribute('disabled');
+                logoutBtn.classList.remove('disabled');
+                logoutBtn.style.pointerEvents = 'auto';
+                logoutBtn.style.zIndex = '9999';
+                
+                console.log('Logout button enabled with multiple event handlers');
+            } else {
+                console.warn('Logout button not found!');
+            }
+            
+            // Method 4: Event delegation on the dropdown menu
+            const dropdownMenu = document.querySelector('.dropdown-menu.dropdown-menu-end');
+            if (dropdownMenu) {
+                console.log('Setting up event delegation on dropdown menu');
+                dropdownMenu.addEventListener('click', function(e) {
+                    const target = e.target.closest('#logoutButton');
+                    if (target) {
+                        console.log('Logout detected via event delegation');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        handleLogout(e);
+                    }
+                }, true);
+                
+                // Debug: Log dropdown menu state
+                console.log('Dropdown menu found:', dropdownMenu);
+                console.log('Dropdown menu computed style:', window.getComputedStyle(dropdownMenu));
+            } else {
+                console.error('Dropdown menu NOT found!');
+            }
+            
+            // CRITICAL: Prevent Bootstrap from closing dropdown when clicking logout
+            const userDropdown = document.querySelector('.user-menu-dropdown');
+            if (userDropdown) {
+                userDropdown.addEventListener('hide.bs.dropdown', function(e) {
+                    // Check if logout was clicked
+                    if (document.getElementById('logoutButton')?.contains(e.clickEvent?.target)) {
+                        console.log('🔴 Preventing dropdown close - logout clicked');
+                        e.preventDefault();
+                    }
+                });
+            }
+            
+            // Alternative: Stop dropdown close on logout button click
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    // Prevent Bootstrap from processing this click
+                    e.stopPropagation();
+                    console.log('🔴 Logout button click - stopping propagation to prevent dropdown close');
+                }, {capture: true, passive: false});
+            }
+        });
+        
+        // Diagnostic test function - can be called from console: testLogout()
+        window.testLogout = function() {
+            console.log('=== LOGOUT DIAGNOSTIC TEST ===');
+            console.log('1. handleLogout function exists?', typeof window.handleLogout);
+            console.log('2. SweetAlert loaded?', typeof Swal);
+            console.log('3. authService loaded?', typeof authService);
+            console.log('4. authService.signOut exists?', typeof authService?.signOut);
+            console.log('5. Current localStorage items:');
+            console.log('   - lambda_token:', localStorage.getItem('lambda_token') ? 'SET' : 'NOT SET');
+            console.log('   - user_info:', localStorage.getItem('user_info') ? 'SET' : 'NOT SET');
+            console.log('   - client_guid:', localStorage.getItem('client_guid') ? 'SET' : 'NOT SET');
+            console.log('6. Logout button element:', document.getElementById('logoutButton'));
+            const logoutBtn = document.getElementById('logoutButton');
+            if (logoutBtn) {
+                console.log('7. Button disabled?', logoutBtn.hasAttribute('disabled'));
+                console.log('8. Button classes:', logoutBtn.className);
+                console.log('9. Button onclick:', logoutBtn.onclick);
+                console.log('10. Button computed style:');
+                const style = window.getComputedStyle(logoutBtn);
+                console.log('    - cursor:', style.cursor);
+                console.log('    - pointer-events:', style.pointerEvents);
+                console.log('    - opacity:', style.opacity);
+                console.log('    - z-index:', style.zIndex);
+                console.log('    - position:', style.position);
+                console.log('11. Button bounding rect:', logoutBtn.getBoundingClientRect());
+                console.log('12. Is button visible?', logoutBtn.offsetParent !== null);
+            }
+            console.log('=== TEST COMPLETE ===');
+            console.log('To test logout manually, call: handleLogout()');
+            console.log('To simulate button click, call: document.getElementById("logoutButton").click()');
+        };
+        
+        // Force logout function - bypasses all UI, directly calls handleLogout
+        window.forceLogout = function() {
+            console.log('FORCE LOGOUT CALLED - Bypassing all UI');
+            handleLogout();
+        };
+        
+        // Comprehensive dropdown diagnostic
+        window.testDropdown = function() {
+            console.log('=== DROPDOWN DIAGNOSTIC TEST ===');
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownToggle = document.querySelector('.user-menu-dropdown');
+            const dropdownMenu = document.querySelector('.dropdown-menu.dropdown-menu-end');
+            const logoutBtn = document.getElementById('logoutButton');
+            
+            console.log('1. Dropdown container:', dropdown);
+            console.log('2. Dropdown toggle:', dropdownToggle);
+            console.log('3. Dropdown menu:', dropdownMenu);
+            console.log('4. Logout button:', logoutBtn);
+            
+            if (dropdownMenu) {
+                const menuStyle = window.getComputedStyle(dropdownMenu);
+                console.log('5. Dropdown menu display:', menuStyle.display);
+                console.log('6. Dropdown menu visibility:', menuStyle.visibility);
+                console.log('7. Dropdown menu opacity:', menuStyle.opacity);
+                console.log('8. Dropdown menu z-index:', menuStyle.zIndex);
+                console.log('9. Dropdown menu position:', dropdownMenu.getBoundingClientRect());
+                console.log('10. Dropdown has show class?', dropdownMenu.classList.contains('show'));
+            }
+            
+            if (logoutBtn) {
+                const btnStyle = window.getComputedStyle(logoutBtn);
+                const rect = logoutBtn.getBoundingClientRect();
+                console.log('11. Logout button position:', rect);
+                console.log('12. Logout button pointer-events:', btnStyle.pointerEvents);
+                console.log('13. Logout button z-index:', btnStyle.zIndex);
+                console.log('14. Logout button display:', btnStyle.display);
+                console.log('15. Logout button visibility:', btnStyle.visibility);
+                
+                // Check what element is at the logout button's position
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const elementAtPosition = document.elementFromPoint(centerX, centerY);
+                console.log('16. Element at logout button center:', elementAtPosition);
+                console.log('17. Element tag:', elementAtPosition?.tagName);
+                console.log('18. Element id:', elementAtPosition?.id);
+                console.log('19. Element class:', elementAtPosition?.className);
+                console.log('20. Is it the logout button?', elementAtPosition === logoutBtn || elementAtPosition?.closest('#logoutButton') === logoutBtn);
+                
+                // Check all elements at this position
+                const elements = document.elementsFromPoint(centerX, centerY);
+                console.log('21. ALL elements at this position:', elements);
+                console.log('22. Logout button index in stack:', elements.indexOf(logoutBtn));
+            }
+            
+            console.log('=== TEST COMPLETE ===');
+            console.log('Try clicking: document.getElementById("logoutButton").click()');
+        };
+        
+        // Find what's blocking the logout button
+        window.findBlocker = function() {
+            const logoutBtn = document.getElementById('logoutButton');
+            if (!logoutBtn) {
+                console.error('Logout button not found!');
+                return;
+            }
+            
+            const rect = logoutBtn.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            console.log('=== FINDING WHAT\'S BLOCKING LOGOUT ===');
+            console.log('Logout button position:', rect);
+            console.log('Testing point:', centerX, centerY);
+            
+            const elementsAtPoint = document.elementsFromPoint(centerX, centerY);
+            console.log('Elements at this point (top to bottom):');
+            elementsAtPoint.forEach((el, index) => {
+                const style = window.getComputedStyle(el);
+                console.log(`${index}:`, el.tagName, 
+                    'ID:', el.id || 'none',
+                    'Class:', el.className || 'none',
+                    'Z-Index:', style.zIndex,
+                    'Pointer-Events:', style.pointerEvents,
+                    'Position:', style.position);
+            });
+            
+            const topElement = elementsAtPoint[0];
+            if (topElement !== logoutBtn && !topElement.closest('#logoutButton')) {
+                console.error('❌ BLOCKER FOUND!', topElement);
+                console.log('This element is blocking the logout button:', topElement);
+                console.log('Tag:', topElement.tagName, 'ID:', topElement.id, 'Classes:', topElement.className);
+                return topElement;
+            } else {
+                console.log('✅ No blocker - logout button is on top');
+                return null;
+            }
+        };
+        
+        // Automatically remove the blocker
+        window.removeBlocker = function() {
+            const blocker = window.findBlocker();
+            if (blocker) {
+                console.log('🔧 Attempting to remove blocker...');
+                
+                // Try multiple methods to remove the blocker
+                
+                // Method 1: Disable pointer events
+                blocker.style.pointerEvents = 'none';
+                console.log('✅ Set pointer-events: none on blocker');
+                
+                // Method 2: Lower z-index
+                const blockerZIndex = parseInt(window.getComputedStyle(blocker).zIndex) || 0;
+                blocker.style.zIndex = blockerZIndex - 1000000;
+                console.log('✅ Lowered blocker z-index to', blockerZIndex - 1000000);
+                
+                // Method 3: Hide it if it's a backdrop
+                if (blocker.className.includes('backdrop') || blocker.className.includes('overlay')) {
+                    blocker.style.display = 'none';
+                    console.log('✅ Hid blocker (backdrop/overlay)');
+                }
+                
+                // Verify fix
+                setTimeout(() => {
+                    const stillBlocked = window.findBlocker();
+                    if (!stillBlocked) {
+                        console.log('🎉 SUCCESS! Blocker removed. Try clicking logout now.');
+                    } else {
+                        console.log('⚠️ Blocker still present:', stillBlocked);
+                    }
+                }, 100);
+            } else {
+                console.log('✅ No blocker to remove');
+            }
+        };
+        
+        // Find and fix SweetAlert button blockers
+        window.fixSweetAlertButtons = function(verbose = false) {
+            const confirmBtn = document.querySelector('.swal2-confirm');
+            const cancelBtn = document.querySelector('.swal2-cancel');
+            
+            if (!confirmBtn && !cancelBtn) {
+                if (verbose) console.log('No SweetAlert dialog found');
+                return;
+            }
+            
+            [confirmBtn, cancelBtn].forEach((btn) => {
+                if (!btn) return;
+                
+                const rect = btn.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                const elementsAtPoint = document.elementsFromPoint(centerX, centerY);
+                const topElement = elementsAtPoint[0];
+                
+                if (!topElement.classList.contains('swal2-confirm') && 
+                    !topElement.classList.contains('swal2-cancel')) {
+                    // Fix blocker
+                    topElement.style.pointerEvents = 'none';
+                    topElement.style.zIndex = '-1';
+                }
+            });
+            
+            // Force SweetAlert to highest z-index
+            const swalContainer = document.querySelector('.swal2-container');
+            if (swalContainer) {
+                swalContainer.style.zIndex = '2147483647';
+            }
+        };
+        
+        // ===================================================================
+        // NAVIGATION STATE
+        // ===================================================================
         // Navigation State
         const navigationState = {
             currentUser: {
@@ -1843,55 +2304,6 @@
                 }
             }, 1500);
         });
-
-        // Handle Logout
-        function handleLogout(event) {
-            if (event) {
-                event.preventDefault();
-            }
-            
-            // Show confirmation dialog
-            Swal.fire({
-                title: 'Sign Out?',
-                text: 'Are you sure you want to sign out?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, sign out',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Clear all authentication data
-                    const clientGuid = localStorage.getItem('client_guid');
-                    
-                    localStorage.removeItem('lambda_token');
-                    localStorage.removeItem('user_info');
-                    
-                    // Clear any session storage
-                    sessionStorage.clear();
-                    
-                    // Use authService if available
-                    if (typeof authService !== 'undefined') {
-                        authService.token = null;
-                        authService.userInfo = null;
-                    }
-                    
-                    // Show success message and redirect
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Signed Out',
-                        text: 'You have been successfully signed out.',
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => {
-                        // Redirect to signin page with client guid
-                        const signinUrl = clientGuid ? `signin.html?cc=${encodeURIComponent(clientGuid)}` : 'signin.html';
-                        window.location.href = signinUrl;
-                    });
-                }
-            });
-        }
 
         // Initialize Navigation
         function initializeNavigation() {

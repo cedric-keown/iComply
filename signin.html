@@ -203,12 +203,35 @@
                 return;
             }
 
+            // Check for session timeout parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionTimedOut = urlParams.get('timeout') === '1';
+            
+            if (sessionTimedOut) {
+                // Show session timeout message
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Session Expired',
+                        text: 'Your session has expired due to inactivity. Please sign in again.',
+                        confirmButtonColor: '#5CBDB4',
+                        confirmButtonText: 'OK'
+                    });
+                }
+                
+                // Remove timeout parameter from URL
+                urlParams.delete('timeout');
+                const newUrl = window.location.pathname + 
+                    (urlParams.toString() ? '?' + urlParams.toString() : '') + 
+                    window.location.hash;
+                window.history.replaceState({}, '', newUrl);
+            }
+
             // Handle form submission
             document.getElementById('signinForm').addEventListener('submit', handleEmailSignIn);
             document.getElementById('signupForm').addEventListener('submit', handleSignUp);
 
             // Set default cc parameter if not present
-            const urlParams = new URLSearchParams(window.location.search);
             if (!urlParams.get('cc')) {
                 urlParams.set('cc', '9e1d961a-bfc2-469d-8526-8af75f536656');
                 const newUrl = window.location.pathname + '?' + urlParams.toString() + window.location.hash;
