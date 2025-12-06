@@ -2,22 +2,6 @@
 
 let complianceData = [];
 
-// Mock compliance data matching team-compliance matrix
-const mockComplianceData = [
-    { id: 1, first_name: "Sarah", surname: "Naidoo", fpStatus: "compliant", cpdStatus: "completed", ficaStatus: "current", overallStatus: "compliant", status: "active", is_debarred: false },
-    { id: 2, first_name: "Thabo", surname: "Mokoena", fpStatus: "compliant", cpdStatus: "in-progress", ficaStatus: "current", overallStatus: "compliant", status: "active", is_debarred: false },
-    { id: 3, first_name: "Mike", surname: "Johnson", fpStatus: "non-compliant", cpdStatus: "behind", ficaStatus: "warning", overallStatus: "non-compliant", status: "suspended", is_debarred: false },
-    { id: 4, first_name: "Johan", surname: "Smith", fpStatus: "compliant", cpdStatus: "behind", ficaStatus: "current", overallStatus: "at-risk", status: "active", is_debarred: false },
-    { id: 5, first_name: "Peter", surname: "Nel", fpStatus: "compliant", cpdStatus: "in-progress", ficaStatus: "warning", overallStatus: "at-risk", status: "active", is_debarred: false },
-    { id: 6, first_name: "Lisa", surname: "van Wyk", fpStatus: "compliant", cpdStatus: "completed", ficaStatus: "current", overallStatus: "compliant", status: "active", is_debarred: false },
-    { id: 7, first_name: "Pieter", surname: "Venter", fpStatus: "warning", cpdStatus: "completed", ficaStatus: "critical", overallStatus: "non-compliant", status: "active", is_debarred: false },
-    { id: 8, first_name: "Anna", surname: "de Wet", fpStatus: "compliant", cpdStatus: "in-progress", ficaStatus: "current", overallStatus: "compliant", status: "active", is_debarred: false },
-    { id: 9, first_name: "David", surname: "Mthembu", fpStatus: "compliant", cpdStatus: "behind", ficaStatus: "warning", overallStatus: "non-compliant", status: "active", is_debarred: false },
-    { id: 10, first_name: "Susan", surname: "Jacobs", fpStatus: "compliant", cpdStatus: "completed", ficaStatus: "current", overallStatus: "compliant", status: "active", is_debarred: false },
-    { id: 11, first_name: "Lerato", surname: "Dlamini", fpStatus: "warning", cpdStatus: "behind", ficaStatus: "warning", overallStatus: "at-risk", status: "active", is_debarred: false },
-    { id: 12, first_name: "Kevin", surname: "O'Brien", fpStatus: "compliant", cpdStatus: "in-progress", ficaStatus: "warning", overallStatus: "compliant", status: "active", is_debarred: false }
-];
-
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize when compliance tab is shown
     const complianceTab = document.getElementById('compliance-tab');
@@ -33,8 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 async function loadComplianceOverview() {
     try {
-        // Try to load Representatives from database
-        const result = await dataFunctions.getRepresentatives();
+        // Load Representatives from database
+        const result = await dataFunctions.getRepresentatives(null); // Get all statuses
         let reps = result;
         if (result && result.data) {
             reps = result.data;
@@ -42,32 +26,51 @@ async function loadComplianceOverview() {
             reps = result;
         }
         
-        // Use mock data if no database data available or for demonstration
-        if (!reps || reps.length === 0) {
-            complianceData = mockComplianceData;
+        // Enrich with user profile data if available
+        if (reps && Array.isArray(reps) && reps.length > 0) {
+            complianceData = await Promise.all(reps.map(async (rep) => {
+                try {
+                    // Get user profile for name
+                    if (rep.user_profile_id) {
+                        const profileResult = await dataFunctions.getUserProfile(rep.user_profile_id);
+                        if (profileResult && profileResult.data) {
+                            rep.first_name = profileResult.data.first_name;
+                            rep.surname = profileResult.data.surname;
+                        } else if (profileResult && profileResult.first_name) {
+                            rep.first_name = profileResult.first_name;
+                            rep.surname = profileResult.surname;
+                        }
+                    }
+                    
+                    // Set compliance statuses based on available data
+                    // TODO: These should be calculated from actual CPD, F&P, FICA data when available
+                    rep.fpStatus = rep.status === 'active' ? 'compliant' : 'non-compliant';
+                    rep.cpdStatus = rep.status === 'active' ? 'in-progress' : 'behind';
+                    rep.ficaStatus = rep.status === 'active' ? 'current' : 'warning';
+                    rep.overallStatus = rep.status === 'active' ? 'compliant' : 'non-compliant';
+                    rep.is_debarred = rep.status === 'debarred';
+                    
+                    return rep;
+                } catch (err) {
+                    console.warn('Error enriching representative data:', err);
+                    return rep;
+                }
+            }));
         } else {
-            // Merge database data with mock compliance statuses for demonstration
-            complianceData = reps.map(rep => {
-                const mockRep = mockComplianceData.find(m => 
-                    (m.first_name === rep.first_name && m.surname === rep.surname) ||
-                    m.id === rep.id
-                );
-                return mockRep ? { ...rep, ...mockRep } : rep;
-            });
-            
-            // If we have fewer reps than mock data, add mock reps
-            if (complianceData.length < mockComplianceData.length) {
-                const existingIds = new Set(complianceData.map(r => r.id));
-                const additionalMockReps = mockComplianceData.filter(m => !existingIds.has(m.id));
-                complianceData = [...complianceData, ...additionalMockReps];
-            }
+            complianceData = [];
         }
         
         renderComplianceOverview();
     } catch (error) {
         console.error('Error loading compliance overview:', error);
-        // Use mock data on error for demonstration
-        complianceData = mockComplianceData;
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to load compliance overview'
+            });
+        }
+        complianceData = [];
         renderComplianceOverview();
     }
 }

@@ -1,278 +1,121 @@
 // Team Compliance Matrix JavaScript
 
-// Sample Data
-const representativesData = [
-    {
-        id: 1,
-        name: "Sarah Naidoo",
-        initials: "SN",
-        email: "sarah.naidoo@abcfinancial.co.za",
-        fscar: "123456",
-        role: "Senior Financial Advisor",
-        supervisor: "Thabo Mokoena",
-        fpStatus: "compliant",
-        fpDetails: {
-            re5: { valid: true, expiry: "20/08/2026" },
-            re1: { valid: true, expiry: "15/03/2025" },
-            cob: "Long-term, Investments ✓",
-            background: "All current ✓",
-            lastVerified: "10/12/2024"
-        },
-        cpdHours: 20,
-        cpdRequired: 18,
-        cpdEthics: 4.0,
-        cpdStatus: "completed",
-        cpdLastActivity: "05/12/2024",
-        ficaTotal: 45,
-        ficaCurrent: 45,
-        ficaOverdue: 0,
-        ficaStatus: "current",
-        docsTotal: 28,
-        docsCurrent: 28,
-        docsExpired: 0,
-        docsStatus: "current",
-        overallScore: 98,
-        overallStatus: "compliant",
-        lastUpdated: "14/12/2024 16:30",
-        updatedBy: "Self-updated",
-        trend: "+1%"
-    },
-    {
-        id: 2,
-        name: "Thabo Mokoena",
-        initials: "TM",
-        email: "thabo.mokoena@abcfinancial.co.za",
-        fscar: "123457",
-        role: "Financial Advisor",
-        supervisor: "Johan Smit",
-        fpStatus: "compliant",
-        fpDetails: {
-            re5: { valid: true, expiry: "10/06/2027" },
-            re1: { valid: true, expiry: "20/04/2025" }
-        },
-        cpdHours: 14,
-        cpdRequired: 18,
-        cpdEthics: 3.0,
-        cpdStatus: "in-progress",
-        cpdLastActivity: "5 days ago",
-        ficaTotal: 52,
-        ficaCurrent: 52,
-        ficaOverdue: 0,
-        ficaStatus: "current",
-        docsTotal: 33,
-        docsCurrent: 31,
-        docsExpired: 2,
-        docsStatus: "warning",
-        overallScore: 85,
-        overallStatus: "compliant",
-        lastUpdated: "15/12/2024 10:15",
-        updatedBy: "CPD verified",
-        trend: "→"
-    },
-    {
-        id: 3,
-        name: "Mike Johnson",
-        initials: "MJ",
-        email: "mike.johnson@abcfinancial.co.za",
-        fscar: "123458",
-        role: "Junior Financial Advisor",
-        supervisor: "Sarah Naidoo",
-        employmentStatus: "suspended",
-        fpStatus: "non-compliant",
-        fpDetails: {
-            re5: { valid: false, expiry: "13/12/2024", expired: true },
-            re1: { valid: true, expiry: "30/09/2025" },
-            background: "Due for renewal"
-        },
-        cpdHours: 8,
-        cpdRequired: 18,
-        cpdEthics: 1.5,
-        cpdStatus: "behind",
-        cpdLastActivity: "45 days ago",
-        ficaTotal: 35,
-        ficaCurrent: 28,
-        ficaOverdue: 7,
-        ficaStatus: "warning",
-        docsTotal: 22,
-        docsCurrent: 18,
-        docsExpired: 4,
-        docsStatus: "expired",
-        overallScore: 45,
-        overallStatus: "non-compliant",
-        lastUpdated: "13/12/2024 08:00",
-        updatedBy: "System alert (RE5 expiry)",
-        trend: "-8%"
-    },
-    {
-        id: 4,
-        name: "Johan Smith",
-        initials: "JS",
-        email: "johan.smith@abcfinancial.co.za",
-        fscar: "123459",
-        role: "Financial Advisor",
-        supervisor: "Thabo Mokoena",
-        fpStatus: "compliant",
-        cpdHours: 12,
-        cpdRequired: 18,
-        cpdEthics: 2.5,
-        cpdStatus: "behind",
-        ficaTotal: 38,
-        ficaCurrent: 38,
-        ficaOverdue: 0,
-        ficaStatus: "current",
-        docsTotal: 25,
-        docsCurrent: 25,
-        docsExpired: 0,
-        docsStatus: "current",
-        overallScore: 68,
-        overallStatus: "at-risk",
-        lastUpdated: "10/12/2024 14:20",
-        updatedBy: "Self-updated",
-        trend: "→"
-    },
-    {
-        id: 5,
-        name: "Peter Nel",
-        initials: "PN",
-        email: "peter.nel@abcfinancial.co.za",
-        fscar: "123460",
-        role: "Financial Advisor",
-        supervisor: "Johan Smit",
-        fpStatus: "compliant",
-        cpdHours: 13,
-        cpdRequired: 18,
-        cpdEthics: 3.0,
-        cpdStatus: "in-progress",
-        ficaTotal: 42,
-        ficaCurrent: 40,
-        ficaOverdue: 2,
-        ficaStatus: "warning",
-        docsTotal: 27,
-        docsCurrent: 26,
-        docsExpired: 1,
-        docsStatus: "warning",
-        overallScore: 72,
-        overallStatus: "at-risk",
-        lastUpdated: "12/12/2024 11:30",
-        updatedBy: "Self-updated",
-        trend: "→"
-    },
-    // Add more representatives...
-    { id: 6, name: "Lisa van Wyk", initials: "LV", email: "lisa.vanwyk@abcfinancial.co.za", fscar: "123461", role: "Senior Financial Advisor", supervisor: "Thabo Mokoena", fpStatus: "compliant", cpdHours: 19, cpdRequired: 18, cpdEthics: 4.0, cpdStatus: "completed", ficaTotal: 48, ficaCurrent: 48, ficaOverdue: 0, ficaStatus: "current", docsTotal: 30, docsCurrent: 30, docsExpired: 0, docsStatus: "current", overallScore: 95, overallStatus: "compliant", lastUpdated: "14/12/2024 15:00", updatedBy: "Self-updated", trend: "+2%" },
-    { 
-        id: 7, 
-        name: "Pieter Venter", 
-        initials: "PV", 
-        email: "pieter.venter@abcfinancial.co.za", 
-        fscar: "123462", 
-        role: "Financial Advisor", 
-        supervisor: "Sarah Naidoo", 
-        fpStatus: "warning",
-        fpDetails: {
-            re5: { valid: true, expiry: "15/02/2025", nearExpiry: true },
-            re1: { valid: true, expiry: "10/01/2025", nearExpiry: true },
-            background: "Due for renewal ⚠️"
-        },
-        cpdHours: 18, 
-        cpdRequired: 18, 
-        cpdEthics: 3.5, 
-        cpdStatus: "completed", 
-        ficaTotal: 45, 
-        ficaCurrent: 32, 
-        ficaOverdue: 13, 
-        ficaStatus: "critical", 
-        docsTotal: 28, 
-        docsCurrent: 21, 
-        docsExpired: 7, 
-        docsStatus: "expired", 
-        overallScore: 52, 
-        overallStatus: "non-compliant", 
-        lastUpdated: "13/12/2024 09:45", 
-        updatedBy: "Compliance alert (FICA overdue)", 
-        trend: "-12%" 
-    },
-    { id: 8, name: "Anna de Wet", initials: "AN", email: "anna.dewet@abcfinancial.co.za", fscar: "123463", role: "Financial Advisor", supervisor: "Johan Smit", fpStatus: "compliant", cpdHours: 16, cpdRequired: 18, cpdEthics: 3.0, cpdStatus: "in-progress", ficaTotal: 35, ficaCurrent: 35, ficaOverdue: 0, ficaStatus: "current", docsTotal: 24, docsCurrent: 24, docsExpired: 0, docsStatus: "current", overallScore: 85, overallStatus: "compliant", lastUpdated: "14/12/2024 13:20", updatedBy: "Self-updated", trend: "→" },
-    { 
-        id: 9, 
-        name: "David Mthembu", 
-        initials: "DM", 
-        email: "david.mthembu@abcfinancial.co.za", 
-        fscar: "123464", 
-        role: "Financial Advisor", 
-        supervisor: "Thabo Mokoena", 
-        fpStatus: "compliant", 
-        cpdHours: 6, 
-        cpdRequired: 18, 
-        cpdEthics: 1.0, 
-        cpdStatus: "behind", 
-        cpdLastActivity: "78 days ago",
-        ficaTotal: 38, 
-        ficaCurrent: 35, 
-        ficaOverdue: 3, 
-        ficaStatus: "warning", 
-        docsTotal: 25, 
-        docsCurrent: 22, 
-        docsExpired: 3, 
-        docsStatus: "warning", 
-        overallScore: 48, 
-        overallStatus: "non-compliant", 
-        lastUpdated: "13/12/2024 16:10", 
-        updatedBy: "System alert (CPD deficit)", 
-        trend: "-15%" 
-    },
-    { id: 10, name: "Susan Jacobs", initials: "SJ", email: "susan.jacobs@abcfinancial.co.za", fscar: "123465", role: "Financial Advisor", supervisor: "Sarah Naidoo", fpStatus: "compliant", cpdHours: 18, cpdRequired: 18, cpdEthics: 3.5, cpdStatus: "completed", ficaTotal: 32, ficaCurrent: 32, ficaOverdue: 0, ficaStatus: "current", docsTotal: 23, docsCurrent: 23, docsExpired: 0, docsStatus: "current", overallScore: 82, overallStatus: "compliant", lastUpdated: "12/12/2024 10:30", updatedBy: "Self-updated", trend: "→" },
-    { 
-        id: 11, 
-        name: "Lerato Dlamini", 
-        initials: "LD", 
-        email: "lerato.dlamini@abcfinancial.co.za", 
-        fscar: "123466", 
-        role: "Financial Advisor", 
-        supervisor: "Johan Smit", 
-        fpStatus: "warning",
-        fpDetails: {
-            re5: { valid: true, expiry: "20/01/2025", nearExpiry: true },
-            re1: { valid: true, expiry: "05/03/2025" },
-            cob: "Long-term ✓",
-            background: "Renewal required"
-        },
-        cpdHours: 11, 
-        cpdRequired: 18, 
-        cpdEthics: 2.0, 
-        cpdStatus: "behind", 
-        cpdLastActivity: "32 days ago",
-        ficaTotal: 30, 
-        ficaCurrent: 26, 
-        ficaOverdue: 4, 
-        ficaStatus: "warning", 
-        docsTotal: 22, 
-        docsCurrent: 18, 
-        docsExpired: 4, 
-        docsStatus: "expired", 
-        overallScore: 62, 
-        overallStatus: "at-risk", 
-        lastUpdated: "11/12/2024 14:45", 
-        updatedBy: "Compliance review", 
-        trend: "-5%" 
-    },
-    { id: 12, name: "Kevin O'Brien", initials: "KO", email: "kevin.obrien@abcfinancial.co.za", fscar: "123467", role: "Financial Advisor", supervisor: "Thabo Mokoena", fpStatus: "compliant", cpdHours: 14, cpdRequired: 18, cpdEthics: 3.0, cpdStatus: "in-progress", ficaTotal: 28, ficaCurrent: 27, ficaOverdue: 1, ficaStatus: "warning", docsTotal: 21, docsCurrent: 20, docsExpired: 1, docsStatus: "warning", overallScore: 78, overallStatus: "compliant", lastUpdated: "10/12/2024 11:20", updatedBy: "Self-updated", trend: "→" }
-];
+// Representatives Data (loaded from database)
+let representativesData = [];
 
 let filteredData = [...representativesData];
 let selectedReps = new Set();
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    initializeMatrix();
+    loadRepresentativesData();
     setupEventListeners();
-    updateLastUpdated();
     
     // Auto-refresh every 2 minutes
     setInterval(() => {
         updateLastUpdated();
-        // In production, would fetch fresh data here
+        loadRepresentativesData(); // Reload data on refresh
     }, 120000);
 });
+
+/**
+ * Load Representatives Data from Database
+ */
+async function loadRepresentativesData() {
+    try {
+        // Get all representatives
+        const result = await dataFunctions.getRepresentatives(null); // Get all statuses
+        let reps = result;
+        
+        // Handle different response structures
+        if (result && result.data) {
+            reps = result.data;
+        } else if (result && Array.isArray(result)) {
+            reps = result;
+        }
+        
+        if (reps && Array.isArray(reps) && reps.length > 0) {
+            // Enrich with user profile data and compliance info
+            representativesData = await Promise.all(reps.map(async (rep, index) => {
+                try {
+                    // Get user profile for name
+                    if (rep.user_profile_id) {
+                        const profileResult = await dataFunctions.getUserProfile(rep.user_profile_id);
+                        if (profileResult && profileResult.data) {
+                            rep.first_name = profileResult.data.first_name;
+                            rep.surname = profileResult.data.surname;
+                            rep.email = profileResult.data.email;
+                        } else if (profileResult && profileResult.first_name) {
+                            rep.first_name = profileResult.first_name;
+                            rep.surname = profileResult.surname;
+                            rep.email = profileResult.email;
+                        }
+                    }
+                    
+                    // Format data for display
+                    rep.name = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
+                    rep.initials = `${(rep.first_name || 'U')[0]}${(rep.surname || 'N')[0]}`.toUpperCase();
+                    rep.fscar = rep.fsp_number || 'N/A';
+                    rep.role = 'Financial Advisor'; // Would come from user profile or role table
+                    rep.supervisor = 'Unknown'; // Would come from KI assignment
+                    rep.employmentStatus = rep.status;
+                    
+                    // TODO: These should be calculated from actual CPD, F&P, FICA data
+                    rep.fpStatus = rep.status === 'active' ? 'compliant' : 'non-compliant';
+                    rep.fpDetails = {
+                        re5: { valid: rep.status === 'active', expiry: 'N/A' },
+                        re1: { valid: rep.status === 'active', expiry: 'N/A' }
+                    };
+                    rep.cpdHours = 0;
+                    rep.cpdRequired = 18;
+                    rep.cpdEthics = 0;
+                    rep.cpdStatus = 'pending';
+                    rep.cpdLastActivity = 'N/A';
+                    rep.ficaTotal = 0;
+                    rep.ficaCurrent = 0;
+                    rep.ficaOverdue = 0;
+                    rep.ficaStatus = 'current';
+                    rep.docsTotal = 0;
+                    rep.docsCurrent = 0;
+                    rep.docsExpired = 0;
+                    rep.docsStatus = 'current';
+                    rep.overallScore = rep.status === 'active' ? 100 : 0;
+                    rep.overallStatus = rep.status === 'active' ? 'compliant' : 'non-compliant';
+                    rep.lastUpdated = new Date(rep.updated_at || rep.created_at).toLocaleString('en-ZA');
+                    rep.updatedBy = 'System';
+                    rep.trend = '→';
+                    rep.id = index + 1; // Temporary ID for display
+                    
+                    return rep;
+                } catch (err) {
+                    console.warn('Error enriching representative data:', err);
+                    return rep;
+                }
+            }));
+            
+            initializeMatrix();
+            updateLastUpdated();
+        } else {
+            representativesData = [];
+            initializeMatrix();
+            updateLastUpdated();
+            console.log('No representatives found in database');
+        }
+    } catch (error) {
+        console.error('Error loading representatives data:', error);
+        representativesData = [];
+        initializeMatrix();
+        updateLastUpdated();
+        
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'info',
+                title: 'No Data',
+                text: 'No representatives data available. Please add representatives to see compliance matrix.'
+            });
+        }
+    }
+}
 
 function initializeMatrix() {
     renderMatrix();

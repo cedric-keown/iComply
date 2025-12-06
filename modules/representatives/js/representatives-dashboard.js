@@ -11,15 +11,6 @@ let dashboardStats = {
     nonCompliant: 0
 };
 
-// Mock compliance data matching team-compliance matrix
-const mockComplianceStats = {
-    total: 12,
-    compliant: 6,    // Sarah, Thabo, Lisa, Anna, Susan, Kevin
-    atRisk: 3,       // Johan, Peter, Lerato
-    nonCompliant: 3, // Mike, Pieter, David
-    suspended: 1     // Mike Johnson
-};
-
 /**
  * Escape HTML to prevent XSS
  */
@@ -91,78 +82,24 @@ async function loadDashboardData() {
  * Calculate Dashboard Statistics
  */
 function calculateDashboardStats() {
-    // If we have database data, calculate from it
-    if (representativesData && representativesData.length > 0) {
-        dashboardStats = {
-            total: representativesData.length,
-            active: representativesData.filter(r => r.status === 'active').length,
-            suspended: representativesData.filter(r => r.status === 'suspended').length,
-            terminated: representativesData.filter(r => r.status === 'terminated').length,
-            compliant: 0,
-            atRisk: 0,
-            nonCompliant: 0
-        };
-    } else {
-        // Use mock data for demonstration
-        dashboardStats = {
-            total: mockComplianceStats.total,
-            active: mockComplianceStats.total - mockComplianceStats.suspended,
-            suspended: mockComplianceStats.suspended,
-            terminated: 0,
-            compliant: mockComplianceStats.compliant,
-            atRisk: mockComplianceStats.atRisk,
-            nonCompliant: mockComplianceStats.nonCompliant
-        };
-        updateDashboardUI();
-        return;
-    }
+    // Calculate basic stats from representative data
+    dashboardStats = {
+        total: representativesData.length,
+        active: representativesData.filter(r => r.status === 'active').length,
+        suspended: representativesData.filter(r => r.status === 'suspended').length,
+        terminated: representativesData.filter(r => r.status === 'terminated').length,
+        compliant: 0,
+        atRisk: 0,
+        nonCompliant: 0
+    };
     
-    // Calculate compliance from actual data
-    // Try to get compliance data from team matrix if available
-    if (typeof dataFunctions !== 'undefined' && dataFunctions) {
-        try {
-            dataFunctions.getTeamComplianceMatrix().then(result => {
-                let matrix = result;
-                if (result && result.data) {
-                    matrix = result.data;
-                } else if (result && Array.isArray(result)) {
-                    matrix = result;
-                }
-                
-                if (matrix && Array.isArray(matrix)) {
-                    const activeReps = matrix.filter(r => r.rep_status === 'active');
-                    const compliantReps = activeReps.filter(r => r.compliance_indicator === 'green');
-                    dashboardStats.compliant = compliantReps.length;
-                    dashboardStats.nonCompliant = activeReps.length - compliantReps.length;
-                    updateDashboardUI(); // Update UI with real data
-                } else {
-                    // Use mock data if no matrix data
-                    dashboardStats.compliant = mockComplianceStats.compliant;
-                    dashboardStats.atRisk = mockComplianceStats.atRisk;
-                    dashboardStats.nonCompliant = mockComplianceStats.nonCompliant;
-                    updateDashboardUI();
-                }
-            }).catch(err => {
-                console.warn('Could not load compliance matrix, using mock data:', err);
-                dashboardStats.compliant = mockComplianceStats.compliant;
-                dashboardStats.atRisk = mockComplianceStats.atRisk;
-                dashboardStats.nonCompliant = mockComplianceStats.nonCompliant;
-                updateDashboardUI();
-            });
-        } catch (err) {
-            console.warn('Error loading compliance data, using mock data:', err);
-            dashboardStats.compliant = mockComplianceStats.compliant;
-            dashboardStats.atRisk = mockComplianceStats.atRisk;
-            dashboardStats.nonCompliant = mockComplianceStats.nonCompliant;
-            updateDashboardUI();
-        }
-    } else {
-        // No dataFunctions available, use mock data
-        dashboardStats.compliant = mockComplianceStats.compliant;
-        dashboardStats.atRisk = mockComplianceStats.atRisk;
-        dashboardStats.nonCompliant = mockComplianceStats.nonCompliant;
-        updateDashboardUI();
-    }
+    // For now, assume active representatives are compliant
+    // TODO: Calculate actual compliance from CPD, F&P, FICA data when available
+    dashboardStats.compliant = dashboardStats.active;
+    dashboardStats.atRisk = 0;
+    dashboardStats.nonCompliant = dashboardStats.suspended + dashboardStats.terminated;
+    
+    updateDashboardUI();
 }
 
 /**
@@ -265,8 +202,8 @@ function updateDashboardUI() {
     }
     
     if (fpStatusEl) {
-        // Based on mock data: 3 reps have F&P issues (Mike, Pieter, Lerato)
-        const fpIssues = dashboardStats.nonCompliant + (dashboardStats.atRisk > 0 ? 1 : 0);
+        // TODO: Calculate from actual F&P data when available
+        const fpIssues = dashboardStats.nonCompliant;
         if (fpIssues === 0) {
             fpStatusEl.textContent = '✅ All Current';
             fpStatusEl.className = 'badge bg-success';
@@ -280,8 +217,8 @@ function updateDashboardUI() {
     }
     
     if (cpdStatusEl) {
-        // Based on mock data: 4 reps have CPD issues (Mike, Johan, David, Lerato)
-        const cpdIssues = dashboardStats.nonCompliant + Math.min(dashboardStats.atRisk, 2);
+        // TODO: Calculate from actual CPD data when available
+        const cpdIssues = dashboardStats.nonCompliant;
         if (cpdIssues === 0) {
             cpdStatusEl.textContent = '✅ All Current';
             cpdStatusEl.className = 'badge bg-success';
