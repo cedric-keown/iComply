@@ -298,7 +298,7 @@ function renderComplianceOverview() {
                                         </td>
                                         <td>${overallBadge}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary" onclick="viewRepProfile('${rep.id}')">
+                                            <button class="btn btn-sm btn-outline-primary view-details-btn" data-rep-id="${rep.id}">
                                                 View Details
                                             </button>
                                         </td>
@@ -311,6 +311,26 @@ function renderComplianceOverview() {
             </div>
         </div>
     `;
+    
+    // Attach event listeners to all View Details buttons
+    attachViewDetailsListeners();
+}
+
+/**
+ * Attach Event Listeners to View Details Buttons
+ */
+function attachViewDetailsListeners() {
+    const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
+    viewDetailsButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const repId = this.getAttribute('data-rep-id');
+            if (repId) {
+                viewRepProfile(repId);
+            }
+        });
+    });
 }
 
 /**
