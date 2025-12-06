@@ -11,10 +11,6 @@ let dashboardStats = {
     nonCompliant: 0
 };
 
-// Pagination for compliance matrix
-let dashboardMatrixPage = 1;
-const dashboardMatrixPerPage = 10;
-
 /**
  * Escape HTML to prevent XSS
  */
@@ -60,7 +56,6 @@ async function loadDashboardData() {
         
         if (reps && Array.isArray(reps)) {
             representativesData = reps;
-            dashboardMatrixPage = 1; // Reset to first page
             await calculateDashboardStats();
         }
     } catch (error) {
@@ -293,38 +288,36 @@ async function updateDashboardUI() {
 }
 
 /**
- * Update Compliance Matrix Table
+ * Update Compliance Issues Widget (Reps Requiring Attention)
  */
 async function updateComplianceMatrix() {
-    // Find the compliance matrix table container
+    // Find the compliance widget container
     const matrixCard = document.querySelector('#dashboard .card:has(.table)') ||
                        document.querySelector('#dashboard .compliance-matrix');
     
     if (!matrixCard) {
-        console.warn('Compliance matrix card not found');
+        console.warn('Compliance widget card not found');
         return;
+    }
+    
+    // Update card title to reflect new purpose
+    const cardHeader = matrixCard.querySelector('.card-header h5');
+    if (cardHeader) {
+        cardHeader.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Representatives Requiring Attention';
     }
     
     const tbody = matrixCard.querySelector('tbody');
     
     if (!tbody) {
-        console.warn('Compliance matrix table body not found');
+        console.warn('Compliance table body not found');
         return;
     }
     
-    // Get active representatives and sort by name
-    let activeReps = representativesData
-        .filter(r => r.status === 'active')
-        .sort((a, b) => {
-            const nameA = `${a.first_name || ''} ${a.surname || ''}`.trim().toLowerCase();
-            const nameB = `${b.first_name || ''} ${b.surname || ''}`.trim().toLowerCase();
-            return nameA.localeCompare(nameB);
-        });
+    // Get active representatives
+    let activeReps = representativesData.filter(r => r.status === 'active');
     
     if (activeReps.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">No active representatives found</td></tr>';
-        
-        // Remove any existing pagination
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No active representatives found</td></tr>';
         const existingPagination = matrixCard.querySelector('.card-footer');
         if (existingPagination) existingPagination.remove();
         return;
@@ -344,167 +337,117 @@ async function updateComplianceMatrix() {
                 const compliance = bulkCompliance.find(c => c.representative_id === rep.id);
                 if (compliance && compliance.compliance_data) {
                     rep.compliance = compliance.compliance_data;
+                    rep.overallStatus = compliance.compliance_data.overall_status || 'unknown';
+                    rep.overallScore = compliance.compliance_data.overall_score || 0;
                     rep.fpStatus = compliance.compliance_data.fit_proper?.status || 'unknown';
                     rep.cpdStatus = compliance.compliance_data.cpd?.status || 'unknown';
                     rep.ficaStatus = compliance.compliance_data.fica?.status || 'unknown';
-                    rep.overallStatus = compliance.compliance_data.overall_status || 'unknown';
                 }
                 return rep;
             });
         }
     } catch (err) {
-        console.warn('Could not load compliance data for matrix:', err);
+        console.warn('Could not load compliance data:', err);
     }
     
-    // Calculate pagination
-    const totalPages = Math.ceil(activeReps.length / dashboardMatrixPerPage);
-    const startIndex = (dashboardMatrixPage - 1) * dashboardMatrixPerPage;
-    const endIndex = startIndex + dashboardMatrixPerPage;
-    const paginatedReps = activeReps.slice(startIndex, endIndex);
+    // Filter to only show reps requiring attention (at-risk or non-compliant)
+    const repsNeedingAttention = activeReps
+        .filter(r => r.overallStatus === 'at_risk' || r.overallStatus === 'non_compliant')
+        .sort((a, b) => (a.overallScore || 0) - (b.overallScore || 0)); // Sort by score (worst first)
     
     // Clear existing rows
     tbody.innerHTML = '';
     
-    // Render paginated rows with real compliance data
-    paginatedReps.forEach((rep, pageIndex) => {
-        const actualIndex = startIndex + pageIndex;
+    if (repsNeedingAttention.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center py-4">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <p class="mb-0 text-success"><strong>All representatives are compliant!</strong></p>
+                    <small class="text-muted">No immediate attention required</small>
+                </td>
+            </tr>
+        `;
+        
+        // Remove pagination if exists
+        const existingPagination = matrixCard.querySelector('.card-footer');
+        if (existingPagination) existingPagination.remove();
+        return;
+    }
+    
+    // Limit to top 10 requiring attention (no pagination needed - dashboard widget)
+    const topIssues = repsNeedingAttention.slice(0, 10);
+    
+    // Render rows
+    topIssues.forEach((rep) => {
         const name = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
+        const score = Math.round(rep.overallScore || 0);
         const row = document.createElement('tr');
         
-        // F&P Badge
-        const fpBadge = rep.fpStatus === 'compliant' ? 
-            '<span class="badge bg-success">✅ Current</span>' :
-            rep.fpStatus === 'warning' ?
-            '<span class="badge bg-warning text-dark">⚠️ Warning</span>' :
-            rep.fpStatus === 'non_compliant' ?
+        // Row color based on severity
+        const rowClass = rep.overallStatus === 'non_compliant' ? 'table-danger' : 'table-warning';
+        row.className = rowClass;
+        
+        // Status badge
+        const statusBadge = rep.overallStatus === 'non_compliant' ?
             '<span class="badge bg-danger">❌ Non-Compliant</span>' :
-            '<span class="badge bg-secondary">Pending</span>';
+            '<span class="badge bg-warning text-dark">⚠️ At Risk</span>';
         
-        // CPD Badge
-        const cpdBadge = rep.cpdStatus === 'completed' ?
-            '<span class="badge bg-success">✅ Complete</span>' :
-            rep.cpdStatus === 'in_progress' ?
-            '<span class="badge bg-info">🔄 In Progress</span>' :
-            rep.cpdStatus === 'behind' ?
-            '<span class="badge bg-danger">⏰ Behind</span>' :
-            '<span class="badge bg-secondary">Pending</span>';
-        
-        // FICA Badge
-        const ficaBadge = rep.ficaStatus === 'current' ?
-            '<span class="badge bg-success">✅ Verified</span>' :
-            rep.ficaStatus === 'warning' ?
-            '<span class="badge bg-warning text-dark">⚠️ Overdue</span>' :
-            rep.ficaStatus === 'critical' ?
-            '<span class="badge bg-danger">❌ Critical</span>' :
-            '<span class="badge bg-secondary">Pending</span>';
-        
-        // Overall Badge
-        const overallBadge = rep.overallStatus === 'compliant' ?
-            '<span class="badge bg-success">✅ Compliant</span>' :
-            rep.overallStatus === 'at_risk' ?
-            '<span class="badge bg-warning text-dark">⚠️ At Risk</span>' :
-            rep.overallStatus === 'non_compliant' ?
-            '<span class="badge bg-danger">❌ Non-Compliant</span>' :
-            '<span class="badge bg-secondary">Pending</span>';
+        // Issues list
+        let issues = [];
+        if (rep.fpStatus && rep.fpStatus !== 'compliant') issues.push('F&P');
+        if (rep.cpdStatus && rep.cpdStatus !== 'completed') issues.push('CPD');
+        if (rep.ficaStatus && rep.ficaStatus !== 'current') issues.push('FICA');
+        const issuesText = issues.length > 0 ? issues.join(', ') : 'Various';
         
         row.innerHTML = `
-            <td>${escapeHtml(name)}</td>
-            <td>${fpBadge}</td>
-            <td>${cpdBadge}</td>
-            <td>${ficaBadge}</td>
-            <td><span class="badge ${rep.is_debarred ? 'bg-danger' : 'bg-success'}">${rep.is_debarred ? '❌ Debarred' : '✅ Clear'}</span></td>
-            <td>${overallBadge}</td>
+            <td><strong>${escapeHtml(name)}</strong></td>
+            <td><span class="badge bg-${score >= 60 ? 'warning' : 'danger'}">${score}%</span></td>
+            <td>${statusBadge}</td>
+            <td><small class="text-muted">${issuesText}</small></td>
             <td>
                 <button class="btn btn-sm btn-outline-primary" onclick="window.viewRepresentative && window.viewRepresentative('${rep.id}'); return false;" type="button">
-                    View
+                    <i class="fas fa-eye me-1"></i>View
+                </button>
+                <button class="btn btn-sm btn-outline-warning" onclick="alert('Send reminder to ${escapeHtml(name)}'); return false;" type="button">
+                    <i class="fas fa-bell"></i>
                 </button>
             </td>
         `;
         tbody.appendChild(row);
     });
     
-    // Add or update pagination controls
-    renderDashboardMatrixPagination(matrixCard, totalPages, activeReps.length);
-    
-    console.log(`Compliance matrix updated with ${paginatedReps.length} of ${activeReps.length} representatives (Page ${dashboardMatrixPage}/${totalPages})`);
-}
-
-/**
- * Render Dashboard Matrix Pagination
- */
-function renderDashboardMatrixPagination(matrixCard, totalPages, totalRecords) {
-    // Remove existing pagination
+    // Remove pagination (not needed for top 10)
     const existingPagination = matrixCard.querySelector('.card-footer');
     if (existingPagination) existingPagination.remove();
     
-    if (totalPages <= 1) return; // No pagination needed
-    
-    const startRecord = ((dashboardMatrixPage - 1) * dashboardMatrixPerPage) + 1;
-    const endRecord = Math.min(dashboardMatrixPage * dashboardMatrixPerPage, totalRecords);
-    
-    let pageButtons = '';
-    
-    // Previous button
-    const prevDisabled = dashboardMatrixPage === 1 ? 'disabled' : '';
-    pageButtons += `<li class="page-item ${prevDisabled}">
-        <a class="page-link" href="#" onclick="changeDashboardMatrixPage(${dashboardMatrixPage - 1}); return false;" ${prevDisabled}>
-            <i class="fas fa-chevron-left"></i>
-        </a>
-    </li>`;
-    
-    // Page number buttons
-    for (let i = 1; i <= totalPages; i++) {
-        if (i === 1 || i === totalPages || (i >= dashboardMatrixPage - 2 && i <= dashboardMatrixPage + 2)) {
-            const active = i === dashboardMatrixPage ? 'active' : '';
-            pageButtons += `<li class="page-item ${active}">
-                <a class="page-link" href="#" onclick="changeDashboardMatrixPage(${i}); return false;">${i}</a>
-            </li>`;
-        } else if (i === dashboardMatrixPage - 3 || i === dashboardMatrixPage + 3) {
-            pageButtons += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
-        }
+    // Add footer with link to full compliance overview
+    if (repsNeedingAttention.length > 10) {
+        const footer = document.createElement('div');
+        footer.className = 'card-footer bg-light text-center';
+        footer.innerHTML = `
+            <small class="text-muted">
+                Showing top 10 of ${repsNeedingAttention.length} representatives requiring attention
+            </small>
+            <a href="#" onclick="switchRepsTab('compliance-tab'); return false;" class="btn btn-sm btn-link">
+                View All in Compliance Overview <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        `;
+        matrixCard.appendChild(footer);
+    } else if (repsNeedingAttention.length > 0) {
+        const footer = document.createElement('div');
+        footer.className = 'card-footer bg-light text-center';
+        footer.innerHTML = `
+            <a href="#" onclick="switchRepsTab('compliance-tab'); return false;" class="btn btn-sm btn-link">
+                View Full Compliance Matrix <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        `;
+        matrixCard.appendChild(footer);
     }
     
-    // Next button
-    const nextDisabled = dashboardMatrixPage === totalPages ? 'disabled' : '';
-    pageButtons += `<li class="page-item ${nextDisabled}">
-        <a class="page-link" href="#" onclick="changeDashboardMatrixPage(${dashboardMatrixPage + 1}); return false;" ${nextDisabled}>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-    </li>`;
-    
-    const paginationFooter = document.createElement('div');
-    paginationFooter.className = 'card-footer bg-light';
-    paginationFooter.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="text-muted small">
-                Showing ${startRecord}-${endRecord} of ${totalRecords} active representatives
-            </div>
-            <nav aria-label="Dashboard matrix pagination">
-                <ul class="pagination pagination-sm mb-0">
-                    ${pageButtons}
-                </ul>
-            </nav>
-        </div>
-    `;
-    
-    matrixCard.appendChild(paginationFooter);
+    console.log(`Dashboard showing ${topIssues.length} representatives requiring attention (${repsNeedingAttention.length} total issues)`);
 }
 
-/**
- * Change Dashboard Matrix Page
- */
-function changeDashboardMatrixPage(page) {
-    const activeReps = representativesData.filter(r => r.status === 'active');
-    const totalPages = Math.ceil(activeReps.length / dashboardMatrixPerPage);
-    
-    if (page < 1 || page > totalPages) return;
-    
-    dashboardMatrixPage = page;
-    updateComplianceMatrix();
-}
-
-// Export to window
-window.changeDashboardMatrixPage = changeDashboardMatrixPage;
 
 function setupActivityFeed() {
     const activityItems = document.querySelectorAll('.activity-item');
