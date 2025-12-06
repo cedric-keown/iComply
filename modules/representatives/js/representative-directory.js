@@ -83,12 +83,22 @@ async function loadRepresentatives() {
         }
     } catch (error) {
         console.error('Error loading representatives:', error);
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'error',
+        
+        // Check if session expired before showing error
+        if (typeof authService !== 'undefined' && authService.handleErrorWithSessionCheck) {
+            await authService.handleErrorWithSessionCheck(error, {
                 title: 'Error',
-                text: 'Failed to load representatives'
+                message: 'Failed to load representatives'
             });
+        } else {
+            // Fallback if authService not available
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to load representatives'
+                });
+            }
         }
     }
 }

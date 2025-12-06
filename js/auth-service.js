@@ -395,6 +395,62 @@ class AuthService {
             'signin.html?timeout=1';
         window.location.href = signinUrl;
     }
+    
+    /**
+     * Check if an error is due to session expiry
+     * Returns true if session has expired, false otherwise
+     */
+    async isSessionExpired(error) {
+        // Check if error indicates authentication failure
+        if (error?.message?.includes('Authentication expired') ||
+            error?.message?.includes('401') ||
+            error?.message?.includes('Unauthorized')) {
+            return true;
+        }
+        
+        // Validate session to be sure
+        const isValid = await this.validateSession();
+        return !isValid;
+    }
+    
+    /**
+     * Handle error with automatic session check
+     * Use this in catch blocks instead of showing error directly
+     * 
+     * @param {Error} error - The error object
+     * @param {Object} options - Error display options
+     * @param {string} options.title - Error title (default: 'Error')
+     * @param {string} options.message - Error message (default: error.message or 'An error occurred')
+     * @param {Function} options.onSessionValid - Callback if session is still valid
+     */
+    async handleErrorWithSessionCheck(error, options = {}) {
+        console.error('Error occurred:', error);
+        
+        // Check if session has expired
+        const sessionExpired = await this.isSessionExpired(error);
+        
+        if (sessionExpired) {
+            console.log('Error caused by expired session - handling timeout');
+            this.handleSessionTimeout();
+            return;
+        }
+        
+        // Session is valid, show the actual error
+        if (options.onSessionValid) {
+            options.onSessionValid(error);
+        } else {
+            // Default error display
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: options.title || 'Error',
+                    text: options.message || error.message || 'An error occurred'
+                });
+            } else {
+                alert(options.message || error.message || 'An error occurred');
+            }
+        }
+    }
 
     /**
      * Make authenticated API call to Lambda proxy

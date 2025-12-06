@@ -654,11 +654,19 @@ async function editComplaintFromModal() {
         
     } catch (error) {
         console.error('Error loading complaint for editing:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message || 'Failed to load complaint for editing'
-        });
+        
+        if (typeof authService !== 'undefined' && authService.handleErrorWithSessionCheck) {
+            await authService.handleErrorWithSessionCheck(error, {
+                title: 'Error',
+                message: error.message || 'Failed to load complaint for editing'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'Failed to load complaint for editing'
+            });
+        }
     }
 }
 
@@ -783,11 +791,19 @@ async function saveComplaintChanges(event) {
         
     } catch (error) {
         console.error('Error saving complaint changes:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message || 'Failed to save complaint changes'
-        });
+        
+        if (typeof authService !== 'undefined' && authService.handleErrorWithSessionCheck) {
+            await authService.handleErrorWithSessionCheck(error, {
+                title: 'Error',
+                message: error.message || 'Failed to save complaint changes'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'Failed to save complaint changes'
+            });
+        }
     }
 }
 

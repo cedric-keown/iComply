@@ -125,13 +125,23 @@ async function loadDashboardData() {
     } catch (error) {
         console.error('Error loading dashboard data:', error);
         hideLoadingState();
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'error',
+        
+        // Check if session expired before showing error
+        if (typeof authService !== 'undefined' && authService.handleErrorWithSessionCheck) {
+            await authService.handleErrorWithSessionCheck(error, {
                 title: 'Error Loading Dashboard',
-                text: 'Failed to load dashboard data. Please try again.',
-                confirmButtonText: 'OK'
+                message: 'Failed to load dashboard data. Please try again.'
             });
+        } else {
+            // Fallback if authService not available
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error Loading Dashboard',
+                    text: 'Failed to load dashboard data. Please try again.',
+                    confirmButtonText: 'OK'
+                });
+            }
         }
     }
 }

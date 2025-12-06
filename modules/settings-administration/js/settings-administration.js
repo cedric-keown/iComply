@@ -265,11 +265,19 @@ async function loadFSPConfiguration() {
         
     } catch (error) {
         console.error('Error loading FSP configuration:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'Failed to load FSP configuration. Please refresh the page.',
-            icon: 'error'
-        });
+        
+        if (typeof authService !== 'undefined' && authService.handleErrorWithSessionCheck) {
+            await authService.handleErrorWithSessionCheck(error, {
+                title: 'Error',
+                message: 'Failed to load FSP configuration. Please refresh the page.'
+            });
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to load FSP configuration. Please refresh the page.',
+                icon: 'error'
+            });
+        }
     } finally {
         hideLoadingState('fspInfoForm');
     }
@@ -400,11 +408,19 @@ async function saveFSPConfiguration(e) {
         }
     } catch (error) {
         console.error('Error saving FSP configuration:', error);
-        Swal.fire({
-            title: 'Error',
-            text: `Failed to save configuration: ${error.message}`,
-            icon: 'error'
-        });
+        
+        if (typeof authService !== 'undefined' && authService.handleErrorWithSessionCheck) {
+            await authService.handleErrorWithSessionCheck(error, {
+                title: 'Error',
+                message: `Failed to save configuration: ${error.message}`
+            });
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: `Failed to save configuration: ${error.message}`,
+                icon: 'error'
+            });
+        }
     }
 }
 

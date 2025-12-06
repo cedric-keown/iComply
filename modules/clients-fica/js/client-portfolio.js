@@ -69,15 +69,23 @@ async function loadClientPortfolio() {
         });
         
         const errorMessage = error.message || 'Failed to load client portfolio';
-        Swal.fire({
-            icon: 'error',
-            title: 'Error Loading Portfolio',
-            html: `
-                <p>${errorMessage}</p>
-                <p class="small text-muted mt-2">Please check the browser console for more details.</p>
-            `,
-            confirmButtonText: 'OK'
-        });
+        
+        if (typeof authService !== 'undefined' && authService.handleErrorWithSessionCheck) {
+            await authService.handleErrorWithSessionCheck(error, {
+                title: 'Error Loading Portfolio',
+                message: `${errorMessage}\n\nPlease check the browser console for more details.`
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error Loading Portfolio',
+                html: `
+                    <p>${errorMessage}</p>
+                    <p class="small text-muted mt-2">Please check the browser console for more details.</p>
+                `,
+                confirmButtonText: 'OK'
+            });
+        }
     }
 }
 
