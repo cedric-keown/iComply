@@ -31,11 +31,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function initializeRepresentativesDashboard() {
     try {
+        showDashboardLoading();
         await loadDashboardData();
         setupActivityFeed();
         setupComplianceMatrix();
     } catch (error) {
         console.error('Error initializing dashboard:', error);
+    } finally {
+        hideDashboardLoading();
     }
 }
 
@@ -128,21 +131,21 @@ async function calculateDashboardStats() {
             }
         });
         
-        updateDashboardUI();
+        await updateDashboardUI();
     } catch (error) {
         console.error('Error calculating compliance statistics:', error);
         // Fallback: assume active are compliant
         dashboardStats.compliant = dashboardStats.active;
         dashboardStats.atRisk = 0;
         dashboardStats.nonCompliant = dashboardStats.suspended + dashboardStats.terminated;
-        updateDashboardUI();
+        await updateDashboardUI();
     }
 }
 
 /**
  * Update Dashboard UI with Real Data
  */
-function updateDashboardUI() {
+async function updateDashboardUI() {
     // Update Total Representatives Card
     const totalValueEl = document.getElementById('repsTotalValue');
     const statusBreakdownEl = document.getElementById('repsStatusBreakdown');
@@ -286,13 +289,13 @@ function updateDashboardUI() {
     });
     
     // Update Compliance Matrix Table
-    updateComplianceMatrix();
+    await updateComplianceMatrix();
 }
 
 /**
  * Update Compliance Matrix Table
  */
-function updateComplianceMatrix() {
+async function updateComplianceMatrix() {
     // Find the compliance matrix table container
     const matrixCard = document.querySelector('#dashboard .card:has(.table)') ||
                        document.querySelector('#dashboard .compliance-matrix');
@@ -310,7 +313,7 @@ function updateComplianceMatrix() {
     }
     
     // Get active representatives and sort by name
-    const activeReps = representativesData
+    let activeReps = representativesData
         .filter(r => r.status === 'active')
         .sort((a, b) => {
             const nameA = `${a.first_name || ''} ${a.surname || ''}`.trim().toLowerCase();
@@ -327,6 +330,32 @@ function updateComplianceMatrix() {
         return;
     }
     
+    // Try to get bulk compliance data
+    try {
+        const bulkComplianceResult = await dataFunctions.getAllRepresentativesCompliance();
+        let bulkCompliance = bulkComplianceResult;
+        if (bulkComplianceResult && bulkComplianceResult.data) {
+            bulkCompliance = bulkComplianceResult.data;
+        }
+        
+        if (bulkCompliance && Array.isArray(bulkCompliance)) {
+            // Enrich reps with compliance data
+            activeReps = activeReps.map(rep => {
+                const compliance = bulkCompliance.find(c => c.representative_id === rep.id);
+                if (compliance && compliance.compliance_data) {
+                    rep.compliance = compliance.compliance_data;
+                    rep.fpStatus = compliance.compliance_data.fit_proper?.status || 'unknown';
+                    rep.cpdStatus = compliance.compliance_data.cpd?.status || 'unknown';
+                    rep.ficaStatus = compliance.compliance_data.fica?.status || 'unknown';
+                    rep.overallStatus = compliance.compliance_data.overall_status || 'unknown';
+                }
+                return rep;
+            });
+        }
+    } catch (err) {
+        console.warn('Could not load compliance data for matrix:', err);
+    }
+    
     // Calculate pagination
     const totalPages = Math.ceil(activeReps.length / dashboardMatrixPerPage);
     const startIndex = (dashboardMatrixPage - 1) * dashboardMatrixPerPage;
@@ -336,20 +365,55 @@ function updateComplianceMatrix() {
     // Clear existing rows
     tbody.innerHTML = '';
     
-    // Render paginated rows
+    // Render paginated rows with real compliance data
     paginatedReps.forEach((rep, pageIndex) => {
         const actualIndex = startIndex + pageIndex;
         const name = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
         const row = document.createElement('tr');
         
-        // Placeholder compliance status (will be updated when compliance data loads)
+        // F&P Badge
+        const fpBadge = rep.fpStatus === 'compliant' ? 
+            '<span class="badge bg-success">✅ Current</span>' :
+            rep.fpStatus === 'warning' ?
+            '<span class="badge bg-warning text-dark">⚠️ Warning</span>' :
+            rep.fpStatus === 'non_compliant' ?
+            '<span class="badge bg-danger">❌ Non-Compliant</span>' :
+            '<span class="badge bg-secondary">Pending</span>';
+        
+        // CPD Badge
+        const cpdBadge = rep.cpdStatus === 'completed' ?
+            '<span class="badge bg-success">✅ Complete</span>' :
+            rep.cpdStatus === 'in_progress' ?
+            '<span class="badge bg-info">🔄 In Progress</span>' :
+            rep.cpdStatus === 'behind' ?
+            '<span class="badge bg-danger">⏰ Behind</span>' :
+            '<span class="badge bg-secondary">Pending</span>';
+        
+        // FICA Badge
+        const ficaBadge = rep.ficaStatus === 'current' ?
+            '<span class="badge bg-success">✅ Verified</span>' :
+            rep.ficaStatus === 'warning' ?
+            '<span class="badge bg-warning text-dark">⚠️ Overdue</span>' :
+            rep.ficaStatus === 'critical' ?
+            '<span class="badge bg-danger">❌ Critical</span>' :
+            '<span class="badge bg-secondary">Pending</span>';
+        
+        // Overall Badge
+        const overallBadge = rep.overallStatus === 'compliant' ?
+            '<span class="badge bg-success">✅ Compliant</span>' :
+            rep.overallStatus === 'at_risk' ?
+            '<span class="badge bg-warning text-dark">⚠️ At Risk</span>' :
+            rep.overallStatus === 'non_compliant' ?
+            '<span class="badge bg-danger">❌ Non-Compliant</span>' :
+            '<span class="badge bg-secondary">Pending</span>';
+        
         row.innerHTML = `
             <td>${escapeHtml(name)}</td>
-            <td><span class="badge bg-success">✅ Current</span></td>
-            <td><span class="badge bg-success">✅ Current</span></td>
-            <td><span class="badge bg-success">✅ Verified</span></td>
+            <td>${fpBadge}</td>
+            <td>${cpdBadge}</td>
+            <td>${ficaBadge}</td>
             <td><span class="badge ${rep.is_debarred ? 'bg-danger' : 'bg-success'}">${rep.is_debarred ? '❌ Debarred' : '✅ Clear'}</span></td>
-            <td><span class="badge bg-success">✅ Compliant</span></td>
+            <td>${overallBadge}</td>
             <td>
                 <button class="btn btn-sm btn-outline-primary" onclick="window.viewRepresentative && window.viewRepresentative('${rep.id}'); return false;" type="button">
                     View
@@ -661,7 +725,52 @@ function showRepresentativeDetails(rep) {
     }
 }
 
+/**
+ * Show Loading Mask
+ */
+function showDashboardLoading() {
+    const container = document.getElementById('dashboard');
+    if (!container) return;
+    
+    // Remove existing loading mask if any
+    const existingMask = container.querySelector('.dashboard-loading-mask');
+    if (existingMask) {
+        existingMask.remove();
+    }
+    
+    // Create loading mask
+    const loadingMask = document.createElement('div');
+    loadingMask.className = 'dashboard-loading-mask';
+    loadingMask.innerHTML = `
+        <div class="loading-overlay">
+            <div class="loading-content">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="mt-3 text-primary fw-bold">Loading Dashboard Data...</div>
+                <div class="text-muted small">Retrieving representatives and calculating compliance...</div>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(loadingMask);
+}
+
+/**
+ * Hide Loading Mask
+ */
+function hideDashboardLoading() {
+    const container = document.getElementById('dashboard');
+    if (!container) return;
+    
+    const loadingMask = container.querySelector('.dashboard-loading-mask');
+    if (loadingMask) {
+        loadingMask.remove();
+    }
+}
+
 // Export for global access
 window.switchRepsTab = switchRepsTab;
 window.viewRepresentative = viewRepresentative;
+window.changeDashboardMatrixPage = changeDashboardMatrixPage;
 
