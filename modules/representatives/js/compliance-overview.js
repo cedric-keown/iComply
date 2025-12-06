@@ -314,6 +314,147 @@ function renderComplianceOverview() {
 }
 
 /**
+ * View Representative Profile with Compliance Details
+ */
+async function viewRepProfile(id) {
+    try {
+        // Find representative in loaded data
+        let rep = complianceData.find(r => r.id === id);
+        
+        if (!rep) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Representative not found'
+            });
+            return;
+        }
+        
+        const name = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
+        const compliance = rep.compliance || {};
+        
+        // F&P Details
+        const fpData = compliance.fit_proper || {};
+        const fpStatus = fpData.status || rep.fpStatus || 'unknown';
+        const fpBadgeClass = fpStatus === 'compliant' ? 'success' : fpStatus === 'warning' ? 'warning' : 'danger';
+        
+        // CPD Details
+        const cpdData = compliance.cpd || {};
+        const cpdStatus = cpdData.status || rep.cpdStatus || 'unknown';
+        const cpdBadgeClass = cpdStatus === 'completed' ? 'success' : cpdStatus === 'in_progress' ? 'info' : 'danger';
+        const cpdPercentage = cpdData.percentage || 0;
+        
+        // FICA Details
+        const ficaData = compliance.fica || {};
+        const ficaStatus = ficaData.status || rep.ficaStatus || 'unknown';
+        const ficaBadgeClass = ficaStatus === 'current' ? 'success' : ficaStatus === 'warning' ? 'warning' : 'danger';
+        
+        // Documents Details
+        const docsData = compliance.documents || {};
+        const docsStatus = docsData.status || rep.docsStatus || 'unknown';
+        const docsBadgeClass = docsStatus === 'current' ? 'success' : docsStatus === 'warning' ? 'warning' : 'danger';
+        
+        // Overall
+        const overallStatus = compliance.overall_status || rep.overallStatus || 'unknown';
+        const overallScore = compliance.overall_score || rep.overallScore || 0;
+        const overallBadgeClass = overallStatus === 'compliant' ? 'success' : overallStatus === 'at_risk' ? 'warning' : 'danger';
+        
+        Swal.fire({
+            title: `${name} - Compliance Details`,
+            html: `
+                <div class="text-start">
+                    <div class="mb-4">
+                        <h5>Overall Compliance</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Score: <strong>${Math.round(overallScore)}%</strong></span>
+                            <span class="badge bg-${overallBadgeClass}">${overallStatus.toUpperCase().replace('_', ' ')}</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 20px;">
+                            <div class="progress-bar bg-${overallBadgeClass}" role="progressbar" 
+                                 style="width: ${overallScore}%">
+                                ${Math.round(overallScore)}%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6>Fit & Proper</h6>
+                            <p class="mb-1">
+                                <span class="badge bg-${fpBadgeClass}">${fpStatus.toUpperCase().replace('_', ' ')}</span>
+                            </p>
+                            <small class="text-muted">
+                                ${fpData.has_re5 ? '✓ RE5 Valid' : '✗ RE5 Missing/Expired'}<br>
+                                ${fpData.has_re1 ? '✓ RE1 Valid' : '✗ RE1 Missing/Expired'}<br>
+                                ${fpData.expired_count > 0 ? `⚠ ${fpData.expired_count} Expired Qualifications` : 'No Expired Qualifications'}
+                            </small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <h6>CPD Status</h6>
+                            <p class="mb-1">
+                                <span class="badge bg-${cpdBadgeClass}">${cpdStatus.toUpperCase().replace('_', ' ')}</span>
+                            </p>
+                            <small class="text-muted">
+                                Hours: ${cpdData.earned_hours || 0} / ${cpdData.required_hours || 18}<br>
+                                Ethics: ${cpdData.earned_ethics || 0} / ${cpdData.required_ethics || 3}<br>
+                                Progress: ${Math.round(cpdPercentage)}%
+                            </small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <h6>FICA Verification</h6>
+                            <p class="mb-1">
+                                <span class="badge bg-${ficaBadgeClass}">${ficaStatus.toUpperCase()}</span>
+                            </p>
+                            <small class="text-muted">
+                                Total Clients: ${ficaData.total_clients || 0}<br>
+                                Verified: ${ficaData.verified_clients || 0}<br>
+                                ${ficaData.expired_clients > 0 ? `⚠ Expired: ${ficaData.expired_clients}` : 'All Current'}
+                            </small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <h6>Documents</h6>
+                            <p class="mb-1">
+                                <span class="badge bg-${docsBadgeClass}">${docsStatus.toUpperCase()}</span>
+                            </p>
+                            <small class="text-muted">
+                                Total: ${docsData.total_documents || 0}<br>
+                                Current: ${docsData.current_documents || 0}<br>
+                                ${docsData.expired_documents > 0 ? `⚠ Expired: ${docsData.expired_documents}` : 'All Current'}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="text-muted small">
+                        <p class="mb-1"><strong>Representative Details</strong></p>
+                        <p class="mb-1">Status: <span class="badge bg-${rep.status === 'active' ? 'success' : 'warning'}">${rep.status || 'N/A'}</span></p>
+                        ${rep.is_debarred ? '<p class="text-danger mb-1">⚠ DEBARRED</p>' : ''}
+                        ${compliance.calculated_at ? `<p class="mb-0">Last Calculated: ${new Date(compliance.calculated_at).toLocaleString('en-ZA')}</p>` : ''}
+                    </div>
+                </div>
+            `,
+            width: '600px',
+            confirmButtonText: 'Close',
+            confirmButtonColor: '#5CBDB4'
+        });
+        
+    } catch (error) {
+        console.error('Error viewing representative profile:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to load representative details'
+        });
+    }
+}
+
+/**
  * Filter Compliance Table
  */
 function filterComplianceTable() {
@@ -330,4 +471,5 @@ function filterComplianceTable() {
 
 // Export for global access
 window.filterComplianceTable = filterComplianceTable;
+window.viewRepProfile = viewRepProfile;
 
