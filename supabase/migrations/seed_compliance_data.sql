@@ -12,8 +12,13 @@ DECLARE
     current_year INTEGER := EXTRACT(YEAR FROM CURRENT_DATE);
 BEGIN
     -- Get up to 12 representative IDs
-    SELECT ARRAY_AGG(id ORDER BY created_at LIMIT 12) INTO rep_ids
-    FROM representatives;
+    SELECT ARRAY_AGG(id) INTO rep_ids
+    FROM (
+        SELECT id 
+        FROM representatives 
+        ORDER BY created_at 
+        LIMIT 12
+    ) AS limited_reps;
     
     -- If no representatives found, exit
     IF rep_ids IS NULL OR array_length(rep_ids, 1) = 0 THEN
