@@ -298,25 +298,25 @@ function renderComplianceOverview() {
                                 const rowClass = rep.overallStatus === 'non-compliant' ? 'table-danger' :
                                                rep.overallStatus === 'at-risk' ? 'table-warning' : '';
                                 
-                                return \`
-                                    <tr class="\${rowClass}">
-                                        <td><strong>\${repName}</strong></td>
-                                        <td>\${fpBadge}</td>
-                                        <td>\${cpdBadge}</td>
-                                        <td>\${ficaBadge}</td>
+                                return `
+                                    <tr class="${rowClass}">
+                                        <td><strong>${repName}</strong></td>
+                                        <td>${fpBadge}</td>
+                                        <td>${cpdBadge}</td>
+                                        <td>${ficaBadge}</td>
                                         <td>
-                                            <span class="badge \${rep.is_debarred ? 'bg-danger' : 'bg-success'}">
-                                                \${rep.is_debarred ? '❌ Debarred' : '✅ Clear'}
+                                            <span class="badge ${rep.is_debarred ? 'bg-danger' : 'bg-success'}">
+                                                ${rep.is_debarred ? '❌ Debarred' : '✅ Clear'}
                                             </span>
                                         </td>
-                                        <td>\${overallBadge}</td>
+                                        <td>${overallBadge}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary" onclick="viewComplianceRepDetails(\${index}); return false;">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewComplianceRepDetails(${index}); return false;">
                                                 View Details
                                             </button>
                                         </td>
                                     </tr>
-                                \`;
+                                `;
                             }).join('')}
                         </tbody>
                     </table>
