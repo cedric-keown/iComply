@@ -620,8 +620,12 @@ async function generateCPDSummary() {
  * Download Report as PDF
  */
 function downloadReportAsPDF(reportName, htmlContent) {
-    // For now, use browser's print functionality
-    // In production, would use a PDF generation library like jsPDF or html2pdf
+    // Remove max-height and overflow restrictions for printing
+    // This ensures all data rows are visible in the PDF
+    const printableContent = htmlContent
+        .replace(/style="max-height:\s*\d+px;\s*overflow-y:\s*auto;"/g, 'style=""')
+        .replace(/max-height:\s*\d+px;/g, '')
+        .replace(/overflow-y:\s*auto;/g, '');
     
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
@@ -630,33 +634,171 @@ function downloadReportAsPDF(reportName, htmlContent) {
         <head>
             <title>${reportName}</title>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
             <style>
-                body { padding: 20px; font-family: Arial, sans-serif; }
-                .badge { display: inline-block; padding: 0.25em 0.6em; }
-                .progress { background-color: #e9ecef; height: 20px; border-radius: 4px; overflow: hidden; }
-                .progress-bar { height: 100%; transition: none; }
-                .bg-success { background-color: #28a745 !important; color: white; }
-                .bg-warning { background-color: #ffc107 !important; color: black; }
-                .bg-danger { background-color: #dc3545 !important; color: white; }
-                .bg-info { background-color: #17a2b8 !important; color: white; }
+                body { 
+                    padding: 20px; 
+                    font-family: Arial, sans-serif;
+                    font-size: 12px;
+                }
+                
+                h4 { 
+                    color: #5CBDB4; 
+                    border-bottom: 2px solid #5CBDB4; 
+                    padding-bottom: 10px;
+                    margin-bottom: 20px;
+                }
+                
+                h5 {
+                    color: #4A4A4A;
+                    margin-top: 20px;
+                    margin-bottom: 15px;
+                }
+                
+                .card { 
+                    border: 1px solid #dee2e6; 
+                    border-radius: 8px; 
+                    margin-bottom: 15px;
+                }
+                
+                .card-body { 
+                    padding: 15px; 
+                }
+                
+                .badge { 
+                    display: inline-block; 
+                    padding: 0.35em 0.65em;
+                    font-size: 0.85em;
+                    font-weight: 600;
+                    border-radius: 4px;
+                }
+                
+                .progress { 
+                    background-color: #e9ecef; 
+                    height: 20px; 
+                    border-radius: 4px; 
+                    overflow: hidden;
+                    display: flex;
+                }
+                
+                .progress-bar { 
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 0.75em;
+                    font-weight: 600;
+                    transition: none; 
+                }
+                
+                .table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 1rem;
+                }
+                
+                .table th,
+                .table td {
+                    padding: 8px;
+                    border: 1px solid #dee2e6;
+                }
+                
+                .table thead th {
+                    background-color: #f8f9fa;
+                    font-weight: 600;
+                }
+                
+                .table-striped tbody tr:nth-of-type(odd) {
+                    background-color: rgba(0, 0, 0, 0.02);
+                }
+                
+                .bg-success { background-color: #28a745 !important; color: white !important; }
+                .bg-warning { background-color: #ffc107 !important; color: #000 !important; }
+                .bg-danger { background-color: #dc3545 !important; color: white !important; }
+                .bg-info { background-color: #17a2b8 !important; color: white !important; }
+                .bg-primary { background-color: #5CBDB4 !important; color: white !important; }
+                .bg-secondary { background-color: #6c757d !important; color: white !important; }
+                
+                .border-success { border-color: #28a745 !important; }
+                .border-warning { border-color: #ffc107 !important; }
+                .border-danger { border-color: #dc3545 !important; }
+                
                 .text-success { color: #28a745 !important; }
                 .text-warning { color: #ffc107 !important; }
                 .text-danger { color: #dc3545 !important; }
                 .text-info { color: #17a2b8 !important; }
                 .text-primary { color: #5CBDB4 !important; }
+                .text-muted { color: #6c757d !important; }
+                
+                .alert {
+                    padding: 15px;
+                    border-radius: 6px;
+                    margin-bottom: 20px;
+                }
+                
+                .alert-success { background-color: #d4edda; border: 1px solid #c3e6cb; }
+                .alert-warning { background-color: #fff3cd; border: 1px solid #ffeaa7; }
+                .alert-danger { background-color: #f8d7da; border: 1px solid #f5c6cb; }
+                .alert-info { background-color: #d1ecf1; border: 1px solid #bee5eb; }
+                
+                /* Remove scrolling - show all data */
+                .table-responsive {
+                    max-height: none !important;
+                    overflow: visible !important;
+                }
+                
                 @media print {
-                    body { margin: 0; }
-                    .no-print { display: none; }
+                    body { 
+                        margin: 0; 
+                        padding: 15px;
+                    }
+                    
+                    .no-print { 
+                        display: none !important; 
+                    }
+                    
+                    .table { 
+                        page-break-inside: auto;
+                        font-size: 10px;
+                    }
+                    
+                    tr { 
+                        page-break-inside: avoid; 
+                        page-break-after: auto; 
+                    }
+                    
+                    thead { 
+                        display: table-header-group; 
+                    }
+                    
+                    .card {
+                        page-break-inside: avoid;
+                        border: 1px solid #000 !important;
+                    }
+                    
+                    /* Ensure all content is visible */
+                    .table-responsive {
+                        max-height: none !important;
+                        overflow: visible !important;
+                    }
+                }
+                
+                @page {
+                    size: A4;
+                    margin: 1cm;
                 }
             </style>
         </head>
         <body>
-            ${htmlContent}
+            <div class="container-fluid">
+                ${printableContent}
+            </div>
             <div class="mt-4 text-center no-print">
-                <button onclick="window.print()" class="btn btn-primary me-2">
+                <button onclick="window.print()" class="btn btn-primary btn-lg me-2">
                     <i class="fas fa-print me-2"></i>Print / Save as PDF
                 </button>
-                <button onclick="window.close()" class="btn btn-secondary">Close</button>
+                <button onclick="window.close()" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-times me-2"></i>Close
+                </button>
             </div>
         </body>
         </html>
