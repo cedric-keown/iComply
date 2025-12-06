@@ -1022,32 +1022,38 @@
                 
                 <div class="row">
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100">
+                        <div class="card h-100 shadow-sm">
                             <div class="card-body text-center">
                                 <i class="fas fa-users fa-3x text-primary mb-3"></i>
                                 <h5>Representatives Summary</h5>
-                                <p class="text-muted">Comprehensive overview of all representatives</p>
-                                <button class="btn btn-primary">Generate</button>
+                                <p class="text-muted">Comprehensive overview of all representatives with status breakdown and categories</p>
+                                <button class="btn btn-primary" onclick="generateRepresentativesSummary()">
+                                    <i class="fas fa-file-alt me-2"></i>Generate Report
+                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100">
+                        <div class="card h-100 shadow-sm">
                             <div class="card-body text-center">
                                 <i class="fas fa-shield-check fa-3x text-success mb-3"></i>
                                 <h5>Compliance Report</h5>
-                                <p class="text-muted">Detailed compliance status for all representatives</p>
-                                <button class="btn btn-success">Generate</button>
+                                <p class="text-muted">Detailed compliance status covering F&P, CPD, FICA, and documents for all representatives</p>
+                                <button class="btn btn-success" onclick="generateComplianceReport()">
+                                    <i class="fas fa-file-chart-line me-2"></i>Generate Report
+                                </button>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100">
+                        <div class="card h-100 shadow-sm">
                             <div class="card-body text-center">
                                 <i class="fas fa-book fa-3x text-info mb-3"></i>
                                 <h5>CPD Summary Report</h5>
-                                <p class="text-muted">CPD status for all representatives</p>
-                                <button class="btn btn-info">Generate</button>
+                                <p class="text-muted">CPD hours earned, ethics training, and completion status for all active representatives</p>
+                                <button class="btn btn-info" onclick="generateCPDSummary()">
+                                    <i class="fas fa-graduation-cap me-2"></i>Generate Report
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1070,6 +1076,7 @@
     <script src="../js/supervision-structure.js"></script>
     <script src="../js/compliance-overview.js"></script>
     <script src="../js/debarment-register.js"></script>
+    <script src="../js/reports.js"></script>
 </body>
 </html>
 
