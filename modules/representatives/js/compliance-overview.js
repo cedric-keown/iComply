@@ -1,6 +1,8 @@
 // Compliance Overview JavaScript
 
 let complianceData = [];
+let currentPage = 1;
+const recordsPerPage = 10;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize when compliance tab is shown
@@ -18,6 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadComplianceOverview() {
     // Show loading mask
     showComplianceLoading();
+    
+    // Reset to first page
+    currentPage = 1;
     
     try {
         // Load Representatives from database
@@ -167,7 +172,13 @@ function renderComplianceOverview() {
     // Export sorted data to window for onclick access
     window.complianceData = complianceData;
     
-    // Calculate compliance statistics
+    // Calculate pagination
+    const totalPages = Math.ceil(complianceData.length / recordsPerPage);
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const endIndex = startIndex + recordsPerPage;
+    const paginatedData = complianceData.slice(startIndex, endIndex);
+    
+    // Calculate compliance statistics (from all data, not just current page)
     const stats = {
         total: complianceData.length,
         compliant: 0,
@@ -287,7 +298,8 @@ function renderComplianceOverview() {
                             </tr>
                         </thead>
                         <tbody>
-                            ${complianceData.map((rep, index) => {
+                            ${paginatedData.map((rep, pageIndex) => {
+                                const actualIndex = startIndex + pageIndex;
                                 const repName = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
                                 
                                 // F&P Status Badge
@@ -334,7 +346,7 @@ function renderComplianceOverview() {
                                         </td>
                                         <td>${overallBadge}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary" onclick="window.viewComplianceRepDetails(${index}); return false;">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="window.viewComplianceRepDetails(${actualIndex}); return false;">
                                                 View Details
                                             </button>
                                         </td>
@@ -344,9 +356,85 @@ function renderComplianceOverview() {
                         </tbody>
                     </table>
                 </div>
+                ${renderPaginationControls(totalPages, complianceData.length)}
             </div>
         </div>
     `;
+}
+
+/**
+ * Render Pagination Controls
+ */
+function renderPaginationControls(totalPages, totalRecords) {
+    if (totalPages <= 1) return ''; // No pagination needed
+    
+    const startRecord = ((currentPage - 1) * recordsPerPage) + 1;
+    const endRecord = Math.min(currentPage * recordsPerPage, totalRecords);
+    
+    let pageButtons = '';
+    
+    // Previous button
+    const prevDisabled = currentPage === 1 ? 'disabled' : '';
+    pageButtons += `<li class="page-item ${prevDisabled}">
+        <a class="page-link" href="#" onclick="changeCompliancePage(${currentPage - 1}); return false;" ${prevDisabled}>
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+    </li>`;
+    
+    // Page number buttons
+    for (let i = 1; i <= totalPages; i++) {
+        // Show first page, last page, current page, and pages around current
+        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+            const active = i === currentPage ? 'active' : '';
+            pageButtons += `<li class="page-item ${active}">
+                <a class="page-link" href="#" onclick="changeCompliancePage(${i}); return false;">${i}</a>
+            </li>`;
+        } else if (i === currentPage - 3 || i === currentPage + 3) {
+            // Show ellipsis
+            pageButtons += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+    }
+    
+    // Next button
+    const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+    pageButtons += `<li class="page-item ${nextDisabled}">
+        <a class="page-link" href="#" onclick="changeCompliancePage(${currentPage + 1}); return false;" ${nextDisabled}>
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+    </li>`;
+    
+    return `
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted">
+                    Showing ${startRecord}-${endRecord} of ${totalRecords} representatives
+                </div>
+                <nav aria-label="Compliance table pagination">
+                    <ul class="pagination mb-0">
+                        ${pageButtons}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Change Page
+ */
+function changeCompliancePage(page) {
+    const totalPages = Math.ceil(complianceData.length / recordsPerPage);
+    
+    if (page < 1 || page > totalPages) return;
+    
+    currentPage = page;
+    renderComplianceOverview();
+    
+    // Scroll to top of table
+    const complianceContainer = document.getElementById('compliance');
+    if (complianceContainer) {
+        complianceContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 /**
@@ -553,5 +641,6 @@ function hideComplianceLoading() {
 // Export for global access
 window.filterComplianceTable = filterComplianceTable;
 window.viewComplianceRepDetails = viewComplianceRepDetails;
+window.changeCompliancePage = changeCompliancePage;
 window.complianceData = complianceData;
 
