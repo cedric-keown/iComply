@@ -31,7 +31,8 @@ async function loadKeyIndividuals() {
         directoryKeyIndividuals = kis || [];
         populateSupervisorFilter();
     } catch (error) {
-        console.error('Error loading key individuals:', error);
+        console.error('Error loading key individuals for supervisor filter:', error);
+        directoryKeyIndividuals = [];
     }
 }
 
@@ -61,11 +62,35 @@ function populateSupervisorFilter() {
 }
 
 /**
+ * Show loading mask
+ */
+function showLoadingMask() {
+    const container = document.getElementById('representativesContainer');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="col-12">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 class="text-muted">Loading Representatives...</h5>
+                <p class="text-muted">Please wait while we fetch the data from the database</p>
+            </div>
+        </div>
+    `;
+}
+
+/**
  * Load Representatives from Database
  */
 async function loadRepresentatives() {
     try {
-        const result = await dataFunctions.getRepresentatives();
+        // Show loading mask
+        showLoadingMask();
+        
+        // Pass null to get ALL representatives regardless of status (active, suspended, terminated)
+        const result = await dataFunctions.getRepresentatives(null);
         let reps = result;
         
         // Handle different response structures
@@ -83,6 +108,20 @@ async function loadRepresentatives() {
         }
     } catch (error) {
         console.error('Error loading representatives:', error);
+        
+        // Hide loading mask and show error
+        const container = document.getElementById('representativesContainer');
+        if (container) {
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-danger text-center">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Error loading representatives</strong>
+                        <p class="mb-0 mt-2">Failed to fetch data from the database. Please try refreshing the page.</p>
+                    </div>
+                </div>
+            `;
+        }
         
         // Check if session expired before showing error
         if (typeof authService !== 'undefined' && authService.handleErrorWithSessionCheck) {
@@ -119,6 +158,9 @@ function renderRepresentatives() {
 
 /**
  * Render Cards View
+ * NOTE: Representative data (name, ID, status, etc.) is pulled from the database.
+ * Compliance status indicators (F&P, CPD, FICA) can be populated via get_representative_compliance() function.
+ * Currently showing placeholders for performance - click "View" for detailed compliance.
  */
 function renderCardsView() {
     const container = document.getElementById('representativesContainer');
@@ -181,11 +223,12 @@ function renderCardsView() {
                     <hr>
                     <p><strong>Compliance:</strong></p>
                     <ul class="list-unstyled">
-                        <li>Fit & Proper: ✅ Current</li>
-                        <li>CPD: ✅ Current</li>
-                        <li>FICA: ✅ Verified</li>
+                        <li>Fit & Proper: <span class="text-muted">—</span></li>
+                        <li>CPD: <span class="text-muted">—</span></li>
+                        <li>FICA: <span class="text-muted">—</span></li>
                         <li>Debarment: ${rep.is_debarred ? '❌ Debarred' : '✅ Clear'}</li>
                     </ul>
+                    <small class="text-muted">Click "View" for detailed compliance status</small>
                     <div class="d-flex gap-2 flex-wrap">
                         <button class="btn btn-sm btn-primary" onclick="viewRepProfile('${rep.id}')">
                             <i class="fas fa-eye me-1"></i>View
@@ -502,11 +545,12 @@ async function viewRepProfile(id) {
                     <hr>
                     <p><strong>Compliance Status:</strong></p>
                     <ul>
-                        <li>Fit & Proper: ✅ Current</li>
-                        <li>CPD: ✅ Current</li>
-                        <li>FICA: ✅ Verified</li>
+                        <li>Fit & Proper: <span class="text-muted">View Compliance Tab</span></li>
+                        <li>CPD: <span class="text-muted">View CPD Module</span></li>
+                        <li>FICA: <span class="text-muted">View FICA Module</span></li>
                         <li>Debarment: ${rep.is_debarred ? '❌ <span class="text-danger">Debarred</span>' : '✅ Clear'}</li>
                     </ul>
+                    <small class="text-muted"><em>Note: Detailed compliance data available in respective modules</em></small>
                 </div>
             `,
             width: '600px',
@@ -753,9 +797,18 @@ function exportRepresentatives() {
     window.URL.revokeObjectURL(url);
 }
 
+/**
+ * Refresh Representatives Data
+ */
+async function refreshRepresentatives() {
+    await loadKeyIndividuals();
+    await loadRepresentatives();
+}
+
 // Export for global access
 window.viewRepProfile = viewRepProfile;
 window.editRepProfile = editRepProfile;
 window.deleteRep = deleteRep;
 window.setViewMode = setViewMode;
 window.exportRepresentatives = exportRepresentatives;
+window.refreshRepresentatives = refreshRepresentatives;

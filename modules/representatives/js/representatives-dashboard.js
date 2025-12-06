@@ -715,5 +715,4 @@ function hideDashboardLoading() {
 // Export for global access
 window.switchRepsTab = switchRepsTab;
 window.viewRepresentative = viewRepresentative;
-window.changeDashboardMatrixPage = changeDashboardMatrixPage;
 

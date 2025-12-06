@@ -97,8 +97,9 @@ function updateProgressCircle() {
     let hoursRequired = 18;
     
     if (cpdData.progress) {
-        hoursEarned = parseFloat(cpdData.progress.total_hours_earned || cpdData.progress.total_hours || 0);
-        hoursRequired = parseFloat(cpdData.progress.required_hours || cpdData.cycle?.required_hours || 18);
+        // Progress summary returns: total_hours_logged, ethics_hours_logged, technical_hours_logged
+        hoursEarned = parseFloat(cpdData.progress.total_hours_logged || cpdData.progress.total_hours_earned || cpdData.progress.total_hours || 0);
+        hoursRequired = parseFloat(cpdData.cycle?.required_hours || 18);
         progress = hoursRequired > 0 ? Math.round((hoursEarned / hoursRequired) * 100) : 0;
     }
     
@@ -157,7 +158,7 @@ function updateDashboardStats() {
     const totalHoursProgressEl = document.getElementById('cpdTotalHoursProgress');
     
     if (totalHoursValueEl || totalHoursSublabelEl || totalHoursProgressEl) {
-        const hoursEarned = parseFloat(progress.total_hours_earned || progress.total_hours || 0);
+        const hoursEarned = parseFloat(progress.total_hours_logged || progress.total_hours_earned || progress.total_hours || 0);
         const hoursRequired = parseFloat(cycle.required_hours || 18);
         const percentage = hoursRequired > 0 ? Math.round((hoursEarned / hoursRequired) * 100) : 0;
         
@@ -177,7 +178,7 @@ function updateDashboardStats() {
     const ethicsSublabelEl = document.getElementById('cpdEthicsHoursSublabel');
     
     if (ethicsValueEl || ethicsSublabelEl) {
-        const ethicsHours = parseFloat(progress.ethics_hours_earned || progress.ethics_hours || 0);
+        const ethicsHours = parseFloat(progress.ethics_hours_logged || progress.ethics_hours_earned || progress.ethics_hours || 0);
         const ethicsRequired = parseFloat(cycle.required_ethics_hours || 3);
         
         if (ethicsValueEl) {
@@ -200,7 +201,7 @@ function updateDashboardStats() {
     
     if (verifiableValueEl || verifiableSublabelEl || verifiableProgressEl) {
         const verifiableHours = parseFloat(progress.verifiable_hours || 0);
-        const totalHours = parseFloat(progress.total_hours_earned || progress.total_hours || 0);
+        const totalHours = parseFloat(progress.total_hours_logged || progress.total_hours_earned || progress.total_hours || 0);
         
         if (verifiableValueEl) {
             verifiableValueEl.textContent = verifiableHours > 0 ? Math.round(verifiableHours) : '-';
@@ -421,7 +422,7 @@ function updateCycleInfo() {
     
     // Update alerts
     const progress = cpdData.progress || {};
-    const hoursEarned = parseFloat(progress.total_hours_earned || progress.total_hours || 0);
+    const hoursEarned = parseFloat(progress.total_hours_logged || progress.total_hours_earned || progress.total_hours || 0);
     const hoursRequired = parseFloat(cpdData.cycle.required_hours || 18);
     const hoursRemaining = Math.max(0, hoursRequired - hoursEarned);
     

@@ -31,17 +31,73 @@ async function loadCpdCycle() {
             currentCpdCycle = cycles[0];
         }
         
-        // Get current user's representative ID
-        // TODO: Get from auth context or user profile
-        // For now, we'll need to get it from the user profile or pass it in
-        const userInfo = localStorage.getItem('user_info');
-        if (userInfo) {
-            const user = JSON.parse(userInfo);
-            // Representative ID would be in user profile
-            // For now, we'll need to fetch it or use a default
-        }
+        // Get current user's representative ID from session/profile
+        await loadCurrentRepresentativeId();
     } catch (error) {
         console.error('Error loading CPD cycle:', error);
+    }
+}
+
+/**
+ * Load current user's representative ID from their user profile
+ */
+async function loadCurrentRepresentativeId() {
+    try {
+        // Check if authService is available and user is authenticated
+        if (typeof authService !== 'undefined' && authService.getCurrentUser) {
+            const currentUser = authService.getCurrentUser();
+            if (currentUser && currentUser.id) {
+                // Get user profile which contains representative link
+                const profileResult = await dataFunctions.getUserProfile(currentUser.id);
+                
+                let profile = profileResult;
+                if (profileResult && profileResult.data) {
+                    profile = profileResult.data;
+                } else if (Array.isArray(profileResult) && profileResult.length > 0) {
+                    profile = profileResult[0];
+                }
+                
+                if (profile && profile.id) {
+                    // Try to get the representative record linked to this user profile
+                    const repsResult = await dataFunctions.getRepresentatives(null);
+                    let reps = repsResult;
+                    if (repsResult && repsResult.data) {
+                        reps = repsResult.data;
+                    } else if (Array.isArray(repsResult)) {
+                        reps = repsResult;
+                    }
+                    
+                    // Find representative by user_profile_id
+                    if (reps && Array.isArray(reps)) {
+                        const myRep = reps.find(r => r.user_profile_id === profile.id);
+                        if (myRep) {
+                            currentRepresentativeId = myRep.id;
+                            console.log('Current representative ID loaded:', currentRepresentativeId);
+                        } else {
+                            console.warn('No representative record found for current user');
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Fallback: check localStorage for cached user info
+        if (!currentRepresentativeId) {
+            const userInfo = localStorage.getItem('user_info');
+            if (userInfo) {
+                try {
+                    const user = JSON.parse(userInfo);
+                    if (user.representative_id) {
+                        currentRepresentativeId = user.representative_id;
+                        console.log('Representative ID loaded from cache:', currentRepresentativeId);
+                    }
+                } catch (e) {
+                    console.error('Error parsing user info from localStorage:', e);
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error loading representative ID:', error);
     }
 }
 

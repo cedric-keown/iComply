@@ -34,6 +34,8 @@ async function initializeComplianceDashboard() {
  * Load Compliance Dashboard Data
  */
 async function loadComplianceDashboard() {
+    showComplianceModuleLoading();
+    
     try {
         const dataFunctionsToUse = typeof dataFunctions !== 'undefined' 
             ? dataFunctions 
@@ -112,6 +114,8 @@ async function loadComplianceDashboard() {
             title: 'Error',
             text: 'Failed to load compliance dashboard data'
         });
+    } finally {
+        hideComplianceModuleLoading();
     }
 }
 
@@ -338,6 +342,57 @@ function switchComplianceTab(tabId) {
     if (tab) {
         const bsTab = new bootstrap.Tab(tab);
         bsTab.show();
+    }
+}
+
+/**
+ * Show Loading Mask
+ */
+function showComplianceModuleLoading() {
+    const container = document.getElementById('overview');
+    if (!container) return;
+    
+    // Remove existing loading mask if any
+    const existingMask = container.querySelector('.compliance-module-loading-mask');
+    if (existingMask) {
+        existingMask.remove();
+    }
+    
+    // Create loading mask
+    const loadingMask = document.createElement('div');
+    loadingMask.className = 'compliance-module-loading-mask';
+    loadingMask.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.95);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    loadingMask.innerHTML = `
+        <div style="text-align: center; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); min-width: 300px;">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem; border-width: 0.3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="mt-3 text-primary fw-bold">Loading Compliance Dashboard...</div>
+            <div class="text-muted small">Calculating executive metrics and compliance data...</div>
+        </div>
+    `;
+    
+    document.body.appendChild(loadingMask);
+}
+
+/**
+ * Hide Loading Mask
+ */
+function hideComplianceModuleLoading() {
+    const loadingMask = document.querySelector('.compliance-module-loading-mask');
+    if (loadingMask) {
+        loadingMask.remove();
     }
 }
 

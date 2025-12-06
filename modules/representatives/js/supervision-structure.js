@@ -36,8 +36,8 @@ async function loadSupervisionStructure() {
             kis = [];
         }
         
-        // Load Representatives
-        const repResult = await dataFunctions.getRepresentatives('active');
+        // Load Representatives - pass null to get ALL statuses (active, suspended, terminated)
+        const repResult = await dataFunctions.getRepresentatives(null);
         let reps = repResult;
         if (repResult && repResult.data) {
             reps = repResult.data;
@@ -132,8 +132,24 @@ function renderSupervisionStructure() {
         }
     });
     
+    // Sort each group of representatives alphabetically by name
+    Object.keys(repsBySupervisor).forEach(supervisorId => {
+        repsBySupervisor[supervisorId].sort((a, b) => {
+            const nameA = `${a.first_name || ''} ${a.surname || ''}`.trim().toLowerCase();
+            const nameB = `${b.first_name || ''} ${b.surname || ''}`.trim().toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+    });
+    
+    // Sort Key Individuals alphabetically by name
+    const sortedKeyIndividuals = [...supervisionData.keyIndividuals].sort((a, b) => {
+        const nameA = (a.name || (a.first_name && a.surname ? `${a.first_name} ${a.surname}` : 'Unknown')).toLowerCase();
+        const nameB = (b.name || (b.first_name && b.surname ? `${b.first_name} ${b.surname}` : 'Unknown')).toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+    
     // Render Key Individuals with their supervised representatives
-    supervisionData.keyIndividuals.forEach(ki => {
+    sortedKeyIndividuals.forEach(ki => {
         const kiCard = document.createElement('div');
         kiCard.className = 'card mb-4';
         
@@ -150,12 +166,21 @@ function renderSupervisionStructure() {
         const capacityPct = maxCount > 0 ? Math.round((currentCount / maxCount) * 100) : 0;
         const capacityClass = capacityPct >= 90 ? 'danger' : capacityPct >= 75 ? 'warning' : 'success';
         
+        // Get supervisor's own status from representatives data
+        const supervisorRep = supervisionData.representatives.find(r => r.id === kiRepresentativeId);
+        const supervisorStatus = supervisorRep ? (supervisorRep.status || 'active') : 'active';
+        const supervisorStatusBadge = supervisorStatus === 'active' ? 'bg-success' :
+                                     supervisorStatus === 'suspended' ? 'bg-warning text-dark' :
+                                     supervisorStatus === 'terminated' ? 'bg-secondary' : 'bg-info';
+        const supervisorStatusText = supervisorStatus.charAt(0).toUpperCase() + supervisorStatus.slice(1);
+        
         kiCard.innerHTML = `
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="mb-0">
                         <i class="fas fa-user-tie me-2"></i>${kiName}
                         <span class="badge bg-primary ms-2">${kiType}</span>
+                        <span class="badge ${supervisorStatusBadge} ms-2">${supervisorStatusText}</span>
                     </h5>
                 </div>
                 <div>
@@ -193,11 +218,16 @@ function renderSupervisionStructure() {
                             <tbody>
                                 ${supervisedReps.map(rep => {
                                     const repName = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
+                                    const status = rep.status || 'active';
+                                    const statusBadge = status === 'active' ? 'bg-success' :
+                                                       status === 'suspended' ? 'bg-warning text-dark' :
+                                                       status === 'terminated' ? 'bg-secondary' : 'bg-info';
+                                    const statusText = status.charAt(0).toUpperCase() + status.slice(1);
                                     return `
                                         <tr>
                                             <td>${repName}</td>
                                             <td>${rep.representative_number || 'N/A'}</td>
-                                            <td><span class="badge bg-success">${rep.status || 'active'}</span></td>
+                                            <td><span class="badge ${statusBadge}">${statusText}</span></td>
                                             <td>
                                                 <button class="btn btn-sm btn-outline-primary" onclick="viewRepProfile('${rep.id}')">
                                                     View
@@ -222,6 +252,14 @@ function renderSupervisionStructure() {
     
     // Show unassigned representatives
     const unassignedReps = supervisionData.representatives.filter(rep => !rep.supervised_by_ki_id);
+    
+    // Sort unassigned representatives alphabetically by name
+    unassignedReps.sort((a, b) => {
+        const nameA = `${a.first_name || ''} ${a.surname || ''}`.trim().toLowerCase();
+        const nameB = `${b.first_name || ''} ${b.surname || ''}`.trim().toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+    
     if (unassignedReps.length > 0) {
         const unassignedCard = document.createElement('div');
         unassignedCard.className = 'card mb-4 border-warning';
@@ -246,11 +284,16 @@ function renderSupervisionStructure() {
                         <tbody>
                             ${unassignedReps.map(rep => {
                                 const repName = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
+                                const status = rep.status || 'active';
+                                const statusBadge = status === 'active' ? 'bg-success' :
+                                                   status === 'suspended' ? 'bg-warning text-dark' :
+                                                   status === 'terminated' ? 'bg-secondary' : 'bg-info';
+                                const statusText = status.charAt(0).toUpperCase() + status.slice(1);
                                 return `
                                     <tr>
                                         <td>${repName}</td>
                                         <td>${rep.representative_number || 'N/A'}</td>
-                                        <td><span class="badge bg-success">${rep.status || 'active'}</span></td>
+                                        <td><span class="badge ${statusBadge}">${statusText}</span></td>
                                         <td>
                                             <button class="btn btn-sm btn-outline-primary" onclick="assignSupervisor('${rep.id}')">
                                                 Assign Supervisor
@@ -292,6 +335,13 @@ async function assignSupervisor(repId) {
             }
             return;
         }
+        
+        // Sort Key Individuals alphabetically by name
+        kis.sort((a, b) => {
+            const nameA = (a.name || (a.first_name && a.surname ? `${a.first_name} ${a.surname}` : 'Unknown')).toLowerCase();
+            const nameB = (b.name || (b.first_name && b.surname ? `${b.first_name} ${b.surname}` : 'Unknown')).toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
         
         // Build options HTML
         const options = kis.map(ki => {
