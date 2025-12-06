@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
  * Load Compliance Overview Data
  */
 async function loadComplianceOverview() {
+    // Show loading mask
+    showComplianceLoading();
+    
     try {
         // Load Representatives from database
         const result = await dataFunctions.getRepresentatives(null); // Get all statuses
@@ -97,6 +100,9 @@ async function loadComplianceOverview() {
         }
         complianceData = [];
         renderComplianceOverview();
+    } finally {
+        // Hide loading mask
+        hideComplianceLoading();
     }
 }
 
@@ -487,6 +493,50 @@ function filterComplianceTable() {
         const text = row.textContent.toLowerCase();
         row.style.display = text.includes(filter) ? '' : 'none';
     });
+}
+
+/**
+ * Show Loading Mask
+ */
+function showComplianceLoading() {
+    const container = document.getElementById('compliance');
+    if (!container) return;
+    
+    // Remove existing loading mask if any
+    const existingMask = container.querySelector('.compliance-loading-mask');
+    if (existingMask) {
+        existingMask.remove();
+    }
+    
+    // Create loading mask
+    const loadingMask = document.createElement('div');
+    loadingMask.className = 'compliance-loading-mask';
+    loadingMask.innerHTML = `
+        <div class="loading-overlay">
+            <div class="loading-content">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="mt-3 text-primary fw-bold">Loading Compliance Data...</div>
+                <div class="text-muted small">Calculating CPD, Fit & Proper, FICA, and Document compliance...</div>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(loadingMask);
+}
+
+/**
+ * Hide Loading Mask
+ */
+function hideComplianceLoading() {
+    const container = document.getElementById('compliance');
+    if (!container) return;
+    
+    const loadingMask = container.querySelector('.compliance-loading-mask');
+    if (loadingMask) {
+        loadingMask.remove();
+    }
 }
 
 // Export for global access
