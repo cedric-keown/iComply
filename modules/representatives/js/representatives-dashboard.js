@@ -11,6 +11,10 @@ let dashboardStats = {
     nonCompliant: 0
 };
 
+// Pagination for compliance matrix
+let dashboardMatrixPage = 1;
+const dashboardMatrixPerPage = 10;
+
 /**
  * Escape HTML to prevent XSS
  */
@@ -53,6 +57,7 @@ async function loadDashboardData() {
         
         if (reps && Array.isArray(reps)) {
             representativesData = reps;
+            dashboardMatrixPage = 1; // Reset to first page
             await calculateDashboardStats();
         }
     } catch (error) {
@@ -288,42 +293,56 @@ function updateDashboardUI() {
  * Update Compliance Matrix Table
  */
 function updateComplianceMatrix() {
-    // Try multiple selectors to find the compliance matrix table
-    const tbody = document.querySelector('#dashboard .table tbody') ||
-                 document.querySelector('#dashboard table tbody') ||
-                 document.querySelector('.compliance-matrix tbody') ||
-                 document.querySelector('#dashboard .card-body table tbody');
+    // Find the compliance matrix table container
+    const matrixCard = document.querySelector('#dashboard .card:has(.table)') ||
+                       document.querySelector('#dashboard .compliance-matrix');
+    
+    if (!matrixCard) {
+        console.warn('Compliance matrix card not found');
+        return;
+    }
+    
+    const tbody = matrixCard.querySelector('tbody');
     
     if (!tbody) {
         console.warn('Compliance matrix table body not found');
         return;
     }
     
-    // Clear existing rows (keep header)
-    tbody.innerHTML = '';
+    // Get active representatives and sort by name
+    const activeReps = representativesData
+        .filter(r => r.status === 'active')
+        .sort((a, b) => {
+            const nameA = `${a.first_name || ''} ${a.surname || ''}`.trim().toLowerCase();
+            const nameB = `${b.first_name || ''} ${b.surname || ''}`.trim().toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
     
-    if (representativesData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">No representatives found</td></tr>';
+    if (activeReps.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">No active representatives found</td></tr>';
+        
+        // Remove any existing pagination
+        const existingPagination = matrixCard.querySelector('.card-footer');
+        if (existingPagination) existingPagination.remove();
         return;
     }
     
-    // Show first 10 active representatives
-    const activeReps = representativesData
-        .filter(r => r.status === 'active')
-        .slice(0, 10);
+    // Calculate pagination
+    const totalPages = Math.ceil(activeReps.length / dashboardMatrixPerPage);
+    const startIndex = (dashboardMatrixPage - 1) * dashboardMatrixPerPage;
+    const endIndex = startIndex + dashboardMatrixPerPage;
+    const paginatedReps = activeReps.slice(startIndex, endIndex);
     
-    activeReps.forEach((rep, index) => {
+    // Clear existing rows
+    tbody.innerHTML = '';
+    
+    // Render paginated rows
+    paginatedReps.forEach((rep, pageIndex) => {
+        const actualIndex = startIndex + pageIndex;
         const name = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
         const row = document.createElement('tr');
-        const repId = rep.id || '';
         
-        // Ensure rep.id is valid
-        if (!repId) {
-            console.warn('Representative missing ID:', rep);
-            return;
-        }
-        
-        // Placeholder compliance status (would need CPD/F&P data)
+        // Placeholder compliance status (will be updated when compliance data loads)
         row.innerHTML = `
             <td>${escapeHtml(name)}</td>
             <td><span class="badge bg-success">✅ Current</span></td>
@@ -332,45 +351,96 @@ function updateComplianceMatrix() {
             <td><span class="badge ${rep.is_debarred ? 'bg-danger' : 'bg-success'}">${rep.is_debarred ? '❌ Debarred' : '✅ Clear'}</span></td>
             <td><span class="badge bg-success">✅ Compliant</span></td>
             <td>
-                <button class="btn btn-sm btn-outline-primary view-rep-btn" data-rep-id="${repId}" type="button">View</button>
+                <button class="btn btn-sm btn-outline-primary" onclick="window.viewRepresentative && window.viewRepresentative('${rep.id}'); return false;" type="button">
+                    View
+                </button>
             </td>
         `;
         tbody.appendChild(row);
-        
-        // Attach event listener directly to avoid closure issues
-        const viewBtn = row.querySelector('.view-rep-btn');
-        if (viewBtn) {
-            // Store repId in a local variable to capture it in the closure
-            const capturedRepId = repId;
-            
-            viewBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // Get ID from data attribute (most reliable)
-                const clickedRepId = this.getAttribute('data-rep-id') || capturedRepId;
-                
-                if (clickedRepId) {
-                    console.log('View button clicked for rep ID:', clickedRepId, 'Name:', name);
-                    viewRepresentative(clickedRepId);
-                } else {
-                    console.error('No representative ID found on button. Captured ID:', capturedRepId);
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Representative ID not found'
-                        });
-                    }
-                }
-            });
-        } else {
-            console.error('View button not found in row for rep:', repId, name);
-        }
     });
     
-    console.log(`Compliance matrix updated with ${activeReps.length} representatives`);
+    // Add or update pagination controls
+    renderDashboardMatrixPagination(matrixCard, totalPages, activeReps.length);
+    
+    console.log(`Compliance matrix updated with ${paginatedReps.length} of ${activeReps.length} representatives (Page ${dashboardMatrixPage}/${totalPages})`);
 }
+
+/**
+ * Render Dashboard Matrix Pagination
+ */
+function renderDashboardMatrixPagination(matrixCard, totalPages, totalRecords) {
+    // Remove existing pagination
+    const existingPagination = matrixCard.querySelector('.card-footer');
+    if (existingPagination) existingPagination.remove();
+    
+    if (totalPages <= 1) return; // No pagination needed
+    
+    const startRecord = ((dashboardMatrixPage - 1) * dashboardMatrixPerPage) + 1;
+    const endRecord = Math.min(dashboardMatrixPage * dashboardMatrixPerPage, totalRecords);
+    
+    let pageButtons = '';
+    
+    // Previous button
+    const prevDisabled = dashboardMatrixPage === 1 ? 'disabled' : '';
+    pageButtons += `<li class="page-item ${prevDisabled}">
+        <a class="page-link" href="#" onclick="changeDashboardMatrixPage(${dashboardMatrixPage - 1}); return false;" ${prevDisabled}>
+            <i class="fas fa-chevron-left"></i>
+        </a>
+    </li>`;
+    
+    // Page number buttons
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= dashboardMatrixPage - 2 && i <= dashboardMatrixPage + 2)) {
+            const active = i === dashboardMatrixPage ? 'active' : '';
+            pageButtons += `<li class="page-item ${active}">
+                <a class="page-link" href="#" onclick="changeDashboardMatrixPage(${i}); return false;">${i}</a>
+            </li>`;
+        } else if (i === dashboardMatrixPage - 3 || i === dashboardMatrixPage + 3) {
+            pageButtons += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+    }
+    
+    // Next button
+    const nextDisabled = dashboardMatrixPage === totalPages ? 'disabled' : '';
+    pageButtons += `<li class="page-item ${nextDisabled}">
+        <a class="page-link" href="#" onclick="changeDashboardMatrixPage(${dashboardMatrixPage + 1}); return false;" ${nextDisabled}>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </li>`;
+    
+    const paginationFooter = document.createElement('div');
+    paginationFooter.className = 'card-footer bg-light';
+    paginationFooter.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted small">
+                Showing ${startRecord}-${endRecord} of ${totalRecords} active representatives
+            </div>
+            <nav aria-label="Dashboard matrix pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    ${pageButtons}
+                </ul>
+            </nav>
+        </div>
+    `;
+    
+    matrixCard.appendChild(paginationFooter);
+}
+
+/**
+ * Change Dashboard Matrix Page
+ */
+function changeDashboardMatrixPage(page) {
+    const activeReps = representativesData.filter(r => r.status === 'active');
+    const totalPages = Math.ceil(activeReps.length / dashboardMatrixPerPage);
+    
+    if (page < 1 || page > totalPages) return;
+    
+    dashboardMatrixPage = page;
+    updateComplianceMatrix();
+}
+
+// Export to window
+window.changeDashboardMatrixPage = changeDashboardMatrixPage;
 
 function setupActivityFeed() {
     const activityItems = document.querySelectorAll('.activity-item');
