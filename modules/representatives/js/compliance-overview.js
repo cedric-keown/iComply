@@ -10,7 +10,32 @@ document.addEventListener('DOMContentLoaded', function() {
             loadComplianceOverview();
         });
     }
+    
+    // Set up event delegation for View Details buttons
+    setupComplianceEventDelegation();
 });
+
+/**
+ * Setup Event Delegation for Compliance Table
+ */
+function setupComplianceEventDelegation() {
+    // Use event delegation on the compliance container
+    const complianceContainer = document.getElementById('compliance');
+    if (complianceContainer) {
+        complianceContainer.addEventListener('click', function(e) {
+            // Check if a View Details button was clicked
+            const button = e.target.closest('.view-details-btn');
+            if (button) {
+                e.preventDefault();
+                e.stopPropagation();
+                const repId = button.getAttribute('data-rep-id');
+                if (repId) {
+                    viewRepProfile(repId);
+                }
+            }
+        });
+    }
+}
 
 /**
  * Load Compliance Overview Data
@@ -317,26 +342,6 @@ function renderComplianceOverview() {
             </div>
         </div>
     `;
-    
-    // Attach event listeners to all View Details buttons
-    attachViewDetailsListeners();
-}
-
-/**
- * Attach Event Listeners to View Details Buttons
- */
-function attachViewDetailsListeners() {
-    const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
-    viewDetailsButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const repId = this.getAttribute('data-rep-id');
-            if (repId) {
-                viewRepProfile(repId);
-            }
-        });
-    });
 }
 
 /**
