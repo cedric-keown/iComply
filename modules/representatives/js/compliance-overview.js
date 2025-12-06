@@ -26,7 +26,7 @@ async function loadComplianceOverview() {
             reps = result;
         }
         
-        // Enrich with user profile data if available
+        // Enrich with user profile data and compliance calculations
         if (reps && Array.isArray(reps) && reps.length > 0) {
             complianceData = await Promise.all(reps.map(async (rep) => {
                 try {
@@ -42,17 +42,42 @@ async function loadComplianceOverview() {
                         }
                     }
                     
-                    // Set compliance statuses based on available data
-                    // TODO: These should be calculated from actual CPD, F&P, FICA data when available
-                    rep.fpStatus = rep.status === 'active' ? 'compliant' : 'non-compliant';
-                    rep.cpdStatus = rep.status === 'active' ? 'in-progress' : 'behind';
-                    rep.ficaStatus = rep.status === 'active' ? 'current' : 'warning';
-                    rep.overallStatus = rep.status === 'active' ? 'compliant' : 'non-compliant';
-                    rep.is_debarred = rep.status === 'debarred';
+                    // Get comprehensive compliance data
+                    const complianceResult = await dataFunctions.getRepresentativeCompliance(rep.id);
+                    let compliance = complianceResult;
+                    if (complianceResult && complianceResult.data) {
+                        compliance = complianceResult.data;
+                    }
+                    
+                    if (compliance) {
+                        // Map compliance data to display format
+                        rep.fpStatus = compliance.fit_proper?.status || 'unknown';
+                        rep.cpdStatus = compliance.cpd?.status || 'unknown';
+                        rep.ficaStatus = compliance.fica?.status || 'unknown';
+                        rep.overallStatus = compliance.overall_status || 'unknown';
+                        rep.overallScore = compliance.overall_score || 0;
+                        rep.is_debarred = rep.status === 'debarred';
+                        
+                        // Store full compliance details
+                        rep.compliance = compliance;
+                    } else {
+                        // Fallback if compliance calculation fails
+                        rep.fpStatus = rep.status === 'active' ? 'compliant' : 'non_compliant';
+                        rep.cpdStatus = rep.status === 'active' ? 'in_progress' : 'behind';
+                        rep.ficaStatus = rep.status === 'active' ? 'current' : 'warning';
+                        rep.overallStatus = rep.status === 'active' ? 'compliant' : 'non_compliant';
+                        rep.is_debarred = rep.status === 'debarred';
+                    }
                     
                     return rep;
                 } catch (err) {
                     console.warn('Error enriching representative data:', err);
+                    // Return rep with basic compliance based on status
+                    rep.fpStatus = rep.status === 'active' ? 'compliant' : 'non_compliant';
+                    rep.cpdStatus = rep.status === 'active' ? 'in_progress' : 'behind';
+                    rep.ficaStatus = rep.status === 'active' ? 'current' : 'warning';
+                    rep.overallStatus = rep.status === 'active' ? 'compliant' : 'non_compliant';
+                    rep.is_debarred = rep.status === 'debarred';
                     return rep;
                 }
             }));

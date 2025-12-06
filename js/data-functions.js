@@ -1123,6 +1123,132 @@ var _dataFunctions = function () {
                 p_overall_status: data.overall_status || null,
                 p_next_review_date: data.next_review_date || null
             }, token);
+        },
+
+        // ========================================================================
+        // COMPREHENSIVE COMPLIANCE TRACKING SYSTEM
+        // ========================================================================
+
+        // ----- CPD TRACKING -----
+
+        createCPDRecord: async function (data, token = null) {
+            return await this.callFunction('create_cpd_record', {
+                p_representative_id: data.representative_id,
+                p_activity_type: data.activity_type,
+                p_activity_name: data.activity_name,
+                p_provider: data.provider || null,
+                p_activity_date: data.activity_date,
+                p_hours_earned: data.hours_earned,
+                p_ethics_hours: data.ethics_hours || 0,
+                p_verifiable: data.verifiable !== undefined ? data.verifiable : true,
+                p_verification_document: data.verification_document || null,
+                p_notes: data.notes || null
+            }, token);
+        },
+
+        getCPDRecords: async function (representativeId, year = null, token = null) {
+            return await this.callFunction('get_cpd_records', {
+                p_representative_id: representativeId,
+                p_year: year
+            }, token);
+        },
+
+        calculateCPDCompliance: async function (representativeId, year = null, token = null) {
+            return await this.callFunction('calculate_cpd_compliance', {
+                p_representative_id: representativeId,
+                p_year: year
+            }, token);
+        },
+
+        // ----- QUALIFICATIONS (FIT & PROPER) -----
+
+        createQualification: async function (data, token = null) {
+            return await this.callFunction('create_qualification', {
+                p_representative_id: data.representative_id,
+                p_qualification_type: data.qualification_type,
+                p_qualification_name: data.qualification_name,
+                p_issuing_authority: data.issuing_authority || null,
+                p_issue_date: data.issue_date || null,
+                p_expiry_date: data.expiry_date || null,
+                p_verification_document: data.verification_document || null,
+                p_notes: data.notes || null
+            }, token);
+        },
+
+        getQualifications: async function (representativeId, token = null) {
+            return await this.callFunction('get_qualifications', {
+                p_representative_id: representativeId
+            }, token);
+        },
+
+        calculateFPCompliance: async function (representativeId, token = null) {
+            return await this.callFunction('calculate_fp_compliance', {
+                p_representative_id: representativeId
+            }, token);
+        },
+
+        // ----- FICA VERIFICATION -----
+
+        createFICARecord: async function (data, token = null) {
+            return await this.callFunction('create_fica_record', {
+                p_representative_id: data.representative_id,
+                p_client_name: data.client_name,
+                p_verification_status: data.verification_status || 'pending',
+                p_risk_rating: data.risk_rating || 'medium'
+            }, token);
+        },
+
+        getFICARecords: async function (representativeId, token = null) {
+            return await this.callFunction('get_fica_records', {
+                p_representative_id: representativeId
+            }, token);
+        },
+
+        calculateFICACompliance: async function (representativeId, token = null) {
+            return await this.callFunction('calculate_fica_compliance', {
+                p_representative_id: representativeId
+            }, token);
+        },
+
+        // ----- DOCUMENT MANAGEMENT -----
+
+        createDocument: async function (data, token = null) {
+            return await this.callFunction('create_document', {
+                p_representative_id: data.representative_id,
+                p_document_type: data.document_type,
+                p_document_name: data.document_name,
+                p_document_url: data.document_url || null,
+                p_issue_date: data.issue_date || null,
+                p_expiry_date: data.expiry_date || null,
+                p_requires_renewal: data.requires_renewal || false
+            }, token);
+        },
+
+        getDocuments: async function (representativeId, token = null) {
+            return await this.callFunction('get_documents', {
+                p_representative_id: representativeId
+            }, token);
+        },
+
+        calculateDocumentCompliance: async function (representativeId, token = null) {
+            return await this.callFunction('calculate_document_compliance', {
+                p_representative_id: representativeId
+            }, token);
+        },
+
+        // ----- COMPREHENSIVE COMPLIANCE CALCULATION -----
+
+        getRepresentativeCompliance: async function (representativeId, year = null, token = null) {
+            return await this.callFunction('get_representative_compliance', {
+                p_representative_id: representativeId,
+                p_year: year
+            }, token);
+        },
+
+        getAllRepresentativesCompliance: async function (year = null, token = null) {
+            return await this.callFunction('get_all_representatives_compliance', {
+                p_year: year
+            }, token);
         }
     }
 }();

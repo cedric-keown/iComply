@@ -53,8 +53,7 @@ async function loadDashboardData() {
         
         if (reps && Array.isArray(reps)) {
             representativesData = reps;
-            calculateDashboardStats();
-            updateDashboardUI();
+            await calculateDashboardStats();
         }
     } catch (error) {
         console.error('Error loading dashboard data:', error);
@@ -81,7 +80,7 @@ async function loadDashboardData() {
 /**
  * Calculate Dashboard Statistics
  */
-function calculateDashboardStats() {
+async function calculateDashboardStats() {
     // Calculate basic stats from representative data
     dashboardStats = {
         total: representativesData.length,
@@ -93,13 +92,46 @@ function calculateDashboardStats() {
         nonCompliant: 0
     };
     
-    // For now, assume active representatives are compliant
-    // TODO: Calculate actual compliance from CPD, F&P, FICA data when available
-    dashboardStats.compliant = dashboardStats.active;
-    dashboardStats.atRisk = 0;
-    dashboardStats.nonCompliant = dashboardStats.suspended + dashboardStats.terminated;
-    
-    updateDashboardUI();
+    // Calculate actual compliance for each representative
+    try {
+        const compliancePromises = representativesData.map(async (rep) => {
+            try {
+                const complianceResult = await dataFunctions.getRepresentativeCompliance(rep.id);
+                let compliance = complianceResult;
+                if (complianceResult && complianceResult.data) {
+                    compliance = complianceResult.data;
+                }
+                return compliance;
+            } catch (err) {
+                console.warn('Error calculating compliance for rep:', rep.id, err);
+                return null;
+            }
+        });
+        
+        const complianceResults = await Promise.all(compliancePromises);
+        
+        // Count by compliance status
+        complianceResults.forEach(compliance => {
+            if (compliance && compliance.overall_status) {
+                if (compliance.overall_status === 'compliant') {
+                    dashboardStats.compliant++;
+                } else if (compliance.overall_status === 'at_risk') {
+                    dashboardStats.atRisk++;
+                } else if (compliance.overall_status === 'non_compliant') {
+                    dashboardStats.nonCompliant++;
+                }
+            }
+        });
+        
+        updateDashboardUI();
+    } catch (error) {
+        console.error('Error calculating compliance statistics:', error);
+        // Fallback: assume active are compliant
+        dashboardStats.compliant = dashboardStats.active;
+        dashboardStats.atRisk = 0;
+        dashboardStats.nonCompliant = dashboardStats.suspended + dashboardStats.terminated;
+        updateDashboardUI();
+    }
 }
 
 /**

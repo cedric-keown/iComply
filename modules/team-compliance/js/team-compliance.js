@@ -60,30 +60,88 @@ async function loadRepresentativesData() {
                     rep.supervisor = 'Unknown'; // Would come from KI assignment
                     rep.employmentStatus = rep.status;
                     
-                    // TODO: These should be calculated from actual CPD, F&P, FICA data
-                    rep.fpStatus = rep.status === 'active' ? 'compliant' : 'non-compliant';
-                    rep.fpDetails = {
-                        re5: { valid: rep.status === 'active', expiry: 'N/A' },
-                        re1: { valid: rep.status === 'active', expiry: 'N/A' }
-                    };
-                    rep.cpdHours = 0;
-                    rep.cpdRequired = 18;
-                    rep.cpdEthics = 0;
-                    rep.cpdStatus = 'pending';
-                    rep.cpdLastActivity = 'N/A';
-                    rep.ficaTotal = 0;
-                    rep.ficaCurrent = 0;
-                    rep.ficaOverdue = 0;
-                    rep.ficaStatus = 'current';
-                    rep.docsTotal = 0;
-                    rep.docsCurrent = 0;
-                    rep.docsExpired = 0;
-                    rep.docsStatus = 'current';
-                    rep.overallScore = rep.status === 'active' ? 100 : 0;
-                    rep.overallStatus = rep.status === 'active' ? 'compliant' : 'non-compliant';
-                    rep.lastUpdated = new Date(rep.updated_at || rep.created_at).toLocaleString('en-ZA');
-                    rep.updatedBy = 'System';
-                    rep.trend = '→';
+                    // Get comprehensive compliance data
+                    const complianceResult = await dataFunctions.getRepresentativeCompliance(rep.id);
+                    let compliance = complianceResult;
+                    if (complianceResult && complianceResult.data) {
+                        compliance = complianceResult.data;
+                    }
+                    
+                    if (compliance) {
+                        // F&P Data
+                        const fpData = compliance.fit_proper || {};
+                        rep.fpStatus = fpData.status || 'unknown';
+                        rep.fpDetails = {
+                            re5: { 
+                                valid: fpData.has_re5 || false, 
+                                expiry: fpData.re5_expiry || 'N/A',
+                                expired: fpData.has_re5 === false 
+                            },
+                            re1: { 
+                                valid: fpData.has_re1 || false, 
+                                expiry: fpData.re1_expiry || 'N/A' 
+                            },
+                            background: fpData.expired_count > 0 ? 'Issues Found' : 'All current ✓',
+                            lastVerified: new Date().toLocaleDateString('en-ZA')
+                        };
+                        
+                        // CPD Data
+                        const cpdData = compliance.cpd || {};
+                        rep.cpdHours = cpdData.earned_hours || 0;
+                        rep.cpdRequired = cpdData.required_hours || 18;
+                        rep.cpdEthics = cpdData.earned_ethics || 0;
+                        rep.cpdStatus = cpdData.status || 'pending';
+                        rep.cpdLastActivity = 'N/A'; // Would need last activity date
+                        
+                        // FICA Data
+                        const ficaData = compliance.fica || {};
+                        rep.ficaTotal = ficaData.total_clients || 0;
+                        rep.ficaCurrent = ficaData.verified_clients || 0;
+                        rep.ficaOverdue = ficaData.expired_clients || 0;
+                        rep.ficaStatus = ficaData.status || 'current';
+                        
+                        // Documents Data
+                        const docsData = compliance.documents || {};
+                        rep.docsTotal = docsData.total_documents || 0;
+                        rep.docsCurrent = docsData.current_documents || 0;
+                        rep.docsExpired = docsData.expired_documents || 0;
+                        rep.docsStatus = docsData.status || 'current';
+                        
+                        // Overall
+                        rep.overallScore = Math.round(compliance.overall_score || 0);
+                        rep.overallStatus = compliance.overall_status || 'unknown';
+                        rep.lastUpdated = new Date(compliance.calculated_at || rep.updated_at || rep.created_at).toLocaleString('en-ZA');
+                        rep.updatedBy = 'System Calculated';
+                        
+                        // Calculate trend (would need historical data)
+                        rep.trend = rep.overallScore >= 80 ? '+' : rep.overallScore >= 60 ? '→' : '-';
+                    } else {
+                        // Fallback to placeholder data
+                        rep.fpStatus = rep.status === 'active' ? 'compliant' : 'non-compliant';
+                        rep.fpDetails = {
+                            re5: { valid: rep.status === 'active', expiry: 'N/A' },
+                            re1: { valid: rep.status === 'active', expiry: 'N/A' }
+                        };
+                        rep.cpdHours = 0;
+                        rep.cpdRequired = 18;
+                        rep.cpdEthics = 0;
+                        rep.cpdStatus = 'pending';
+                        rep.cpdLastActivity = 'N/A';
+                        rep.ficaTotal = 0;
+                        rep.ficaCurrent = 0;
+                        rep.ficaOverdue = 0;
+                        rep.ficaStatus = 'current';
+                        rep.docsTotal = 0;
+                        rep.docsCurrent = 0;
+                        rep.docsExpired = 0;
+                        rep.docsStatus = 'current';
+                        rep.overallScore = rep.status === 'active' ? 100 : 0;
+                        rep.overallStatus = rep.status === 'active' ? 'compliant' : 'non-compliant';
+                        rep.lastUpdated = new Date(rep.updated_at || rep.created_at).toLocaleString('en-ZA');
+                        rep.updatedBy = 'Pending Compliance Data';
+                        rep.trend = '→';
+                    }
+                    
                     rep.id = index + 1; // Temporary ID for display
                     
                     return rep;
