@@ -10,32 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadComplianceOverview();
         });
     }
-    
-    // Set up event delegation for View Details buttons
-    setupComplianceEventDelegation();
 });
-
-/**
- * Setup Event Delegation for Compliance Table
- */
-function setupComplianceEventDelegation() {
-    // Use event delegation on the compliance container
-    const complianceContainer = document.getElementById('compliance');
-    if (complianceContainer) {
-        complianceContainer.addEventListener('click', function(e) {
-            // Check if a View Details button was clicked
-            const button = e.target.closest('.view-details-btn');
-            if (button) {
-                e.preventDefault();
-                e.stopPropagation();
-                const repId = button.getAttribute('data-rep-id');
-                if (repId) {
-                    viewRepProfile(repId);
-                }
-            }
-        });
-    }
-}
 
 /**
  * Load Compliance Overview Data
@@ -162,6 +137,13 @@ function renderComplianceOverview() {
         return;
     }
     
+    // Sort compliance data by representative name
+    complianceData.sort((a, b) => {
+        const nameA = `${a.first_name || ''} ${a.surname || ''}`.trim().toLowerCase();
+        const nameB = `${b.first_name || ''} ${b.surname || ''}`.trim().toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+    
     // Calculate compliance statistics
     const stats = {
         total: complianceData.length,
@@ -282,7 +264,7 @@ function renderComplianceOverview() {
                             </tr>
                         </thead>
                         <tbody>
-                            ${complianceData.map(rep => {
+                            ${complianceData.map((rep, index) => {
                                 const repName = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
                                 
                                 // F&P Status Badge
@@ -316,25 +298,25 @@ function renderComplianceOverview() {
                                 const rowClass = rep.overallStatus === 'non-compliant' ? 'table-danger' :
                                                rep.overallStatus === 'at-risk' ? 'table-warning' : '';
                                 
-                                return `
-                                    <tr class="${rowClass}">
-                                        <td><strong>${repName}</strong></td>
-                                        <td>${fpBadge}</td>
-                                        <td>${cpdBadge}</td>
-                                        <td>${ficaBadge}</td>
+                                return \`
+                                    <tr class="\${rowClass}">
+                                        <td><strong>\${repName}</strong></td>
+                                        <td>\${fpBadge}</td>
+                                        <td>\${cpdBadge}</td>
+                                        <td>\${ficaBadge}</td>
                                         <td>
-                                            <span class="badge ${rep.is_debarred ? 'bg-danger' : 'bg-success'}">
-                                                ${rep.is_debarred ? '❌ Debarred' : '✅ Clear'}
+                                            <span class="badge \${rep.is_debarred ? 'bg-danger' : 'bg-success'}">
+                                                \${rep.is_debarred ? '❌ Debarred' : '✅ Clear'}
                                             </span>
                                         </td>
-                                        <td>${overallBadge}</td>
+                                        <td>\${overallBadge}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary view-details-btn" data-rep-id="${rep.id}">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewComplianceRepDetails(\${index}); return false;">
                                                 View Details
                                             </button>
                                         </td>
                                     </tr>
-                                `;
+                                \`;
                             }).join('')}
                         </tbody>
                     </table>
@@ -346,11 +328,12 @@ function renderComplianceOverview() {
 
 /**
  * View Representative Profile with Compliance Details
+ * @param {number} index - Index in complianceData array
  */
-async function viewRepProfile(id) {
+function viewComplianceRepDetails(index) {
     try {
-        // Find representative in loaded data
-        let rep = complianceData.find(r => r.id === id);
+        // Get representative from array by index
+        const rep = complianceData[index];
         
         if (!rep) {
             Swal.fire({
@@ -546,5 +529,5 @@ function hideComplianceLoading() {
 
 // Export for global access
 window.filterComplianceTable = filterComplianceTable;
-window.viewRepProfile = viewRepProfile;
+window.viewComplianceRepDetails = viewComplianceRepDetails;
 
