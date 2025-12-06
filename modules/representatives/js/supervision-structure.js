@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
  * Load Supervision Structure Data
  */
 async function loadSupervisionStructure() {
+    showSupervisionLoading();
+    
     try {
         // Load Key Individuals
         const kiResult = await dataFunctions.getKeyIndividuals('active');
@@ -43,6 +45,31 @@ async function loadSupervisionStructure() {
             reps = repResult;
         }
         
+        // Enrich representatives with user profile data for names
+        if (reps && Array.isArray(reps) && reps.length > 0) {
+            const profilePromises = reps.map(rep => {
+                if (rep.user_profile_id) {
+                    return dataFunctions.getUserProfile(rep.user_profile_id).catch(err => null);
+                }
+                return Promise.resolve(null);
+            });
+            
+            const profiles = await Promise.all(profilePromises);
+            
+            reps.forEach((rep, index) => {
+                const profile = profiles[index];
+                if (profile) {
+                    if (profile.data) {
+                        rep.first_name = profile.data.first_name;
+                        rep.surname = profile.data.surname;
+                    } else if (profile.first_name) {
+                        rep.first_name = profile.first_name;
+                        rep.surname = profile.surname;
+                    }
+                }
+            });
+        }
+        
         supervisionData.keyIndividuals = kis || [];
         supervisionData.representatives = reps || [];
         
@@ -56,6 +83,8 @@ async function loadSupervisionStructure() {
                 text: 'Failed to load supervision structure'
             });
         }
+    } finally {
+        hideSupervisionLoading();
     }
 }
 
@@ -455,6 +484,50 @@ async function viewRepProfile(id) {
             title: 'Error',
             text: 'Failed to load representative profile'
         });
+    }
+}
+
+/**
+ * Show Loading Mask
+ */
+function showSupervisionLoading() {
+    const container = document.getElementById('supervision');
+    if (!container) return;
+    
+    // Remove existing loading mask if any
+    const existingMask = container.querySelector('.supervision-loading-mask');
+    if (existingMask) {
+        existingMask.remove();
+    }
+    
+    // Create loading mask
+    const loadingMask = document.createElement('div');
+    loadingMask.className = 'supervision-loading-mask';
+    loadingMask.innerHTML = `
+        <div class="loading-overlay">
+            <div class="loading-content">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="mt-3 text-primary fw-bold">Loading Supervision Structure...</div>
+                <div class="text-muted small">Retrieving Key Individuals and representative assignments...</div>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(loadingMask);
+}
+
+/**
+ * Hide Loading Mask
+ */
+function hideSupervisionLoading() {
+    const container = document.getElementById('supervision');
+    if (!container) return;
+    
+    const loadingMask = container.querySelector('.supervision-loading-mask');
+    if (loadingMask) {
+        loadingMask.remove();
     }
 }
 

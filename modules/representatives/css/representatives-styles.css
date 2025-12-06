@@ -403,7 +403,8 @@
 
 /* Loading Masks */
 .compliance-loading-mask,
-.dashboard-loading-mask {
+.dashboard-loading-mask,
+.supervision-loading-mask {
     position: fixed;
     top: 0;
     left: 0;
