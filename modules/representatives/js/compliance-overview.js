@@ -31,59 +31,79 @@ async function loadComplianceOverview() {
         
         // Enrich with user profile data and compliance calculations
         if (reps && Array.isArray(reps) && reps.length > 0) {
-            complianceData = await Promise.all(reps.map(async (rep) => {
-                try {
-                    // Get user profile for name
-                    if (rep.user_profile_id) {
-                        const profileResult = await dataFunctions.getUserProfile(rep.user_profile_id);
-                        if (profileResult && profileResult.data) {
-                            rep.first_name = profileResult.data.first_name;
-                            rep.surname = profileResult.data.surname;
-                        } else if (profileResult && profileResult.first_name) {
-                            rep.first_name = profileResult.first_name;
-                            rep.surname = profileResult.surname;
-                        }
+            // First, get all user profiles in parallel (faster)
+            const profilePromises = reps.map(rep => {
+                if (rep.user_profile_id) {
+                    return dataFunctions.getUserProfile(rep.user_profile_id).catch(err => null);
+                }
+                return Promise.resolve(null);
+            });
+            
+            const profiles = await Promise.all(profilePromises);
+            
+            // Enrich reps with profile data
+            reps.forEach((rep, index) => {
+                const profile = profiles[index];
+                if (profile) {
+                    if (profile.data) {
+                        rep.first_name = profile.data.first_name;
+                        rep.surname = profile.data.surname;
+                    } else if (profile.first_name) {
+                        rep.first_name = profile.first_name;
+                        rep.surname = profile.surname;
                     }
-                    
-                    // Get comprehensive compliance data
-                    const complianceResult = await dataFunctions.getRepresentativeCompliance(rep.id);
-                    let compliance = complianceResult;
-                    if (complianceResult && complianceResult.data) {
-                        compliance = complianceResult.data;
-                    }
-                    
-                    if (compliance) {
-                        // Map compliance data to display format
-                        rep.fpStatus = compliance.fit_proper?.status || 'unknown';
-                        rep.cpdStatus = compliance.cpd?.status || 'unknown';
-                        rep.ficaStatus = compliance.fica?.status || 'unknown';
-                        rep.overallStatus = compliance.overall_status || 'unknown';
-                        rep.overallScore = compliance.overall_score || 0;
-                        rep.is_debarred = rep.status === 'debarred';
+                }
+            });
+            
+            // Try to use bulk compliance calculation (much faster)
+            try {
+                const bulkComplianceResult = await dataFunctions.getAllRepresentativesCompliance();
+                let bulkCompliance = bulkComplianceResult;
+                if (bulkComplianceResult && bulkComplianceResult.data) {
+                    bulkCompliance = bulkComplianceResult.data;
+                }
+                
+                if (bulkCompliance && Array.isArray(bulkCompliance)) {
+                    // Map bulk compliance to representatives
+                    complianceData = reps.map(rep => {
+                        const compliance = bulkCompliance.find(c => c.representative_id === rep.id);
                         
-                        // Store full compliance details
-                        rep.compliance = compliance;
-                    } else {
-                        // Fallback if compliance calculation fails
-                        rep.fpStatus = rep.status === 'active' ? 'compliant' : 'non_compliant';
-                        rep.cpdStatus = rep.status === 'active' ? 'in_progress' : 'behind';
-                        rep.ficaStatus = rep.status === 'active' ? 'current' : 'warning';
-                        rep.overallStatus = rep.status === 'active' ? 'compliant' : 'non_compliant';
+                        if (compliance && compliance.compliance_data) {
+                            const compData = compliance.compliance_data;
+                            rep.fpStatus = compData.fit_proper?.status || 'unknown';
+                            rep.cpdStatus = compData.cpd?.status || 'unknown';
+                            rep.ficaStatus = compData.fica?.status || 'unknown';
+                            rep.overallStatus = compData.overall_status || 'unknown';
+                            rep.overallScore = compData.overall_score || 0;
+                            rep.compliance = compData;
+                        } else {
+                            // Set basic status
+                            rep.fpStatus = rep.status === 'active' ? 'compliant' : 'non_compliant';
+                            rep.cpdStatus = rep.status === 'active' ? 'in_progress' : 'behind';
+                            rep.ficaStatus = rep.status === 'active' ? 'current' : 'warning';
+                            rep.overallStatus = rep.status === 'active' ? 'compliant' : 'non_compliant';
+                            rep.overallScore = rep.status === 'active' ? 100 : 0;
+                        }
+                        
                         rep.is_debarred = rep.status === 'debarred';
-                    }
-                    
-                    return rep;
-                } catch (err) {
-                    console.warn('Error enriching representative data:', err);
-                    // Return rep with basic compliance based on status
+                        return rep;
+                    });
+                } else {
+                    throw new Error('Bulk compliance not available');
+                }
+            } catch (bulkError) {
+                console.warn('Bulk compliance failed, using simplified status:', bulkError);
+                // Simplified approach - just use representative status
+                complianceData = reps.map(rep => {
                     rep.fpStatus = rep.status === 'active' ? 'compliant' : 'non_compliant';
                     rep.cpdStatus = rep.status === 'active' ? 'in_progress' : 'behind';
                     rep.ficaStatus = rep.status === 'active' ? 'current' : 'warning';
                     rep.overallStatus = rep.status === 'active' ? 'compliant' : 'non_compliant';
+                    rep.overallScore = rep.status === 'active' ? 100 : 0;
                     rep.is_debarred = rep.status === 'debarred';
                     return rep;
-                }
-            }));
+                });
+            }
         } else {
             complianceData = [];
         }
@@ -143,6 +163,9 @@ function renderComplianceOverview() {
         const nameB = `${b.first_name || ''} ${b.surname || ''}`.trim().toLowerCase();
         return nameA.localeCompare(nameB);
     });
+    
+    // Export sorted data to window for onclick access
+    window.complianceData = complianceData;
     
     // Calculate compliance statistics
     const stats = {
@@ -311,7 +334,7 @@ function renderComplianceOverview() {
                                         </td>
                                         <td>${overallBadge}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary" onclick="viewComplianceRepDetails(${index}); return false;">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="window.viewComplianceRepDetails(${index}); return false;">
                                                 View Details
                                             </button>
                                         </td>
@@ -530,4 +553,5 @@ function hideComplianceLoading() {
 // Export for global access
 window.filterComplianceTable = filterComplianceTable;
 window.viewComplianceRepDetails = viewComplianceRepDetails;
+window.complianceData = complianceData;
 
