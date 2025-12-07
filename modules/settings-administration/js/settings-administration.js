@@ -807,7 +807,7 @@ function handleUserClickFallback(action, userId, userName, newStatus) {
 /**
  * Open Add User Modal
  */
-function openAddUserModal() {
+async function openAddUserModal() {
     const modal = new bootstrap.Modal(document.getElementById('addUserModal'));
     const form = document.getElementById('addUserForm');
     const roleSelect = document.getElementById('userRole');
@@ -828,6 +828,9 @@ function openAddUserModal() {
         option.textContent = role.role_display_name;
         roleSelect.appendChild(option);
     });
+    
+    // Load representatives for linking
+    await loadRepresentativesForLinking(null);
     
     modal.show();
 }

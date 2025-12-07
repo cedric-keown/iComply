@@ -148,6 +148,7 @@ function aggregateDashboardSummary(summaryRows, allComplaints) {
         else if (status === 'investigating') summary.investigating_complaints++;
         else if (status === 'resolved') summary.resolved_complaints++;
         else if (status === 'closed') summary.closed_complaints++;
+        else if (status === 'pending' || status === 'pending_info') summary.open_complaints++; // Count pending as open
         
         // Approaching deadline (within 7 days)
         if (complaint.resolution_due_date) {
@@ -389,15 +390,39 @@ function initializeCharts() {
             complaintsData.charts.categoryChart.destroy();
         }
         
-        // Get category breakdown from complaints
+        // Get category breakdown from complaints and consolidate similar categories
         const categoryCounts = {};
         complaintsData.complaints.forEach(complaint => {
-            const category = complaint.complaint_category || 'Other';
+            let category = complaint.complaint_category || 'Other';
+            
+            // Consolidate and clean up category names
+            if (category.toLowerCase().includes('claim')) {
+                category = 'Claims';
+            } else if (category.toLowerCase().includes('service') || category.toLowerCase().includes('communication')) {
+                category = 'Service Quality';
+            } else if (category.toLowerCase().includes('admin') || category.toLowerCase().includes('processing')) {
+                category = 'Administrative';
+            } else if (category.toLowerCase().includes('product') || category.toLowerCase().includes('mis-sell')) {
+                category = 'Product Issues';
+            } else if (category.toLowerCase().includes('fee') || category.toLowerCase().includes('financial') || category.toLowerCase().includes('billing') || category.toLowerCase().includes('payment')) {
+                category = 'Financial';
+            } else if (category.toLowerCase().includes('invest') || category.toLowerCase().includes('advice')) {
+                category = 'Investment Advice';
+            } else if (category.toLowerCase().includes('data') || category.toLowerCase().includes('privacy')) {
+                category = 'Data Protection';
+            } else if (category.toLowerCase().includes('policy')) {
+                category = 'Policy Admin';
+            }
+            
             categoryCounts[category] = (categoryCounts[category] || 0) + 1;
         });
         
-        const labels = Object.keys(categoryCounts);
-        const data = Object.values(categoryCounts);
+        // Sort by count descending
+        const sortedCategories = Object.entries(categoryCounts)
+            .sort((a, b) => b[1] - a[1]);
+        
+        const labels = sortedCategories.map(([category]) => category);
+        const data = sortedCategories.map(([, count]) => count);
         
         try {
             complaintsData.charts.categoryChart = new Chart(ctx, {
@@ -407,14 +432,19 @@ function initializeCharts() {
                     datasets: [{
                         data: data.length > 0 ? data : [1],
                         backgroundColor: [
-                            '#5CBDB4',
-                            '#17A2B8',
-                            '#28A745',
-                            '#FFC107',
-                            '#DC3545',
-                            '#6c757d'
+                            '#5CBDB4', // Teal
+                            '#17A2B8', // Info blue
+                            '#28A745', // Success green
+                            '#FFC107', // Warning yellow
+                            '#DC3545', // Danger red
+                            '#6c757d', // Secondary gray
+                            '#007bff', // Primary blue
+                            '#fd7e14', // Orange
+                            '#6f42c1', // Purple
+                            '#e83e8c'  // Pink
                         ],
-                        borderWidth: 0
+                        borderWidth: 2,
+                        borderColor: '#fff'
                     }]
                 },
                 options: {
@@ -422,7 +452,41 @@ function initializeCharts() {
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'right',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                },
+                                boxWidth: 15,
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        return data.labels.map(function(label, i) {
+                                            const value = data.datasets[0].data[i];
+                                            const percentage = ((value / data.datasets[0].data.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+                                            return {
+                                                text: `${label} (${value} - ${percentage}%)`,
+                                                fillStyle: data.datasets[0].backgroundColor[i],
+                                                hidden: false,
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
                         }
                     }
                 }
@@ -439,32 +503,45 @@ function initializeCharts() {
             complaintsData.charts.statusChart.destroy();
         }
         
-        const statusCounts = {
-            open: summary.open_complaints || 0,
-            investigating: summary.investigating_complaints || 0,
-            resolved: summary.resolved_complaints || 0,
-            closed: summary.closed_complaints || 0
+        // Get actual status counts from complaints
+        const statusCounts = {};
+        complaintsData.complaints.forEach(c => {
+            const status = (c.status || 'unknown').toLowerCase();
+            statusCounts[status] = (statusCounts[status] || 0) + 1;
+        });
+        
+        // Prepare data for chart - only show statuses that have complaints
+        const chartData = [];
+        const chartLabels = [];
+        const chartColors = [];
+        
+        const statusConfig = {
+            'open': { label: 'Open', color: '#FFC107' },
+            'acknowledged': { label: 'Acknowledged', color: '#17A2B8' },
+            'investigating': { label: 'Investigating', color: '#007bff' },
+            'pending': { label: 'Pending', color: '#ffc107' },
+            'pending_info': { label: 'Pending Info', color: '#fd7e14' },
+            'resolved': { label: 'Resolved', color: '#28A745' },
+            'closed': { label: 'Closed', color: '#6c757d' }
         };
+        
+        Object.entries(statusCounts).forEach(([status, count]) => {
+            const config = statusConfig[status] || { label: status, color: '#6c757d' };
+            chartLabels.push(config.label);
+            chartData.push(count);
+            chartColors.push(config.color);
+        });
         
         try {
             complaintsData.charts.statusChart = new Chart(statusCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Open', 'Investigating', 'Resolved', 'Closed'],
+                    labels: chartLabels.length > 0 ? chartLabels : ['No Data'],
                     datasets: [{
-                        label: 'Complaints by Status',
-                        data: [
-                            statusCounts.open,
-                            statusCounts.investigating,
-                            statusCounts.resolved,
-                            statusCounts.closed
-                        ],
-                        backgroundColor: [
-                            '#FFC107',
-                            '#17A2B8',
-                            '#28A745',
-                            '#6c757d'
-                        ]
+                        label: 'Number of Complaints',
+                        data: chartData.length > 0 ? chartData : [0],
+                        backgroundColor: chartColors.length > 0 ? chartColors : ['#6c757d'],
+                        borderWidth: 0
                     }]
                 },
                 options: {
@@ -473,11 +550,28 @@ function initializeCharts() {
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' complaint' + (context.parsed.y !== 1 ? 's' : '');
+                                }
+                            }
                         }
                     },
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 11
+                                }
+                            }
                         }
                     }
                 }
