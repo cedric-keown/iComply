@@ -150,7 +150,7 @@ BEGIN
     RETURN QUERY
     SELECT 
         r.id,
-        COALESCE(up.first_name || ' ' || up.surname, 'Unknown') as rep_name,
+        COALESCE(r.first_name || ' ' || r.surname, up.first_name || ' ' || up.last_name, 'Unknown') as rep_name,
         (calculate_cpd_compliance(r.id)->>'earned_hours')::NUMERIC,
         (calculate_cpd_compliance(r.id)->>'required_hours')::NUMERIC,
         (calculate_cpd_compliance(r.id)->>'earned_ethics')::NUMERIC,
@@ -239,93 +239,102 @@ SET search_path = public
 AS $$
 BEGIN
     RETURN QUERY
-    -- CPD Deadlines
     SELECT 
-        'CPD Requirement'::TEXT,
-        cr.due_date,
-        r.id,
-        COALESCE(up.first_name || ' ' || up.surname, 'Unknown') as rep_name,
-        'CPD Year ' || cr.year::TEXT as item_name,
-        CASE 
-            WHEN cr.due_date - CURRENT_DATE <= 30 THEN 'high'
-            WHEN cr.due_date - CURRENT_DATE <= 60 THEN 'medium'
-            ELSE 'low'
-        END as priority,
-        (cr.due_date - CURRENT_DATE)::INTEGER as days_until
-    FROM cpd_requirements cr
-    JOIN representatives r ON cr.representative_id = r.id
-    LEFT JOIN user_profiles up ON r.user_profile_id = up.id
-    WHERE cr.due_date BETWEEN CURRENT_DATE AND CURRENT_DATE + p_days_ahead
-    AND cr.status != 'completed'
-    AND r.status = 'active'
-    
-    UNION ALL
-    
-    -- Qualification Expiry Deadlines
-    SELECT 
-        'Qualification Expiry'::TEXT,
-        q.expiry_date,
-        r.id,
-        COALESCE(up.first_name || ' ' || up.surname, 'Unknown'),
-        q.qualification_type || ' - ' || q.qualification_name,
-        CASE 
-            WHEN q.expiry_date - CURRENT_DATE <= 30 THEN 'high'
-            WHEN q.expiry_date - CURRENT_DATE <= 60 THEN 'medium'
-            ELSE 'low'
-        END,
-        (q.expiry_date - CURRENT_DATE)::INTEGER
-    FROM representative_qualifications q
-    JOIN representatives r ON q.representative_id = r.id
-    LEFT JOIN user_profiles up ON r.user_profile_id = up.id
-    WHERE q.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + p_days_ahead
-    AND q.status = 'active'
-    AND r.status = 'active'
-    
-    UNION ALL
-    
-    -- Document Expiry Deadlines
-    SELECT 
-        'Document Expiry'::TEXT,
-        d.expiry_date,
-        r.id,
-        COALESCE(up.first_name || ' ' || up.surname, 'Unknown'),
-        d.document_type || ' - ' || d.document_name,
-        CASE 
-            WHEN d.expiry_date - CURRENT_DATE <= 15 THEN 'high'
-            WHEN d.expiry_date - CURRENT_DATE <= 30 THEN 'medium'
-            ELSE 'low'
-        END,
-        (d.expiry_date - CURRENT_DATE)::INTEGER
-    FROM representative_documents d
-    JOIN representatives r ON d.representative_id = r.id
-    LEFT JOIN user_profiles up ON r.user_profile_id = up.id
-    WHERE d.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + p_days_ahead
-    AND d.status = 'current'
-    AND r.status = 'active'
-    
-    UNION ALL
-    
-    -- FICA Expiry Deadlines
-    SELECT 
-        'FICA Expiry'::TEXT,
-        f.expiry_date,
-        r.id,
-        COALESCE(up.first_name || ' ' || up.surname, 'Unknown'),
-        'Client: ' || f.client_name,
-        CASE 
-            WHEN f.expiry_date - CURRENT_DATE <= 30 THEN 'high'
-            WHEN f.expiry_date - CURRENT_DATE <= 60 THEN 'medium'
-            ELSE 'low'
-        END,
-        (f.expiry_date - CURRENT_DATE)::INTEGER
-    FROM client_fica_records f
-    JOIN representatives r ON f.representative_id = r.id
-    LEFT JOIN user_profiles up ON r.user_profile_id = up.id
-    WHERE f.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + p_days_ahead
-    AND f.verification_status = 'verified'
-    AND r.status = 'active'
-    
-    ORDER BY deadline_date ASC, priority DESC;
+        combined_deadlines.deadline_type,
+        combined_deadlines.deadline_date,
+        combined_deadlines.rep_id,
+        combined_deadlines.rep_name,
+        combined_deadlines.item_name,
+        combined_deadlines.priority,
+        combined_deadlines.days_until
+    FROM (
+        -- CPD Deadlines
+        SELECT 
+            'CPD Requirement'::TEXT as deadline_type,
+            cr.due_date as deadline_date,
+            r.id as rep_id,
+            COALESCE(r.first_name || ' ' || r.surname, up.first_name || ' ' || up.last_name, 'Unknown') as rep_name,
+            'CPD Year ' || cr.year::TEXT as item_name,
+            CASE 
+                WHEN cr.due_date - CURRENT_DATE <= 30 THEN 'high'
+                WHEN cr.due_date - CURRENT_DATE <= 60 THEN 'medium'
+                ELSE 'low'
+            END as priority,
+            (cr.due_date - CURRENT_DATE)::INTEGER as days_until
+        FROM cpd_requirements cr
+        JOIN representatives r ON cr.representative_id = r.id
+        LEFT JOIN user_profiles up ON r.user_profile_id = up.id
+        WHERE cr.due_date BETWEEN CURRENT_DATE AND CURRENT_DATE + p_days_ahead
+        AND cr.status != 'completed'
+        AND r.status = 'active'
+        
+        UNION ALL
+        
+        -- Qualification Expiry Deadlines
+        SELECT 
+            'Qualification Expiry'::TEXT,
+            q.expiry_date,
+            r.id,
+            COALESCE(r.first_name || ' ' || r.surname, up.first_name || ' ' || up.last_name, 'Unknown'),
+            q.qualification_type || ' - ' || q.qualification_name,
+            CASE 
+                WHEN q.expiry_date - CURRENT_DATE <= 30 THEN 'high'
+                WHEN q.expiry_date - CURRENT_DATE <= 60 THEN 'medium'
+                ELSE 'low'
+            END,
+            (q.expiry_date - CURRENT_DATE)::INTEGER
+        FROM representative_qualifications q
+        JOIN representatives r ON q.representative_id = r.id
+        LEFT JOIN user_profiles up ON r.user_profile_id = up.id
+        WHERE q.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + p_days_ahead
+        AND q.status = 'active'
+        AND r.status = 'active'
+        
+        UNION ALL
+        
+        -- Document Expiry Deadlines
+        SELECT 
+            'Document Expiry'::TEXT,
+            d.expiry_date,
+            r.id,
+            COALESCE(r.first_name || ' ' || r.surname, up.first_name || ' ' || up.last_name, 'Unknown'),
+            d.document_type || ' - ' || d.document_name,
+            CASE 
+                WHEN d.expiry_date - CURRENT_DATE <= 15 THEN 'high'
+                WHEN d.expiry_date - CURRENT_DATE <= 30 THEN 'medium'
+                ELSE 'low'
+            END,
+            (d.expiry_date - CURRENT_DATE)::INTEGER
+        FROM representative_documents d
+        JOIN representatives r ON d.representative_id = r.id
+        LEFT JOIN user_profiles up ON r.user_profile_id = up.id
+        WHERE d.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + p_days_ahead
+        AND d.status = 'current'
+        AND r.status = 'active'
+        
+        UNION ALL
+        
+        -- FICA Expiry Deadlines
+        SELECT 
+            'FICA Expiry'::TEXT,
+            f.expiry_date,
+            r.id,
+            COALESCE(r.first_name || ' ' || r.surname, up.first_name || ' ' || up.last_name, 'Unknown'),
+            'Client: ' || f.client_name,
+            CASE 
+                WHEN f.expiry_date - CURRENT_DATE <= 30 THEN 'high'
+                WHEN f.expiry_date - CURRENT_DATE <= 60 THEN 'medium'
+                ELSE 'low'
+            END,
+            (f.expiry_date - CURRENT_DATE)::INTEGER
+        FROM client_fica_records f
+        JOIN representatives r ON f.representative_id = r.id
+        LEFT JOIN user_profiles up ON r.user_profile_id = up.id
+        WHERE f.expiry_date BETWEEN CURRENT_DATE AND CURRENT_DATE + p_days_ahead
+        AND f.verification_status = 'verified'
+        AND r.status = 'active'
+    ) combined_deadlines
+    ORDER BY combined_deadlines.deadline_date ASC, combined_deadlines.priority DESC;
 END;
 $$;
 
@@ -343,7 +352,7 @@ DECLARE
     v_rep RECORD;
     v_compliance JSON;
 BEGIN
-    SELECT r.*, up.first_name, up.surname, up.email
+    SELECT r.*, up.first_name as up_first_name, up.last_name as up_last_name, up.email as up_email
     INTO v_rep
     FROM representatives r
     LEFT JOIN user_profiles up ON r.user_profile_id = up.id

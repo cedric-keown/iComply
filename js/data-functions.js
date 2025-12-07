@@ -1049,7 +1049,7 @@ var _dataFunctions = function () {
          */
         getUpcomingDeadlines: async function (days = 90, token = null) {
             return await this.callFunction('get_upcoming_deadlines', {
-                p_days: days
+                p_days_ahead: days
             }, token);
         },
 
