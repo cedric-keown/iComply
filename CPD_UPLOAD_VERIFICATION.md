@@ -160,7 +160,7 @@ Displays:
    - certificate_attached (true if file selected)
 5. ✅ Calls dataFunctions.createCpdActivity(activityData)
 6. ✅ Creates activity record in database
-7. ✅ Refreshes materialized view (refresh_cpd_progress)
+7. ✅ Refreshes materialized view (refresh_cpd_progress_summary)
 ```
 
 **✅ Success Response:**
