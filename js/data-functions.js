@@ -845,17 +845,18 @@ var _dataFunctions = function () {
         },
 
         updateComplaint: async function (id, data, token = null) {
+            // Don't convert empty strings to null - send actual values
             return await this.callFunction('update_complaint', {
                 p_id: id,
-                p_status: data.status || null,
-                p_priority: data.priority || null,
-                p_assigned_to: data.assigned_to || null,
-                p_investigation_notes: data.investigation_notes || null,
-                p_resolution_description: data.resolution_description || null,
-                p_resolution_date: data.resolution_date || null,
-                p_acknowledgement_sent_date: data.acknowledgement_sent_date || null,
-                p_root_cause: data.root_cause || null,
-                p_preventative_action: data.preventative_action || null
+                p_status: data.status !== undefined ? data.status : null,
+                p_priority: data.priority !== undefined ? data.priority : null,
+                p_assigned_to: data.assigned_to !== undefined && data.assigned_to !== '' ? data.assigned_to : null,
+                p_investigation_notes: data.investigation_notes !== undefined ? data.investigation_notes : null,
+                p_resolution_description: data.resolution_description !== undefined ? data.resolution_description : null,
+                p_resolution_date: data.resolution_date !== undefined && data.resolution_date !== '' ? data.resolution_date : null,
+                p_acknowledgement_sent_date: data.acknowledgement_sent_date !== undefined && data.acknowledgement_sent_date !== '' ? data.acknowledgement_sent_date : null,
+                p_root_cause: data.root_cause !== undefined ? data.root_cause : null,
+                p_preventative_action: data.preventative_action !== undefined ? data.preventative_action : null
             }, token);
         },
 

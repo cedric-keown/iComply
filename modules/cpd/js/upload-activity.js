@@ -30,6 +30,8 @@ async function initializeUploadActivity() {
     setupFormValidation();
     setupHoursValidation();
     setupProviderCustomInput();
+    setupCertificateUpload();
+    setupUploadMethodSwitch();
 }
 
 // Export for use by tab switching logic in cpd-dashboard.js
@@ -358,4 +360,171 @@ async function submitActivity() {
         });
     }
 }
+
+/**
+ * Setup Upload Method Switch
+ */
+function setupUploadMethodSwitch() {
+    const methodCards = document.querySelectorAll('.upload-method-card');
+    const certificateForm = document.getElementById('certificateUploadForm');
+    const manualForm = document.getElementById('manualEntryForm');
+    
+    methodCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Remove active from all
+            methodCards.forEach(c => c.classList.remove('active'));
+            // Add active to clicked
+            this.classList.add('active');
+            
+            const method = this.dataset.method;
+            if (method === 'certificate') {
+                certificateForm?.classList.remove('d-none');
+                manualForm?.classList.add('d-none');
+            } else {
+                certificateForm?.classList.add('d-none');
+                manualForm?.classList.remove('d-none');
+            }
+        });
+    });
+}
+
+/**
+ * Setup Certificate Upload
+ */
+function setupCertificateUpload() {
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('certificateFile');
+    const browseButton = uploadZone?.querySelector('.btn-primary');
+    
+    if (!uploadZone || !fileInput) return;
+    
+    // Click browse button → trigger file input
+    if (browseButton) {
+        browseButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            fileInput.click();
+        });
+    }
+    
+    // Click upload zone → trigger file input
+    uploadZone.addEventListener('click', (e) => {
+        if (e.target === uploadZone || e.target.closest('.fa-cloud-upload-alt')) {
+            fileInput.click();
+        }
+    });
+    
+    // Handle file selection
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleFileSelection(file);
+        }
+    });
+    
+    // Drag & drop handlers
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+    });
+    
+    uploadZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+    });
+    
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            // Set the file to the input
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+            
+            handleFileSelection(file);
+        }
+    });
+}
+
+/**
+ * Handle File Selection
+ */
+function handleFileSelection(file) {
+    const uploadZone = document.getElementById('uploadZone');
+    if (!uploadZone) return;
+    
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Invalid File Type',
+            text: 'Please upload a PDF, JPG, or PNG file.'
+        });
+        return;
+    }
+    
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+        Swal.fire({
+            icon: 'error',
+            title: 'File Too Large',
+            text: 'File size must be less than 5MB.'
+        });
+        return;
+    }
+    
+    // Display file info
+    const fileIcon = file.type === 'application/pdf' ? 'fa-file-pdf' : 'fa-file-image';
+    const fileSize = (file.size / 1024).toFixed(2) + ' KB';
+    
+    uploadZone.innerHTML = `
+        <div class="text-center py-4">
+            <i class="fas ${fileIcon} fa-4x text-success mb-3"></i>
+            <h5 class="mb-2">${file.name}</h5>
+            <p class="text-muted mb-3">${fileSize}</p>
+            <button class="btn btn-outline-secondary btn-sm" onclick="clearCertificateFile()">
+                <i class="fas fa-times me-1"></i>Remove
+            </button>
+            <button class="btn btn-outline-primary btn-sm ms-2" onclick="document.getElementById('certificateFile').click()">
+                <i class="fas fa-sync me-1"></i>Replace
+            </button>
+        </div>
+    `;
+    
+    console.log('Certificate file selected:', file.name, fileSize);
+}
+
+/**
+ * Clear Certificate File
+ */
+function clearCertificateFile() {
+    const fileInput = document.getElementById('certificateFile');
+    const uploadZone = document.getElementById('uploadZone');
+    
+    if (fileInput) {
+        fileInput.value = '';
+    }
+    
+    if (uploadZone) {
+        uploadZone.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-cloud-upload-alt fa-4x text-muted mb-3"></i>
+                <p class="mb-2"><strong>Drag & drop your certificate here</strong></p>
+                <p class="text-muted mb-3">or</p>
+                <button class="btn btn-primary">Browse Files</button>
+                <p class="mt-3 small text-muted">PDF, JPG, PNG - Max 5MB</p>
+            </div>
+        `;
+        
+        // Re-setup handlers
+        setupCertificateUpload();
+    }
+}
+
+// Export for global access
+window.clearCertificateFile = clearCertificateFile;
 

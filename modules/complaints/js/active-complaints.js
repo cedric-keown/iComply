@@ -790,18 +790,20 @@ async function saveComplaintChanges(event) {
             throw new Error('dataFunctions is not available');
         }
         
-        // Collect form data
+        // Collect form data - send actual values, not null
         const formData = {
-            status: document.getElementById('editComplaintStatus').value || null,
-            priority: document.getElementById('editComplaintPriority').value || null,
-            assigned_to: document.getElementById('editComplaintAssignedTo').value || null,
-            acknowledgement_sent_date: document.getElementById('editComplaintAckDate').value || null,
-            resolution_date: document.getElementById('editComplaintResolutionDate').value || null,
-            investigation_notes: document.getElementById('editComplaintInvestigationNotes').value || null,
-            resolution_description: document.getElementById('editComplaintResolutionDescription').value || null,
-            root_cause: document.getElementById('editComplaintRootCause').value || null,
-            preventative_action: document.getElementById('editComplaintPreventativeAction').value || null
+            status: document.getElementById('editComplaintStatus').value,
+            priority: document.getElementById('editComplaintPriority').value,
+            assigned_to: document.getElementById('editComplaintAssignedTo').value,
+            acknowledgement_sent_date: document.getElementById('editComplaintAckDate').value,
+            resolution_date: document.getElementById('editComplaintResolutionDate').value,
+            investigation_notes: document.getElementById('editComplaintInvestigationNotes').value,
+            resolution_description: document.getElementById('editComplaintResolutionDescription').value,
+            root_cause: document.getElementById('editComplaintRootCause').value,
+            preventative_action: document.getElementById('editComplaintPreventativeAction').value
         };
+        
+        console.log('Saving complaint data:', complaintId, formData);
         
         // Show loading
         Swal.fire({
@@ -814,14 +816,33 @@ async function saveComplaintChanges(event) {
         });
         
         // Update complaint
-        await dataFunctionsToUse.updateComplaint(complaintId, formData);
+        const updateResult = await dataFunctionsToUse.updateComplaint(complaintId, formData);
+        console.log('Update result:', updateResult);
+        
+        // Check if update was successful
+        let success = false;
+        if (updateResult) {
+            // Handle different response formats
+            if (updateResult.success === true) {
+                success = true;
+            } else if (updateResult.data && updateResult.data.success === true) {
+                success = true;
+            } else if (Array.isArray(updateResult) && updateResult[0]?.success === true) {
+                success = true;
+            }
+        }
+        
+        if (!success) {
+            const errorMsg = updateResult?.error || updateResult?.data?.error || updateResult?.message || 'Update failed';
+            throw new Error(errorMsg);
+        }
         
         // Close modal
         const editModal = bootstrap.Modal.getInstance(document.getElementById('editComplaintModal'));
         if (editModal) editModal.hide();
         
         // Show success
-        Swal.fire({
+        await Swal.fire({
             icon: 'success',
             title: 'Success',
             text: 'Complaint updated successfully',
