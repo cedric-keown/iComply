@@ -339,26 +339,47 @@ function updateStatusTimeline(summary) {
     // Received = total complaints
     if (receivedEl) {
         receivedEl.textContent = summary.total_complaints || 0;
+        receivedEl.innerHTML = summary.total_complaints || 0; // Try innerHTML too
         console.log('Set received:', summary.total_complaints);
+        console.log('Verify received element value:', receivedEl.textContent, receivedEl.innerHTML);
+        console.log('Received element styles:', window.getComputedStyle(receivedEl).display, window.getComputedStyle(receivedEl).visibility, window.getComputedStyle(receivedEl).opacity);
     }
     if (acknowledgedEl) {
         acknowledgedEl.textContent = summary.acknowledged_complaints || 0;
+        acknowledgedEl.innerHTML = summary.acknowledged_complaints || 0;
         console.log('Set acknowledged:', summary.acknowledged_complaints);
+        console.log('Verify acknowledged element value:', acknowledgedEl.textContent);
     }
     if (investigatingEl) {
         investigatingEl.textContent = summary.investigating_complaints || 0;
+        investigatingEl.innerHTML = summary.investigating_complaints || 0;
         console.log('Set investigating:', summary.investigating_complaints);
+        console.log('Verify investigating element value:', investigatingEl.textContent);
     }
     if (resolvedEl) {
         resolvedEl.textContent = summary.resolved_complaints || 0;
+        resolvedEl.innerHTML = summary.resolved_complaints || 0;
         console.log('Set resolved:', summary.resolved_complaints);
+        console.log('Verify resolved element value:', resolvedEl.textContent);
     }
     if (closedEl) {
         closedEl.textContent = summary.closed_complaints || 0;
+        closedEl.innerHTML = summary.closed_complaints || 0;
         console.log('Set closed:', summary.closed_complaints);
+        console.log('Verify closed element value:', closedEl.textContent);
     }
     
-    console.log('Status timeline updated');
+    console.log('Status timeline updated - checking elements in 1 second...');
+    
+    // Verify after 1 second to see if values persist
+    setTimeout(() => {
+        console.log('=== VERIFICATION (1 second later) ===');
+        if (receivedEl) console.log('Received still shows:', receivedEl.textContent);
+        if (acknowledgedEl) console.log('Acknowledged still shows:', acknowledgedEl.textContent);
+        if (investigatingEl) console.log('Investigating still shows:', investigatingEl.textContent);
+        if (resolvedEl) console.log('Resolved still shows:', resolvedEl.textContent);
+        if (closedEl) console.log('Closed still shows:', closedEl.textContent);
+    }, 1000);
 }
 
 /**
