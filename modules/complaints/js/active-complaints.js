@@ -635,11 +635,61 @@ function renderComplaintDetails(complaint, communications = []) {
 async function editComplaintFromCard(complaintId) {
     if (!complaintId) return;
     
-    // Store complaint ID for edit function
-    document.getElementById('complaintDetailModal').dataset.complaintId = complaintId;
-    
-    // Call the edit function
-    await editComplaintFromModal();
+    try {
+        const dataFunctionsToUse = typeof dataFunctions !== 'undefined' 
+            ? dataFunctions 
+            : (window.dataFunctions || window.parent?.dataFunctions);
+        
+        if (!dataFunctionsToUse) {
+            throw new Error('dataFunctions is not available');
+        }
+        
+        // Mark that we did NOT come from detail modal
+        document.getElementById('editComplaintModal').dataset.fromDetailModal = 'false';
+        
+        // Load complaint data
+        const complaintResult = await dataFunctionsToUse.getComplaint(complaintId);
+        let complaint = complaintResult;
+        if (complaintResult && complaintResult.data) {
+            complaint = complaintResult.data;
+        } else if (complaintResult && typeof complaintResult === 'object' && !Array.isArray(complaintResult)) {
+            complaint = complaintResult;
+        }
+        
+        if (!complaint) {
+            throw new Error('Complaint not found');
+        }
+        
+        // Load users for assignment dropdown
+        let users = [];
+        try {
+            const usersResult = await dataFunctionsToUse.getUserProfiles();
+            if (usersResult) {
+                users = Array.isArray(usersResult) ? usersResult : 
+                       (usersResult.data ? (Array.isArray(usersResult.data) ? usersResult.data : [usersResult.data]) : []);
+            }
+        } catch (error) {
+            console.warn('Could not load users:', error);
+        }
+        
+        // Populate edit form
+        populateEditForm(complaint, users);
+        
+        // Store complaint ID
+        document.getElementById('editComplaintId').value = complaintId;
+        
+        // Show edit modal
+        const editModal = new bootstrap.Modal(document.getElementById('editComplaintModal'));
+        editModal.show();
+        
+    } catch (error) {
+        console.error('Error loading complaint for editing:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to load complaint for editing'
+        });
+    }
 }
 
 /**
@@ -664,6 +714,9 @@ async function editComplaintFromModal() {
         if (!dataFunctionsToUse) {
             throw new Error('dataFunctions is not available');
         }
+        
+        // Mark that we came from the detail modal
+        document.getElementById('editComplaintModal').dataset.fromDetailModal = 'true';
         
         // Close the detail modal
         const detailModal = bootstrap.Modal.getInstance(document.getElementById('complaintDetailModal'));
@@ -853,13 +906,18 @@ async function saveComplaintChanges(event) {
         // Reload complaints list
         await loadActiveComplaints();
         
-        // If detail modal was open, refresh it
-        const detailModal = document.getElementById('complaintDetailModal');
-        if (detailModal && detailModal.classList.contains('show')) {
+        // Check if we came from the detail modal
+        const editModalEl = document.getElementById('editComplaintModal');
+        const fromDetailModal = editModalEl && editModalEl.dataset.fromDetailModal === 'true';
+        
+        if (fromDetailModal) {
+            // Clear the flag
+            delete editModalEl.dataset.fromDetailModal;
+            
             // Re-open detail view with updated data
             setTimeout(() => {
                 viewComplaintDetails(complaintId);
-            }, 500);
+            }, 300);
         }
         
     } catch (error) {
