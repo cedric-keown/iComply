@@ -427,8 +427,8 @@ function updateRecentActivity() {
                             <p class="mb-1 text-muted">${complaint.complaint_category || 'N/A'}</p>
                             <p class="mb-0 small text-muted">${date} • ${priorityBadge} • ${statusBadge}</p>
                         </div>
-                        <div class="flex-shrink-0">
-                            <button class="btn btn-sm btn-outline-primary" onclick="viewComplaintDetails('${complaint.id}')">View</button>
+                        <div class="flex-shrink-0" style="width: 70px; text-align: right;">
+                            <button class="btn btn-sm btn-outline-primary" style="width: 65px;" onclick="viewComplaintDetails('${complaint.id}')">View</button>
                         </div>
                     </div>
                 </div>
