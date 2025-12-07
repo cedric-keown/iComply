@@ -90,6 +90,11 @@ async function loadComplaintsDashboard() {
         updateRecentActivity();
         initializeDashboardCharts(); // Only initialize charts on Dashboard tab
         
+        // Update status timeline with a slight delay to ensure DOM is ready
+        setTimeout(() => {
+            updateStatusTimeline(complaintsData.summary);
+        }, 100);
+        
         // Update navbar badges
         if (typeof updateNavbarBadges === 'function') {
             updateNavbarBadges(dataFunctionsToUse);
@@ -291,8 +296,7 @@ function updateDashboardStats() {
         }
     }
     
-    // Update status timeline
-    updateStatusTimeline(summary);
+    // Status timeline will be updated with delay in loadComplaintsDashboard
     
     // Update FAIS status
     const faisStatusEl = document.getElementById('fais-status');
