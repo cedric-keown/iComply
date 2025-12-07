@@ -348,12 +348,14 @@ function updateRecentActivity() {
             <div class="activity-item card mb-3">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
+                        <div class="flex-grow-1 me-3">
                             <h6 class="mb-1">${complaint.complaint_reference_number || 'N/A'} - ${complaint.complainant_name || 'Unknown'}</h6>
                             <p class="mb-1 text-muted">${complaint.complaint_category || 'N/A'}</p>
                             <p class="mb-0 small text-muted">${date} • ${priorityBadge} • ${statusBadge}</p>
                         </div>
-                        <button class="btn btn-sm btn-outline-primary" onclick="viewComplaintDetails('${complaint.id}')">View</button>
+                        <div class="flex-shrink-0">
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewComplaintDetails('${complaint.id}')">View</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -498,6 +500,9 @@ function initializeCharts() {
     
     // Status Chart
     const statusCtx = document.getElementById('statusChart');
+    console.log('Status chart canvas element:', statusCtx);
+    console.log('Complaints data for status chart:', complaintsData.complaints.length, complaintsData.complaints);
+    
     if (statusCtx) {
         if (complaintsData.charts.statusChart) {
             complaintsData.charts.statusChart.destroy();
@@ -509,6 +514,8 @@ function initializeCharts() {
             const status = (c.status || 'unknown').toLowerCase();
             statusCounts[status] = (statusCounts[status] || 0) + 1;
         });
+        
+        console.log('Status counts for chart:', statusCounts);
         
         // Prepare data for chart - only show statuses that have complaints
         const chartData = [];
@@ -531,6 +538,8 @@ function initializeCharts() {
             chartData.push(count);
             chartColors.push(config.color);
         });
+        
+        console.log('Creating status chart with data:', chartData, 'labels:', chartLabels);
         
         try {
             complaintsData.charts.statusChart = new Chart(statusCtx, {
