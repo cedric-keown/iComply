@@ -310,7 +310,12 @@ function updateDashboardStats() {
  * Update Status Timeline
  */
 function updateStatusTimeline(summary) {
-    if (!summary) return;
+    console.log('Updating status timeline with summary:', summary);
+    
+    if (!summary) {
+        console.warn('No summary data for status timeline');
+        return;
+    }
     
     // Use the aggregated counts from our summary
     const receivedEl = document.getElementById('status-received');
@@ -319,12 +324,37 @@ function updateStatusTimeline(summary) {
     const resolvedEl = document.getElementById('status-resolved');
     const closedEl = document.getElementById('status-closed');
     
+    console.log('Status timeline elements found:', {
+        received: !!receivedEl,
+        acknowledged: !!acknowledgedEl,
+        investigating: !!investigatingEl,
+        resolved: !!resolvedEl,
+        closed: !!closedEl
+    });
+    
     // Received = total complaints
-    if (receivedEl) receivedEl.textContent = summary.total_complaints || 0;
-    if (acknowledgedEl) acknowledgedEl.textContent = summary.acknowledged_complaints || 0;
-    if (investigatingEl) investigatingEl.textContent = summary.investigating_complaints || 0;
-    if (resolvedEl) resolvedEl.textContent = summary.resolved_complaints || 0;
-    if (closedEl) closedEl.textContent = summary.closed_complaints || 0;
+    if (receivedEl) {
+        receivedEl.textContent = summary.total_complaints || 0;
+        console.log('Set received:', summary.total_complaints);
+    }
+    if (acknowledgedEl) {
+        acknowledgedEl.textContent = summary.acknowledged_complaints || 0;
+        console.log('Set acknowledged:', summary.acknowledged_complaints);
+    }
+    if (investigatingEl) {
+        investigatingEl.textContent = summary.investigating_complaints || 0;
+        console.log('Set investigating:', summary.investigating_complaints);
+    }
+    if (resolvedEl) {
+        resolvedEl.textContent = summary.resolved_complaints || 0;
+        console.log('Set resolved:', summary.resolved_complaints);
+    }
+    if (closedEl) {
+        closedEl.textContent = summary.closed_complaints || 0;
+        console.log('Set closed:', summary.closed_complaints);
+    }
+    
+    console.log('Status timeline updated');
 }
 
 /**
