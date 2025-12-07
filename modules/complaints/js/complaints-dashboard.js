@@ -24,6 +24,25 @@ async function initializeComplaintsDashboard() {
         }
     }
     
+    // Initialize Analysis & Trends tab charts when shown
+    const analysisTab = document.getElementById('analysis-tab');
+    if (analysisTab) {
+        analysisTab.addEventListener('shown.bs.tab', function() {
+            console.log('Analysis tab shown, initializing charts...');
+            // Load complaints data if not already loaded
+            if (!complaintsData.complaints || complaintsData.complaints.length === 0) {
+                loadComplaintsDashboard().then(() => {
+                    // Initialize analysis charts after data loads
+                    initializeAnalysisCharts();
+                });
+            } else {
+                // Data already loaded, just initialize analysis charts
+                console.log('Data already loaded, initializing analysis charts');
+                initializeAnalysisCharts();
+            }
+        });
+    }
+    
     setupActivityFeed();
 }
 
@@ -69,7 +88,7 @@ async function loadComplaintsDashboard() {
         // Update dashboard UI
         updateDashboardStats();
         updateRecentActivity();
-        initializeCharts();
+        initializeDashboardCharts(); // Only initialize charts on Dashboard tab
         
         // Update navbar badges
         if (typeof updateNavbarBadges === 'function') {
@@ -364,9 +383,9 @@ function updateRecentActivity() {
 }
 
 /**
- * Initialize Charts
+ * Initialize Dashboard Charts (Dashboard tab only)
  */
-function initializeCharts() {
+function initializeDashboardCharts() {
     const summary = complaintsData.summary;
     if (!summary) return;
     
@@ -384,7 +403,7 @@ function initializeCharts() {
         window.Chart = ChartToUse;
     }
     
-    // Category Chart
+    // Category Chart (on Dashboard tab)
     const ctx = document.getElementById('categoryChart');
     if (ctx) {
         // Destroy existing chart if it exists
@@ -497,8 +516,33 @@ function initializeCharts() {
             console.error('Error creating category chart:', error);
         }
     }
+}
+
+/**
+ * Initialize Analysis Charts (Analysis & Trends tab only)
+ */
+function initializeAnalysisCharts() {
+    const summary = complaintsData.summary;
+    if (!summary) {
+        console.warn('No summary data available for analysis charts');
+        return;
+    }
     
-    // Status Chart
+    // Check if Chart.js is available
+    const ChartToUse = typeof Chart !== 'undefined' ? Chart : 
+                      (window.parent && typeof window.parent.Chart !== 'undefined' ? window.parent.Chart : undefined);
+    
+    if (!ChartToUse) {
+        console.warn('Chart.js not available, skipping chart initialization');
+        return;
+    }
+    
+    // Make Chart available if needed
+    if (typeof Chart === 'undefined' && ChartToUse) {
+        window.Chart = ChartToUse;
+    }
+    
+    // Status Chart (on Analysis & Trends tab)
     const statusCtx = document.getElementById('statusChart');
     console.log('Status chart canvas element:', statusCtx);
     console.log('Complaints data for status chart:', complaintsData.complaints.length, complaintsData.complaints);
