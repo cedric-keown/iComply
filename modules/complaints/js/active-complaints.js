@@ -302,17 +302,24 @@ async function viewComplaintDetails(complaintId) {
         `;
         modal.show();
         
-        // Load complaint details
+        // Load complaint details - FRESH from database
         const complaintResult = await dataFunctionsToUse.getComplaint(complaintId);
-        let complaint = complaintResult;
-        if (complaintResult && complaintResult.data) {
-            complaint = complaintResult.data;
-        } else if (complaintResult && typeof complaintResult === 'object' && !Array.isArray(complaintResult)) {
-            complaint = complaintResult;
+        console.log('Complaint detail result:', complaintResult);
+        
+        // Parse the response - function now returns JSON
+        let complaint = null;
+        if (Array.isArray(complaintResult) && complaintResult.length > 0) {
+            // PostgREST returns array for functions
+            complaint = complaintResult[0];
+        } else if (complaintResult && typeof complaintResult === 'object') {
+            // Direct object
+            complaint = complaintResult.data || complaintResult;
         }
         
-        if (!complaint) {
-            throw new Error('Complaint not found');
+        console.log('Parsed complaint for detail view:', complaint);
+        
+        if (!complaint || complaint.error) {
+            throw new Error(complaint?.error || 'Complaint not found');
         }
         
         // Load communications if available
@@ -647,17 +654,25 @@ async function editComplaintFromCard(complaintId) {
         // Mark that we did NOT come from detail modal
         document.getElementById('editComplaintModal').dataset.fromDetailModal = 'false';
         
-        // Load complaint data
+        // Load complaint data - FRESH from database
+        console.log('Loading complaint for editing (from card):', complaintId);
         const complaintResult = await dataFunctionsToUse.getComplaint(complaintId);
-        let complaint = complaintResult;
-        if (complaintResult && complaintResult.data) {
-            complaint = complaintResult.data;
-        } else if (complaintResult && typeof complaintResult === 'object' && !Array.isArray(complaintResult)) {
-            complaint = complaintResult;
+        console.log('Raw complaint result (from card):', complaintResult);
+        
+        // Parse the response - function now returns JSON
+        let complaint = null;
+        if (Array.isArray(complaintResult) && complaintResult.length > 0) {
+            // PostgREST returns array for functions
+            complaint = complaintResult[0];
+        } else if (complaintResult && typeof complaintResult === 'object') {
+            // Direct object
+            complaint = complaintResult.data || complaintResult;
         }
         
-        if (!complaint) {
-            throw new Error('Complaint not found');
+        console.log('Parsed complaint for edit form (from card):', complaint);
+        
+        if (!complaint || complaint.error) {
+            throw new Error(complaint?.error || 'Complaint not found');
         }
         
         // Load users for assignment dropdown
@@ -722,17 +737,25 @@ async function editComplaintFromModal() {
         const detailModal = bootstrap.Modal.getInstance(document.getElementById('complaintDetailModal'));
         if (detailModal) detailModal.hide();
         
-        // Load complaint data
+        // Load complaint data - FRESH from database
+        console.log('Loading complaint for editing (from modal):', complaintId);
         const complaintResult = await dataFunctionsToUse.getComplaint(complaintId);
-        let complaint = complaintResult;
-        if (complaintResult && complaintResult.data) {
-            complaint = complaintResult.data;
-        } else if (complaintResult && typeof complaintResult === 'object' && !Array.isArray(complaintResult)) {
-            complaint = complaintResult;
+        console.log('Raw complaint result (from modal):', complaintResult);
+        
+        // Parse the response - function now returns JSON
+        let complaint = null;
+        if (Array.isArray(complaintResult) && complaintResult.length > 0) {
+            // PostgREST returns array for functions
+            complaint = complaintResult[0];
+        } else if (complaintResult && typeof complaintResult === 'object') {
+            // Direct object
+            complaint = complaintResult.data || complaintResult;
         }
         
-        if (!complaint) {
-            throw new Error('Complaint not found');
+        console.log('Parsed complaint for edit form (from modal):', complaint);
+        
+        if (!complaint || complaint.error) {
+            throw new Error(complaint?.error || 'Complaint not found');
         }
         
         // Load users for assignment dropdown
@@ -779,43 +802,91 @@ async function editComplaintFromModal() {
  * Populate Edit Form
  */
 function populateEditForm(complaint, users = []) {
-    // Set form values
-    document.getElementById('editComplaintStatus').value = complaint.status || '';
-    document.getElementById('editComplaintPriority').value = complaint.priority || '';
+    console.log('Populating edit form with complaint:', complaint);
+    
+    if (!complaint) {
+        console.error('No complaint data provided to populateEditForm');
+        return;
+    }
+    
+    // Set form values with logging
+    const statusEl = document.getElementById('editComplaintStatus');
+    if (statusEl) {
+        statusEl.value = complaint.status || '';
+        console.log('Set status:', complaint.status);
+    }
+    
+    const priorityEl = document.getElementById('editComplaintPriority');
+    if (priorityEl) {
+        priorityEl.value = complaint.priority || '';
+        console.log('Set priority:', complaint.priority);
+    }
     
     // Populate assigned to dropdown
     const assignedToSelect = document.getElementById('editComplaintAssignedTo');
-    assignedToSelect.innerHTML = '<option value="">Unassigned</option>';
-    users.forEach(user => {
-        const option = document.createElement('option');
-        option.value = user.id;
-        option.textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email || user.id;
-        if (complaint.assigned_to && complaint.assigned_to === user.id) {
-            option.selected = true;
-        }
-        assignedToSelect.appendChild(option);
-    });
-    
-    // Set dates
-    if (complaint.acknowledgement_sent_date) {
-        const ackDate = new Date(complaint.acknowledgement_sent_date);
-        document.getElementById('editComplaintAckDate').value = ackDate.toISOString().split('T')[0];
-    } else {
-        document.getElementById('editComplaintAckDate').value = '';
+    if (assignedToSelect) {
+        assignedToSelect.innerHTML = '<option value="">Unassigned</option>';
+        users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email || user.id;
+            if (complaint.assigned_to && complaint.assigned_to === user.id) {
+                option.selected = true;
+            }
+            assignedToSelect.appendChild(option);
+        });
+        console.log('Set assigned_to:', complaint.assigned_to);
     }
     
-    if (complaint.resolution_date) {
-        const resDate = new Date(complaint.resolution_date);
-        document.getElementById('editComplaintResolutionDate').value = resDate.toISOString().split('T')[0];
-    } else {
-        document.getElementById('editComplaintResolutionDate').value = '';
+    // Set dates
+    const ackDateEl = document.getElementById('editComplaintAckDate');
+    if (ackDateEl) {
+        if (complaint.acknowledgement_sent_date) {
+            const ackDate = new Date(complaint.acknowledgement_sent_date);
+            ackDateEl.value = ackDate.toISOString().split('T')[0];
+            console.log('Set ack date:', ackDateEl.value);
+        } else {
+            ackDateEl.value = '';
+        }
+    }
+    
+    const resDateEl = document.getElementById('editComplaintResolutionDate');
+    if (resDateEl) {
+        if (complaint.resolution_date) {
+            const resDate = new Date(complaint.resolution_date);
+            resDateEl.value = resDate.toISOString().split('T')[0];
+            console.log('Set resolution date:', resDateEl.value);
+        } else {
+            resDateEl.value = '';
+        }
     }
     
     // Set text areas
-    document.getElementById('editComplaintInvestigationNotes').value = complaint.investigation_notes || '';
-    document.getElementById('editComplaintResolutionDescription').value = complaint.resolution_description || '';
-    document.getElementById('editComplaintRootCause').value = complaint.root_cause || '';
-    document.getElementById('editComplaintPreventativeAction').value = complaint.preventative_action || '';
+    const investigationNotesEl = document.getElementById('editComplaintInvestigationNotes');
+    if (investigationNotesEl) {
+        investigationNotesEl.value = complaint.investigation_notes || '';
+        console.log('Set investigation notes length:', (complaint.investigation_notes || '').length);
+    }
+    
+    const resolutionDescEl = document.getElementById('editComplaintResolutionDescription');
+    if (resolutionDescEl) {
+        resolutionDescEl.value = complaint.resolution_description || '';
+        console.log('Set resolution description length:', (complaint.resolution_description || '').length);
+    }
+    
+    const rootCauseEl = document.getElementById('editComplaintRootCause');
+    if (rootCauseEl) {
+        rootCauseEl.value = complaint.root_cause || '';
+        console.log('Set root cause length:', (complaint.root_cause || '').length);
+    }
+    
+    const preventativeEl = document.getElementById('editComplaintPreventativeAction');
+    if (preventativeEl) {
+        preventativeEl.value = complaint.preventative_action || '';
+        console.log('Set preventative action length:', (complaint.preventative_action || '').length);
+    }
+    
+    console.log('Form population complete');
 }
 
 /**
