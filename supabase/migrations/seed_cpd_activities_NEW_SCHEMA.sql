@@ -132,14 +132,14 @@ BEGIN
             representative_id, cpd_cycle_id, activity_date, activity_name,
             activity_type, provider_name, total_hours, ethics_hours, technical_hours,
             class_1_applicable, class_2_applicable, class_3_applicable,
-            verifiable, certificate_attached, status
+            verifiable, certificate_attached, status, verified_date
         ) VALUES
             (v_rep_id, v_cycle_id, '2024-09-10', 'Market Updates Webinar', 
              'webinar', 'Industry Body', 5.0, 1.5, 3.5,
-             true, true, false, true, true, 'pending'),
+             true, true, false, true, true, 'pending', NULL),
             (v_rep_id, v_cycle_id, '2024-11-15', 'Investment Basics Course', 
              'course', 'Training Provider', 7.0, 1.0, 6.0,
-             true, false, false, true, true, 'pending');
+             true, false, false, true, true, 'pending', NULL);
         
         v_activity_count := v_activity_count + 2;
         RAISE NOTICE '⏳ Rep 4: Added 2 pending activities (12 hours awaiting approval)';
@@ -165,7 +165,7 @@ BEGIN
              true, false, false, true, false, 'verified', NOW() - INTERVAL '12 days'),
             (v_rep_id, v_cycle_id, '2024-11-28', 'Industry Conference Day', 
              'conference', 'Conference Organizers', 3.0, 0.5, 2.5,
-             true, true, false, false, false, 'pending');
+             true, true, false, false, false, 'pending', NULL);
         
         v_activity_count := v_activity_count + 3;
         RAISE NOTICE '📊 Rep 5: Added 3 activities (13 hours total, mixed status)';
@@ -184,12 +184,12 @@ BEGIN
             class_1_applicable, class_2_applicable, class_3_applicable,
             verifiable, certificate_attached, status, verified_date
         ) VALUES
-            (v_rep_id, v_cycle_id, '2024-08-' || (10 + i)::text, 'Standard Training ' || i, 
+            (v_rep_id, v_cycle_id, ('2024-08-' || (10 + i)::text)::DATE, 'Standard Training ' || i, 
              'course', 'CPD Provider', (8 + (i % 4) * 2)::DECIMAL, 2.0, (6 + (i % 4) * 2)::DECIMAL,
              true, (i % 2 = 0), (i % 3 = 0), true, true, 
              CASE WHEN i % 3 = 0 THEN 'pending' ELSE 'verified' END,
              CASE WHEN i % 3 != 0 THEN NOW() - (i * 5 || ' days')::INTERVAL ELSE NULL END),
-            (v_rep_id, v_cycle_id, '2024-10-' || (5 + i)::text, 'Update Session ' || i, 
+            (v_rep_id, v_cycle_id, ('2024-10-' || (5 + i)::text)::DATE, 'Update Session ' || i, 
              'webinar', 'Industry Body', (4.0 + (i % 3))::DECIMAL, 1.0, (3.0 + (i % 3))::DECIMAL,
              true, false, false, true, (i % 2 = 0), 'verified', NOW() - (i * 3 || ' days')::INTERVAL);
         

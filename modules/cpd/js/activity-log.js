@@ -37,9 +37,13 @@ async function loadActivityLog() {
         if (cycles && cycles.length > 0) {
             activityLogCurrentCpdCycle = cycles[0];
             
-            // Get activities for current cycle
-            // TODO: Filter by current user's representative_id
-            const activitiesResult = await dataFunctions.getCpdActivities(null, activityLogCurrentCpdCycle.id);
+            // Get selected representative ID from cpdData (shared global)
+            const selectedRepId = (typeof cpdData !== 'undefined' && cpdData.selectedRepresentativeId) 
+                ? cpdData.selectedRepresentativeId 
+                : null;
+            
+            // Get activities for current cycle and selected representative
+            const activitiesResult = await dataFunctions.getCpdActivities(selectedRepId, activityLogCurrentCpdCycle.id);
             let activities = activitiesResult;
             if (activitiesResult && activitiesResult.data) {
                 activities = activitiesResult.data;

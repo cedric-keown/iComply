@@ -197,6 +197,11 @@ async function submitActivity() {
     const form = document.getElementById('cpdActivityForm');
     if (!form || !currentCpdCycle) return;
     
+    // Get selected representative from global cpdData
+    const selectedRepId = (typeof cpdData !== 'undefined' && cpdData.selectedRepresentativeId) 
+        ? cpdData.selectedRepresentativeId 
+        : currentRepresentativeId;
+    
     // Show loading
     Swal.fire({
         title: 'Submitting...',
@@ -210,7 +215,7 @@ async function submitActivity() {
     try {
         // Get form data
         const activityData = {
-            representative_id: currentRepresentativeId || null, // TODO: Get from auth context
+            representative_id: selectedRepId || null,
             cpd_cycle_id: currentCpdCycle.id,
             activity_date: document.getElementById('cpdActivityDate').value,
             activity_name: document.getElementById('cpdActivityTitle').value.trim(),

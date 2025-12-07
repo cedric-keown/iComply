@@ -1,5 +1,13 @@
 /* AI Chatbot Widget Styles */
 
+/*
+ * Z-INDEX HIERARCHY:
+ * - Navbar: 1050 (main.css)
+ * - Chatbot toggle: 1000 (below navbar)
+ * - Chatbot window: 999 (below navbar)
+ * This ensures navbar remains clickable and above chatbot
+ */
+
 /* Floating Chat Button */
 .chatbot-toggle {
     position: fixed;
@@ -13,7 +21,7 @@
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
-    z-index: 1050;
+    z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -56,13 +64,14 @@
     background: white;
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    z-index: 1049;
+    z-index: 999;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     transform: translateY(20px);
     opacity: 0;
     transition: all 0.3s ease;
+    pointer-events: auto;
 }
 
 .chatbot-window.open {

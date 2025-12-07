@@ -3,7 +3,11 @@
 let cpdData = {
     cycle: null,
     progress: null,
-    activities: []
+    activities: [],
+    representatives: [],
+    selectedRepresentativeId: null,
+    myRepresentativeId: null, // Current user's own representative
+    repComplianceStatus: {} // Cache of compliance status by rep ID
 };
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -12,7 +16,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function initializeCPDDashboard() {
     try {
+        // Load representatives first
+        await loadRepresentatives();
+        
+        // Setup representative selector
+        setupRepresentativeSelector();
+        
+        // Load CPD data for selected representative
         await loadCpdDashboardData();
+        
         updateProgressCircle();
         updateDashboardStats();
         initializeCharts();
@@ -21,6 +33,361 @@ async function initializeCPDDashboard() {
         updateCycleInfo();
     } catch (error) {
         console.error('Error initializing CPD dashboard:', error);
+    }
+}
+
+/**
+ * Load Representatives for Dropdown
+ */
+async function loadRepresentatives() {
+    try {
+        const result = await dataFunctions.getRepresentatives(null);
+        let reps = result;
+        
+        if (result && result.data) {
+            reps = result.data;
+        } else if (Array.isArray(result)) {
+            reps = result;
+        }
+        
+        cpdData.representatives = reps || [];
+        
+        // Try to auto-select current user's representative
+        if (typeof authService !== 'undefined' && authService.getCurrentUser) {
+            const currentUser = authService.getCurrentUser();
+            if (currentUser && currentUser.id) {
+                const profileResult = await dataFunctions.getUserProfile(currentUser.id);
+                let profile = profileResult;
+                
+                if (profileResult && profileResult.data) {
+                    profile = profileResult.data;
+                } else if (Array.isArray(profileResult) && profileResult.length > 0) {
+                    profile = profileResult[0];
+                }
+                
+                if (profile && profile.id) {
+                    // Find representative linked to this user
+                    const myRep = cpdData.representatives.find(r => r.user_profile_id === profile.id);
+                    if (myRep) {
+                        cpdData.myRepresentativeId = myRep.id; // Store for "My CPD" toggle
+                        cpdData.selectedRepresentativeId = myRep.id;
+                    }
+                }
+            }
+        }
+        
+        // If no auto-selection, select first representative
+        if (!cpdData.selectedRepresentativeId && cpdData.representatives.length > 0) {
+            cpdData.selectedRepresentativeId = cpdData.representatives[0].id;
+        }
+        
+        // Load CPD compliance status for all representatives
+        await loadRepresentativeComplianceStatus();
+        
+    } catch (error) {
+        console.error('Error loading representatives:', error);
+        cpdData.representatives = [];
+    }
+}
+
+/**
+ * Load CPD Compliance Status for All Representatives
+ */
+async function loadRepresentativeComplianceStatus() {
+    try {
+        if (!cpdData.cycle) return;
+        
+        // Get progress summary for all reps in current cycle
+        const summaryResult = await dataFunctions.getCpdProgressSummary(cpdData.cycle.id);
+        let summaries = summaryResult;
+        
+        if (summaryResult && summaryResult.data) {
+            summaries = summaryResult.data;
+        } else if (Array.isArray(summaryResult)) {
+            summaries = summaryResult;
+        }
+        
+        // Build compliance status cache
+        if (summaries && Array.isArray(summaries)) {
+            summaries.forEach(summary => {
+                if (summary.representative_id) {
+                    cpdData.repComplianceStatus[summary.representative_id] = {
+                        status: summary.compliance_status || 'unknown',
+                        progress: parseFloat(summary.progress_percentage || 0),
+                        hours: parseFloat(summary.total_hours_logged || 0)
+                    };
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error loading representative compliance status:', error);
+    }
+}
+
+/**
+ * Get Compliance Badge HTML
+ */
+function getComplianceBadge(repId) {
+    const compliance = cpdData.repComplianceStatus[repId];
+    if (!compliance) {
+        return '<span class="badge bg-secondary badge-sm">?</span>';
+    }
+    
+    const status = compliance.status;
+    const progress = Math.round(compliance.progress);
+    
+    if (status === 'compliant' || progress >= 100) {
+        return `<span class="badge bg-success badge-sm" title="Compliant - ${progress}%">✓ ${progress}%</span>`;
+    } else if (status === 'on_track' || progress >= 70) {
+        return `<span class="badge bg-info badge-sm" title="On Track - ${progress}%">⟳ ${progress}%</span>`;
+    } else if (status === 'at_risk' || progress >= 40) {
+        return `<span class="badge bg-warning badge-sm" title="At Risk - ${progress}%">⚠ ${progress}%</span>`;
+    } else {
+        return `<span class="badge bg-danger badge-sm" title="Critical - ${progress}%">✗ ${progress}%</span>`;
+    }
+}
+
+/**
+ * Setup Representative Selector Dropdown
+ */
+function setupRepresentativeSelector() {
+    const selector = document.getElementById('representativeSelector');
+    const searchInput = document.getElementById('repSearchInput');
+    
+    if (!selector) return;
+    
+    // Store all representatives for filtering
+    const allReps = [...cpdData.representatives].sort((a, b) => {
+        const nameA = `${a.first_name || ''} ${a.surname || ''}`.trim().toLowerCase();
+        const nameB = `${b.first_name || ''} ${b.surname || ''}`.trim().toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+    
+    // Function to populate dropdown
+    function populateDropdown(repsToShow) {
+        selector.innerHTML = '';
+        
+        if (repsToShow.length === 0) {
+            selector.innerHTML = '<option value="">No representatives found</option>';
+            return;
+        }
+        
+        repsToShow.forEach(rep => {
+            const option = document.createElement('option');
+            option.value = rep.id;
+            option.dataset.repId = rep.id;
+            
+            const name = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
+            const repNumber = rep.representative_number || 'N/A';
+            const status = rep.status || 'active';
+            
+            // Get compliance badge text
+            const compliance = cpdData.repComplianceStatus[rep.id];
+            const complianceText = compliance ? ` [${Math.round(compliance.progress)}%]` : '';
+            
+            option.textContent = `${name} (${repNumber})${complianceText} - ${status.toUpperCase()}`;
+            
+            if (rep.id === cpdData.selectedRepresentativeId) {
+                option.selected = true;
+            }
+            
+            selector.appendChild(option);
+        });
+    }
+    
+    // Initial population
+    populateDropdown(allReps);
+    
+    // Setup search/filter
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                populateDropdown(allReps);
+                return;
+            }
+            
+            const filtered = allReps.filter(rep => {
+                const name = `${rep.first_name || ''} ${rep.surname || ''}`.toLowerCase();
+                const repNumber = (rep.representative_number || '').toLowerCase();
+                const idNumber = (rep.id_number || '').toLowerCase();
+                
+                return name.includes(searchTerm) || 
+                       repNumber.includes(searchTerm) || 
+                       idNumber.includes(searchTerm);
+            });
+            
+            populateDropdown(filtered);
+            
+            // Show result count
+            if (filtered.length > 0 && searchTerm) {
+                searchInput.style.borderColor = '#198754'; // green
+            } else if (filtered.length === 0 && searchTerm) {
+                searchInput.style.borderColor = '#dc3545'; // red
+            } else {
+                searchInput.style.borderColor = '';
+            }
+        });
+        
+        // Clear search on Escape key
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                this.value = '';
+                this.style.borderColor = '';
+                populateDropdown(allReps);
+            }
+        });
+    }
+    
+    // Add change event listener
+    selector.addEventListener('change', function() {
+        cpdData.selectedRepresentativeId = this.value;
+        updateSelectedRepInfo();
+        refreshCpdData();
+    });
+    
+    // Update info display
+    updateSelectedRepInfo();
+    
+    // Update "My CPD" toggle visibility
+    updateMyRepToggle();
+}
+
+/**
+ * Update Selected Representative Info Display
+ */
+function updateSelectedRepInfo() {
+    const infoElement = document.getElementById('selectedRepInfo');
+    if (!infoElement) return;
+    
+    if (!cpdData.selectedRepresentativeId) {
+        infoElement.innerHTML = '<small class="text-muted">No representative selected</small>';
+        return;
+    }
+    
+    const selectedRep = cpdData.representatives.find(r => r.id === cpdData.selectedRepresentativeId);
+    if (!selectedRep) {
+        infoElement.innerHTML = '<small class="text-muted">Representative not found</small>';
+        return;
+    }
+    
+    const name = `${selectedRep.first_name || ''} ${selectedRep.surname || ''}`.trim() || 'Unknown';
+    const repNumber = selectedRep.representative_number || 'N/A';
+    const complianceBadge = getComplianceBadge(selectedRep.id);
+    
+    // Show if viewing your own rep
+    const isMyRep = selectedRep.id === cpdData.myRepresentativeId;
+    const myRepBadge = isMyRep ? '<span class="badge bg-primary badge-sm ms-1">YOU</span>' : '';
+    
+    infoElement.innerHTML = `
+        <small>
+            <i class="fas fa-user-circle me-1"></i>
+            <strong>${name}</strong> (${repNumber})
+            ${myRepBadge}
+            ${complianceBadge}
+        </small>
+    `;
+}
+
+/**
+ * Update My Representative Toggle Button
+ */
+function updateMyRepToggle() {
+    const toggleBtn = document.getElementById('myRepToggle');
+    if (!toggleBtn) return;
+    
+    // Show/hide based on whether viewing own rep
+    if (cpdData.myRepresentativeId && cpdData.selectedRepresentativeId !== cpdData.myRepresentativeId) {
+        toggleBtn.style.display = 'inline-block';
+        toggleBtn.classList.add('btn-primary');
+        toggleBtn.classList.remove('btn-outline-primary');
+    } else {
+        // Still show but disabled/styled differently when viewing own rep
+        toggleBtn.style.display = 'inline-block';
+        toggleBtn.classList.remove('btn-primary');
+        toggleBtn.classList.add('btn-outline-primary');
+        
+        if (cpdData.selectedRepresentativeId === cpdData.myRepresentativeId) {
+            toggleBtn.disabled = true;
+            toggleBtn.title = 'Already viewing your CPD';
+        } else {
+            toggleBtn.disabled = false;
+            toggleBtn.title = 'Switch to my representative';
+        }
+    }
+}
+
+/**
+ * Switch to My Representative
+ */
+function switchToMyRep() {
+    if (!cpdData.myRepresentativeId) {
+        Swal.fire({
+            icon: 'info',
+            title: 'No Representative Linked',
+            text: 'Your user account is not linked to a representative record.',
+            footer: 'Please contact your administrator to link your account.'
+        });
+        return;
+    }
+    
+    if (cpdData.selectedRepresentativeId === cpdData.myRepresentativeId) {
+        return; // Already viewing own rep
+    }
+    
+    // Update selection
+    cpdData.selectedRepresentativeId = cpdData.myRepresentativeId;
+    
+    // Update dropdown
+    const selector = document.getElementById('representativeSelector');
+    if (selector) {
+        selector.value = cpdData.myRepresentativeId;
+    }
+    
+    // Clear search
+    const searchInput = document.getElementById('repSearchInput');
+    if (searchInput) {
+        searchInput.value = '';
+        searchInput.style.borderColor = '';
+    }
+    
+    // Update UI and reload data
+    updateSelectedRepInfo();
+    updateMyRepToggle();
+    refreshCpdData();
+}
+
+/**
+ * Refresh CPD Data for Selected Representative
+ */
+async function refreshCpdData() {
+    try {
+        // Show loading state
+        const progressValue = document.getElementById('cpdProgressValue');
+        if (progressValue) {
+            progressValue.textContent = 'Loading...';
+        }
+        
+        // Reload data
+        await loadCpdDashboardData();
+        updateProgressCircle();
+        updateDashboardStats();
+        initializeCharts();
+        renderRecentActivities();
+        updateCycleInfo();
+        
+        // If on activity log tab, refresh it too
+        const logTab = document.getElementById('log-tab');
+        if (logTab && logTab.classList.contains('active') && typeof loadActivityLog === 'function') {
+            await loadActivityLog();
+        }
+        
+        // Update toggle button state
+        updateMyRepToggle();
+        
+    } catch (error) {
+        console.error('Error refreshing CPD data:', error);
     }
 }
 
@@ -41,10 +408,9 @@ async function loadCpdDashboardData() {
         if (cycles && cycles.length > 0) {
             cpdData.cycle = cycles[0]; // Get first active cycle
             
-            // Get progress summary for current user
-            // Note: We need to get current user's representative_id
-            // For now, we'll get progress for all or use a default
+            // Get progress summary for selected representative
             try {
+                // Pass selected representative ID to filter progress
                 const progressResult = await dataFunctions.getCpdProgressSummary(cpdData.cycle.id);
                 let progress = progressResult;
                 if (progressResult && progressResult.data) {
@@ -69,9 +435,12 @@ async function loadCpdDashboardData() {
                 };
             }
             
-            // Get recent activities
+            // Get recent activities for selected representative
             try {
-                const activitiesResult = await dataFunctions.getCpdActivities(null, cpdData.cycle.id);
+                const activitiesResult = await dataFunctions.getCpdActivities(
+                    cpdData.selectedRepresentativeId, 
+                    cpdData.cycle.id
+                );
                 let activities = activitiesResult;
                 if (activitiesResult && activitiesResult.data) {
                     activities = activitiesResult.data;
@@ -490,6 +859,8 @@ function editCpdActivity(activityId) {
 // Export functions
 window.viewCpdActivity = viewCpdActivity;
 window.editCpdActivity = editCpdActivity;
+window.refreshCpdData = refreshCpdData;
+window.switchToMyRep = switchToMyRep;
 
 function setupTabSwitching() {
     // Handle tab changes

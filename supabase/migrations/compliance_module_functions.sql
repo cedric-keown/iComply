@@ -104,9 +104,9 @@ BEGIN
     RETURN QUERY
     SELECT 
         r.id,
-        COALESCE(up.first_name || ' ' || up.surname, 'Unknown') as rep_name,
+        COALESCE(r.first_name || ' ' || r.surname, up.first_name || ' ' || up.last_name, 'Unknown') as rep_name,
         r.status,
-        r.fsp_number,
+        COALESCE(r.fsp_number_new, r.representative_number) as fsp_number,
         (get_representative_compliance(r.id)->>'overall_score')::NUMERIC,
         (get_representative_compliance(r.id)->>'overall_status')::TEXT,
         CASE 
