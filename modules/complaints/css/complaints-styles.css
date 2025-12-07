@@ -127,7 +127,8 @@
     min-width: 100px;
 }
 
-.timeline-marker {
+/* Status timeline marker (on Dashboard) */
+.status-timeline .timeline-marker {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -136,7 +137,10 @@
     justify-content: center;
     color: white;
     font-weight: 700;
+    font-size: 1.1rem;
     margin-bottom: 10px;
+    position: relative; /* Override the absolute positioning below */
+    left: auto; /* Override the left: -30px below */
 }
 
 .timeline-label {
@@ -540,7 +544,8 @@
     background: #dee2e6;
 }
 
-.timeline-marker {
+/* Complaint detail timeline marker (in modals) */
+.timeline-item .timeline-marker {
     position: absolute;
     left: -30px;
     top: 0;
