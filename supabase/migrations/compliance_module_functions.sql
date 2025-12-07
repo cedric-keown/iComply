@@ -189,7 +189,7 @@ BEGIN
         SELECT 
             COUNT(*),
             COUNT(*) FILTER (WHERE status IN ('open', 'investigating', 'pending')),
-            COUNT(*) FILTER (WHERE status IN ('open', 'investigating') AND due_date < CURRENT_DATE)
+            COUNT(*) FILTER (WHERE status IN ('open', 'investigating') AND resolution_due_date < CURRENT_DATE)
         INTO v_total_complaints, v_open_complaints, v_overdue_complaints
         FROM complaints;
         
@@ -197,7 +197,7 @@ BEGIN
         INTO v_resolved_this_month
         FROM complaints
         WHERE status = 'resolved'
-        AND resolved_date >= DATE_TRUNC('month', CURRENT_DATE);
+        AND resolution_date >= DATE_TRUNC('month', CURRENT_DATE);
         
     EXCEPTION
         WHEN undefined_table THEN
