@@ -477,7 +477,7 @@ async function loadUserProfiles() {
         // Show loading
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="text-center">
+                <td colspan="8" class="text-center">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
@@ -516,6 +516,38 @@ async function loadUserProfiles() {
             }
         }
         
+        // Load representatives to show linked rep info
+        try {
+            const repsResult = await dataFunctions.getRepresentatives(null);
+            let representatives = repsResult;
+            if (repsResult && repsResult.data) {
+                representatives = repsResult.data;
+            } else if (Array.isArray(repsResult)) {
+                representatives = repsResult;
+            }
+            
+            // Attach linked representative info to each user
+            if (representatives && Array.isArray(representatives)) {
+                usersData.forEach(user => {
+                    const linkedRep = representatives.find(r => r.user_profile_id === user.id);
+                    if (linkedRep) {
+                        user.linked_representative = {
+                            id: linkedRep.id,
+                            name: `${linkedRep.first_name || ''} ${linkedRep.surname || ''}`.trim(),
+                            number: linkedRep.representative_number,
+                            status: linkedRep.status
+                        };
+                    } else {
+                        user.linked_representative = null;
+                    }
+                });
+                console.log('Attached representative links to users');
+            }
+        } catch (repError) {
+            console.warn('Could not load representatives for linking display:', repError);
+            // Continue without rep info - table will show "Not Linked"
+        }
+        
         console.log('Loaded usersData:', usersData.length, 'users');
         console.log('Loaded userRolesData:', userRolesData.length, 'roles');
         renderUsersTable();
@@ -525,7 +557,7 @@ async function loadUserProfiles() {
         if (tbody) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="text-center text-danger">
+                    <td colspan="8" class="text-center text-danger">
                         Error loading users: ${error.message}
                     </td>
                 </tr>
@@ -556,7 +588,7 @@ function renderFilteredUsersTable(filteredUsers) {
     if (filteredUsers.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="text-center text-muted">
+                <td colspan="8" class="text-center text-muted">
                     No users found. ${usersData.length === 0 ? 'Click "Add New User" to create one.' : 'Try adjusting your filters.'}
                 </td>
             </tr>
@@ -614,10 +646,25 @@ function renderFilteredUsersTable(filteredUsers) {
         const safeUserId = escapeHtml(user.id);
         const safeUserName = escapeHtml(`${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Unknown');
         
+        // Get linked representative info
+        let linkedRepDisplay = '<span class="text-muted"><i class="fas fa-unlink me-1"></i>Not Linked</span>';
+        if (user.linked_representative) {
+            const repName = escapeHtml(user.linked_representative.name || 'Unknown');
+            const repNumber = escapeHtml(user.linked_representative.number || 'N/A');
+            linkedRepDisplay = `
+                <span class="text-success">
+                    <i class="fas fa-link me-1"></i>
+                    <strong>${repName}</strong>
+                    <small class="text-muted">(${repNumber})</small>
+                </span>
+            `;
+        }
+        
         tr.innerHTML = `
             <td>${userName}</td>
             <td>${userEmail}</td>
             <td>${escapeHtml(roleDisplayName)}</td>
+            <td>${linkedRepDisplay}</td>
             <td>${statusBadge}</td>
             <td>${lastLogin}</td>
             <td>${createdDate}</td>
@@ -818,7 +865,13 @@ async function openAddUserModal() {
     form.dataset.editMode = 'false';
     document.getElementById('userId').disabled = false;
     document.getElementById('userEmail').disabled = false;
-    modalTitle.textContent = 'Add New User';
+    modalTitle.innerHTML = '<i class="fas fa-user-plus me-2"></i>Add New User';
+    
+    // Update submit button text
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Create User Profile';
+    }
     
     // Populate roles dropdown
     roleSelect.innerHTML = '<option value="">Select Role...</option>';
@@ -910,6 +963,13 @@ async function handleAddUserProfile(e) {
         // Get selected representative link
         const selectedRepId = document.getElementById('userRepresentativeLink')?.value || null;
         
+        console.log('Form submission - Representative link:', {
+            isEditMode,
+            userId,
+            selectedRepId,
+            currentLink: currentUserRepLink?.id
+        });
+        
         let result;
         if (isEditMode) {
             // Update existing
@@ -926,7 +986,18 @@ async function handleAddUserProfile(e) {
             
             // Update representative link if changed
             if (result && result.success) {
-                await updateRepresentativeLink(userId, selectedRepId);
+                console.log('User profile updated, now updating representative link...');
+                const linkResult = await updateRepresentativeLink(userId, selectedRepId);
+                console.log('Representative link update result:', linkResult);
+                
+                // Show success message with link info
+                if (linkResult && linkResult.success && selectedRepId) {
+                    const selectedRep = allRepresentativesForLinking.find(r => r.id === selectedRepId);
+                    if (selectedRep) {
+                        const repName = `${selectedRep.first_name || ''} ${selectedRep.surname || ''}`.trim();
+                        console.log(`✅ User linked to representative: ${repName}`);
+                    }
+                }
             }
         } else {
             // Create new
@@ -1001,8 +1072,14 @@ async function editUserProfile(userId) {
         const modalTitle = document.getElementById('addUserModalLabel');
         const roleSelect = document.getElementById('userRole');
         
-        // Change title
-        modalTitle.textContent = 'Edit User Profile';
+        // Change title and icon
+        modalTitle.innerHTML = '<i class="fas fa-user-edit me-2"></i>Edit User Profile';
+        
+        // Update submit button text
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Update User Profile';
+        }
         
         // Populate roles dropdown
         roleSelect.innerHTML = '<option value="">Select Role...</option>';
@@ -1212,80 +1289,63 @@ function clearRepLink() {
 /**
  * Update Representative Link
  * Links or unlinks a user profile from a representative record
+ * Uses database function for reliable updates
  */
 async function updateRepresentativeLink(userProfileId, newRepresentativeId) {
     try {
-        // Use Supabase client directly to update representative
-        if (!window.supabase) {
-            console.warn('Supabase client not available, skipping representative link update');
-            return { success: true, message: 'Link update skipped (no Supabase client)' };
+        console.log('🔗 Updating representative link via database function:', { 
+            userProfileId, 
+            newRepresentativeId 
+        });
+        
+        // Use the dedicated database function (most reliable)
+        const result = await dataFunctions.linkUserToRepresentative(
+            userProfileId,
+            newRepresentativeId || null
+        );
+        
+        console.log('Link update result:', result);
+        
+        // Handle response
+        let response = result;
+        if (result && result.data) {
+            response = result.data;
         }
         
-        // First, clear any existing link for this user profile
-        if (currentUserRepLink) {
-            const { error: clearError } = await window.supabase
-                .from('representatives')
-                .update({ user_profile_id: null, updated_at: new Date().toISOString() })
-                .eq('user_profile_id', userProfileId);
+        if (response && response.success) {
+            console.log('✅ Representative link updated successfully');
             
-            if (clearError) {
-                console.error('Error clearing existing rep link:', clearError);
-            } else {
-                console.log('Cleared existing rep link for user:', userProfileId);
-            }
-        }
-        
-        // If a new representative was selected, create the link
-        if (newRepresentativeId && newRepresentativeId !== '') {
-            // First, clear this representative's existing link (if any)
-            await window.supabase
-                .from('representatives')
-                .update({ user_profile_id: null, updated_at: new Date().toISOString() })
-                .eq('id', newRepresentativeId)
-                .not('user_profile_id', 'is', null);
-            
-            // Now create the new link
-            const { data, error } = await window.supabase
-                .from('representatives')
-                .update({ 
-                    user_profile_id: userProfileId,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', newRepresentativeId)
-                .select('id, representative_number, first_name, surname');
-            
-            if (error) {
-                throw error;
+            // Show success details
+            if (response.representative_name) {
+                console.log(`   → Linked to: ${response.representative_name} (${response.representative_number})`);
+            } else if (response.action === 'unlinked') {
+                console.log('   → Link removed');
             }
             
-            console.log('Created new rep link:', data);
-            
-            return {
-                success: true,
-                message: 'Representative link updated successfully',
-                data: data
-            };
+            return response;
         } else {
-            return {
-                success: true,
-                message: 'Representative link removed'
-            };
+            throw new Error(response?.error || 'Failed to update link');
         }
         
     } catch (error) {
-        console.error('Error updating representative link:', error);
+        console.error('❌ Error updating representative link:', error);
         
-        // Fallback: Show instructions for manual SQL
+        // Show error with manual SQL fallback
         Swal.fire({
-            icon: 'warning',
-            title: 'Manual Link Required',
+            icon: 'error',
+            title: 'Link Update Failed',
             html: `
                 <div class="text-start">
-                    <p>The representative link couldn't be updated automatically.</p>
-                    <p>Please run this SQL in Supabase:</p>
-                    <pre class="bg-light p-2 rounded"><code>UPDATE representatives
-SET user_profile_id = '${userProfileId}'
-WHERE id = '${newRepresentativeId}';</code></pre>
+                    <p class="mb-3"><strong>Error:</strong> ${error.message}</p>
+                    <p class="mb-2">You can manually link via SQL:</p>
+                    <textarea class="form-control font-monospace" rows="4" readonly onclick="this.select()">-- Run this in Supabase SQL Editor:
+UPDATE representatives 
+SET user_profile_id = '${userProfileId}', 
+    updated_at = NOW() 
+WHERE id = '${newRepresentativeId}';</textarea>
+                    <button class="btn btn-sm btn-outline-primary mt-2" onclick="this.previousElementSibling.select(); document.execCommand('copy'); alert('Copied!')">
+                        <i class="fas fa-copy me-1"></i>Copy SQL
+                    </button>
                 </div>
             `,
             width: '600px'

@@ -157,9 +157,26 @@ function hideLoadingState() {
 }
 
 function updateHealthScore() {
-    if (!dashboardData.health || dashboardData.health.length === 0) return;
+    // Validate health data exists
+    if (!dashboardData.health) return;
     
-    const health = dashboardData.health[0];
+    // Handle both array and object formats
+    let health = null;
+    if (Array.isArray(dashboardData.health)) {
+        if (dashboardData.health.length === 0) return;
+        health = dashboardData.health[0];
+    } else if (typeof dashboardData.health === 'object') {
+        health = dashboardData.health;
+    } else {
+        return;
+    }
+    
+    // Validate health object and score property exist
+    if (!health || typeof health.overall_compliance_score === 'undefined') {
+        console.warn('Health score data not available');
+        return;
+    }
+    
     const score = parseFloat(health.overall_compliance_score) || 0;
     
     // Update health score chart (will be handled by health-score.js)
@@ -369,10 +386,26 @@ function updateTeamComplianceMatrixTable(representatives) {
 }
 
 function updateComplianceAreas() {
-    if (!dashboardData.health || dashboardData.health.length === 0) return;
+    // Validate health data exists
+    if (!dashboardData.health) return;
     
-    const health = dashboardData.health[0];
-    const totalReps = parseInt(health.active_representatives) || 1;
+    // Handle both array and object formats
+    let health = null;
+    if (Array.isArray(dashboardData.health)) {
+        if (dashboardData.health.length === 0) return;
+        health = dashboardData.health[0];
+    } else if (typeof dashboardData.health === 'object') {
+        health = dashboardData.health;
+    } else {
+        return;
+    }
+    
+    // Validate health object exists
+    if (!health) return;
+    
+    const totalReps = (health && typeof health.active_representatives !== 'undefined') 
+        ? parseInt(health.active_representatives) 
+        : 1;
     const matrix = dashboardData.teamMatrix || [];
     const activeReps = matrix.filter(r => r.rep_status === 'active');
     
@@ -718,19 +751,22 @@ function updateDeadlines() {
                 const dateStr = deadlineDate.toLocaleDateString('en-ZA');
                 const daysStr = isOverdue ? `${Math.abs(daysUntil)} days ago` : `${daysUntil} days`;
                 
+                // Safe urgency handling
+                const urgency = deadline.urgency || 'upcoming';
+                
                 let itemClass = 'deadline-item';
                 let badgeClass = 'badge';
-                let badgeText = deadline.urgency.toUpperCase();
+                let badgeText = urgency.toUpperCase();
                 
-                if (deadline.urgency === 'overdue' || isOverdue) {
+                if (urgency === 'overdue' || isOverdue) {
                     itemClass += ' overdue';
                     badgeClass += ' bg-danger';
                     badgeText = 'OVERDUE';
-                } else if (deadline.urgency === 'urgent') {
+                } else if (urgency === 'urgent') {
                     itemClass += ' high';
                     badgeClass += ' bg-warning';
                     badgeText = 'URGENT';
-                } else if (deadline.urgency === 'soon') {
+                } else if (urgency === 'soon') {
                     itemClass += ' medium';
                     badgeClass += ' bg-warning';
                     badgeText = 'SOON';
@@ -767,20 +803,34 @@ function updateDeadlines() {
 }
 
 function updateStatistics() {
-    if (!dashboardData.health || dashboardData.health.length === 0) return;
+    // Validate health data exists
+    if (!dashboardData.health) return;
     
-    const health = dashboardData.health[0];
+    // Handle both array and object formats
+    let health = null;
+    if (Array.isArray(dashboardData.health)) {
+        if (dashboardData.health.length === 0) return;
+        health = dashboardData.health[0];
+    } else if (typeof dashboardData.health === 'object') {
+        health = dashboardData.health;
+    } else {
+        return;
+    }
+    
+    // Validate health object exists
+    if (!health) return;
+    
     const matrix = dashboardData.teamMatrix || [];
     const fica = dashboardData.fica || [];
     
-    // Update key statistics
+    // Update key statistics with safe property access
     const activeRepsElement = document.querySelector('[data-stat="active-reps-count"]');
-    if (activeRepsElement) {
+    if (activeRepsElement && typeof health.active_representatives !== 'undefined') {
         activeRepsElement.textContent = health.active_representatives;
     }
     
     const avgScoreElement = document.querySelector('[data-stat="avg-score"]');
-    if (avgScoreElement) {
+    if (avgScoreElement && typeof health.overall_compliance_score !== 'undefined') {
         avgScoreElement.textContent = `${Math.round(parseFloat(health.overall_compliance_score))}%`;
     }
     
@@ -825,9 +875,23 @@ function updateStatistics() {
 }
 
 function updateAlerts() {
-    if (!dashboardData.health || dashboardData.health.length === 0) return;
+    // Validate health data exists
+    if (!dashboardData.health) return;
     
-    const health = dashboardData.health[0];
+    // Handle both array and object formats
+    let health = null;
+    if (Array.isArray(dashboardData.health)) {
+        if (dashboardData.health.length === 0) return;
+        health = dashboardData.health[0];
+    } else if (typeof dashboardData.health === 'object') {
+        health = dashboardData.health;
+    } else {
+        return;
+    }
+    
+    // Validate health object exists
+    if (!health) return;
+    
     const deadlines = dashboardData.deadlines || [];
     const complaints = dashboardData.complaints || [];
     

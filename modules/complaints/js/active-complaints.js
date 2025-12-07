@@ -68,6 +68,7 @@ async function loadActiveComplaints() {
         
         console.log('Active complaints after filtering:', activeComplaintsData.complaints.length);
         
+        updateStats();
         renderComplaints();
     } catch (error) {
         console.error('Error loading active complaints:', error);
@@ -86,6 +87,48 @@ async function loadActiveComplaints() {
             text: errorMessage,
             footer: 'Check browser console for more details'
         });
+    }
+}
+
+/**
+ * Update Stats
+ */
+function updateStats() {
+    const complaints = activeComplaintsData.complaints || [];
+    
+    // Total active count
+    const totalActive = complaints.length;
+    document.getElementById('active-total-count').textContent = totalActive;
+    
+    // Due this week count
+    const sevenDaysFromNow = new Date();
+    sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+    const dueThisWeek = complaints.filter(c => {
+        if (!c.resolution_due_date) return false;
+        const dueDate = new Date(c.resolution_due_date);
+        return dueDate <= sevenDaysFromNow && dueDate >= new Date();
+    }).length;
+    document.getElementById('active-due-this-week').textContent = dueThisWeek;
+    
+    // Pending info count
+    const pendingInfo = complaints.filter(c => {
+        const status = (c.status || '').toLowerCase();
+        return status === 'pending_info' || status === 'pending';
+    }).length;
+    document.getElementById('active-pending-info').textContent = pendingInfo;
+    
+    // Average age
+    if (complaints.length > 0) {
+        const totalDays = complaints.reduce((sum, c) => {
+            const receivedDate = new Date(c.complaint_received_date || c.complaint_date || c.created_at);
+            const today = new Date();
+            const days = Math.ceil((today - receivedDate) / (1000 * 60 * 60 * 24));
+            return sum + days;
+        }, 0);
+        const avgAge = Math.round(totalDays / complaints.length);
+        document.getElementById('active-average-age').textContent = `${avgAge} days`;
+    } else {
+        document.getElementById('active-average-age').textContent = '0 days';
     }
 }
 
@@ -189,9 +232,10 @@ function setupFilters() {
 }
 
 function applyFilters() {
-    const statusFilter = document.querySelector('#active select[name="status"]')?.value || 'All';
-    const priorityFilter = document.querySelector('#active select[name="priority"]')?.value || 'All';
-    const searchTerm = (document.querySelector('#active input[type="search"]')?.value || '').toLowerCase();
+    const statusFilter = document.getElementById('active-filter-status')?.value || 'All';
+    const priorityFilter = document.getElementById('active-filter-priority')?.value || 'All';
+    const categoryFilter = document.getElementById('active-filter-category')?.value || 'All';
+    const searchTerm = (document.getElementById('active-filter-search')?.value || '').toLowerCase();
     
     activeComplaintsData.filteredComplaints = activeComplaintsData.complaints.filter(complaint => {
         // Status filter
@@ -202,6 +246,14 @@ function applyFilters() {
         // Priority filter
         if (priorityFilter !== 'All' && complaint.priority !== priorityFilter.toLowerCase()) {
             return false;
+        }
+        
+        // Category filter
+        if (categoryFilter !== 'All') {
+            const category = complaint.complaint_category || '';
+            if (!category.toLowerCase().includes(categoryFilter.toLowerCase())) {
+                return false;
+            }
         }
         
         // Search filter

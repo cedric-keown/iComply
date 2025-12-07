@@ -74,11 +74,19 @@
         /* CRITICAL: Ensure SweetAlert is always on top and clickable */
         .swal2-container {
             z-index: 2147483647 !important; /* Maximum z-index */
+            display: flex !important;
+            align-items: flex-start !important; /* Align to top instead of center */
+            justify-content: center !important;
+            padding-top: 0 !important;
         }
         
         .swal2-popup {
             z-index: 2147483647 !important;
             pointer-events: auto !important;
+            margin-top: 90px !important; /* Navbar (70px) + spacing (20px) */
+            position: relative !important;
+            max-height: calc(100vh - 120px) !important; /* Leave room at top and bottom */
+            overflow-y: auto !important;
         }
         
         .swal2-actions {

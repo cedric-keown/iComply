@@ -3,9 +3,9 @@
 /*
  * Z-INDEX HIERARCHY:
  * - Navbar: 1050 (main.css)
- * - Chatbot toggle: 1000 (below navbar)
- * - Chatbot window: 999 (below navbar)
- * This ensures navbar remains clickable and above chatbot
+ * - Chatbot window: 1045 (below navbar, above content)
+ * - Chatbot toggle: 1046 (below navbar, above chatbot window)
+ * This ensures navbar remains clickable while chatbot is accessible
  */
 
 /* Floating Chat Button */
@@ -21,7 +21,8 @@
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
-    z-index: 1000;
+    z-index: 1046;
+    pointer-events: auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -64,19 +65,20 @@
     background: white;
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    z-index: 999;
+    z-index: 1045;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     transform: translateY(20px);
     opacity: 0;
     transition: all 0.3s ease;
-    pointer-events: auto;
+    pointer-events: none; /* Disabled when closed - won't block clicks */
 }
 
 .chatbot-window.open {
     transform: translateY(0);
     opacity: 1;
+    pointer-events: auto; /* Enabled when open - can interact */
 }
 
 .chatbot-window.minimized {

@@ -2,22 +2,60 @@
 
 let cpdActivities = [];
 let activityLogCurrentCpdCycle = null;
+let currentPage = 1;
+const pageSize = 10;
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize when log tab is shown
-    const logTab = document.getElementById('log-tab');
-    if (logTab) {
-        logTab.addEventListener('shown.bs.tab', function() {
-            loadActivityLog();
-        });
-    }
-});
-
+/**
+ * Initialize Activity Log Tab
+ * Called when the activity log tab is shown (via tab switching event)
+ */
 async function initializeActivityLog() {
+    console.log('🔄 Initializing activity log tab...');
+    
+    // Check if cpdData exists and is initialized
+    if (typeof cpdData === 'undefined') {
+        console.error('❌ cpdData not initialized - dashboard must load first');
+        showActivityLogNoAccessMessage();
+        return;
+    }
+    
+    // Check if user has representative access
+    if (!cpdData.selectedRepresentativeId) {
+        console.warn('⚠️ No representative selected for activity log');
+        showActivityLogNoAccessMessage();
+        return;
+    }
+    
+    console.log('✅ Activity log ready for rep:', cpdData.selectedRepresentativeId);
+    
     await loadActivityLog();
     setupFilters();
     setupSearch();
     setupTableActions();
+}
+
+// Export for use by tab switching logic in cpd-dashboard.js
+window.initializeActivityLog = initializeActivityLog;
+
+/**
+ * Show No Access Message on Activity Log Tab
+ */
+function showActivityLogNoAccessMessage() {
+    const tbody = document.querySelector('#log tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="8" class="text-center py-5">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <h5 class="mb-3">No Access to Activity Log</h5>
+                <p class="text-muted mb-3">You must be linked to a representative to view CPD activities.</p>
+                <button class="btn btn-primary" onclick="switchTab('dashboard-tab')">
+                    <i class="fas fa-info-circle me-2"></i>View Access Information
+                </button>
+            </td>
+        </tr>
+    `;
 }
 
 /**
@@ -25,6 +63,9 @@ async function initializeActivityLog() {
  */
 async function loadActivityLog() {
     try {
+        // Reset to first page when loading new data
+        currentPage = 1;
+        
         // Get current cycle
         const cyclesResult = await dataFunctions.getCpdCycles('active');
         let cycles = cyclesResult;
@@ -68,7 +109,7 @@ async function loadActivityLog() {
 }
 
 /**
- * Render Activity Table
+ * Render Activity Table with Pagination
  */
 function renderActivityTable() {
     const tbody = document.querySelector('#log tbody');
@@ -83,6 +124,7 @@ function renderActivityTable() {
                 </td>
             </tr>
         `;
+        renderPagination(0);
         return;
     }
     
@@ -91,7 +133,14 @@ function renderActivityTable() {
         new Date(b.activity_date) - new Date(a.activity_date)
     );
     
-    tbody.innerHTML = sortedActivities.map(activity => {
+    // Calculate pagination
+    const totalItems = sortedActivities.length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, totalItems);
+    const paginatedActivities = sortedActivities.slice(startIndex, endIndex);
+    
+    tbody.innerHTML = paginatedActivities.map(activity => {
         const date = new Date(activity.activity_date).toLocaleDateString('en-ZA');
         const status = activity.status || 'pending';
         const statusBadge = status === 'verified' 
@@ -127,6 +176,98 @@ function renderActivityTable() {
             </tr>
         `;
     }).join('');
+    
+    // Render pagination controls
+    renderPagination(totalPages, totalItems, startIndex, endIndex);
+}
+
+/**
+ * Render Pagination Controls
+ */
+function renderPagination(totalPages, totalItems = 0, startIndex = 0, endIndex = 0) {
+    const paginationContainer = document.querySelector('#log .pagination-container');
+    if (!paginationContainer) {
+        console.warn('Pagination container not found');
+        return;
+    }
+    
+    if (totalPages === 0 || totalPages === 1) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+    
+    const showingText = `Showing ${startIndex + 1}-${endIndex} of ${totalItems} activities`;
+    
+    // Build page numbers to show (show current +/- 2 pages)
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    
+    // Adjust if we're at the end
+    if (endPage - startPage < maxPagesToShow - 1) {
+        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.push(i);
+    }
+    
+    paginationContainer.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted small">
+                ${showingText}
+            </div>
+            <nav aria-label="Activity log pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                    ${startPage > 1 ? `
+                        <li class="page-item">
+                            <a class="page-link" href="#" onclick="changePage(1); return false;">1</a>
+                        </li>
+                        ${startPage > 2 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
+                    ` : ''}
+                    ${pageNumbers.map(num => `
+                        <li class="page-item ${currentPage === num ? 'active' : ''}">
+                            <a class="page-link" href="#" onclick="changePage(${num}); return false;">${num}</a>
+                        </li>
+                    `).join('')}
+                    ${endPage < totalPages ? `
+                        ${endPage < totalPages - 1 ? '<li class="page-item disabled"><span class="page-link">...</span></li>' : ''}
+                        <li class="page-item">
+                            <a class="page-link" href="#" onclick="changePage(${totalPages}); return false;">${totalPages}</a>
+                        </li>
+                    ` : ''}
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    `;
+}
+
+/**
+ * Change Page
+ */
+function changePage(page) {
+    const totalPages = Math.ceil(cpdActivities.length / pageSize);
+    if (page < 1 || page > totalPages) return;
+    
+    currentPage = page;
+    renderActivityTable();
+    
+    // Scroll to top of table
+    const tableContainer = document.querySelector('#log .table-responsive');
+    if (tableContainer) {
+        tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 function setupFilters() {
@@ -376,4 +517,5 @@ window.editCpdActivityFromLog = editCpdActivityFromLog;
 window.deleteCpdActivityFromLog = deleteCpdActivityFromLog;
 window.loadActivityLog = loadActivityLog;
 window.exportToExcel = exportToExcel;
+window.changePage = changePage;
 

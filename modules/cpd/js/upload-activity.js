@@ -3,15 +3,64 @@
 let currentCpdCycle = null;
 let currentRepresentativeId = null;
 
-document.addEventListener('DOMContentLoaded', function() {
-    initializeUploadActivity();
-});
-
+/**
+ * Initialize Upload Activity Tab
+ * Called when the upload tab is shown (via tab switching event)
+ */
 async function initializeUploadActivity() {
+    console.log('🔄 Initializing upload tab...');
+    
+    // Check if cpdData exists and is initialized
+    if (typeof cpdData === 'undefined') {
+        console.error('❌ cpdData not initialized - dashboard must load first');
+        showUploadNoAccessMessage();
+        return;
+    }
+    
+    // Check if user has representative access
+    if (!cpdData.selectedRepresentativeId) {
+        console.warn('⚠️ No representative selected for upload');
+        showUploadNoAccessMessage();
+        return;
+    }
+    
+    console.log('✅ Upload tab ready for rep:', cpdData.selectedRepresentativeId);
+    
     await loadCpdCycle();
     setupFormValidation();
     setupHoursValidation();
     setupProviderCustomInput();
+}
+
+// Export for use by tab switching logic in cpd-dashboard.js
+window.initializeUploadActivity = initializeUploadActivity;
+
+/**
+ * Show No Access Message on Upload Tab
+ */
+function showUploadNoAccessMessage() {
+    const uploadTab = document.getElementById('upload');
+    if (!uploadTab) return;
+    
+    const container = uploadTab.querySelector('.container-fluid');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="card border-warning">
+                    <div class="card-body text-center py-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                        <h4 class="mb-3">Cannot Upload CPD Activities</h4>
+                        <p class="mb-3">You must be linked to a representative to upload CPD activities.</p>
+                        <a href="#" onclick="switchTab('dashboard-tab')" class="btn btn-primary">
+                            <i class="fas fa-info-circle me-2"></i>View Access Information
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 /**
@@ -195,7 +244,20 @@ function setupHoursValidation() {
 
 async function submitActivity() {
     const form = document.getElementById('cpdActivityForm');
-    if (!form || !currentCpdCycle) return;
+    
+    // Use selected cycle from cpdData if available
+    const cycleToUse = (typeof cpdData !== 'undefined' && cpdData.cycle) 
+        ? cpdData.cycle 
+        : currentCpdCycle;
+    
+    if (!form || !cycleToUse) {
+        Swal.fire({
+            icon: 'error',
+            title: 'No Active Cycle',
+            text: 'Please select a CPD cycle first.'
+        });
+        return;
+    }
     
     // Get selected representative from global cpdData
     const selectedRepId = (typeof cpdData !== 'undefined' && cpdData.selectedRepresentativeId) 
@@ -216,7 +278,7 @@ async function submitActivity() {
         // Get form data
         const activityData = {
             representative_id: selectedRepId || null,
-            cpd_cycle_id: currentCpdCycle.id,
+            cpd_cycle_id: cycleToUse.id,
             activity_date: document.getElementById('cpdActivityDate').value,
             activity_name: document.getElementById('cpdActivityTitle').value.trim(),
             activity_type: document.getElementById('cpdActivityType').value,
@@ -252,21 +314,36 @@ async function submitActivity() {
         }
         
         if (response && response.success !== false && !response.error) {
+            // Refresh materialized view to update dashboard
+            try {
+                await dataFunctions.callFunction('refresh_cpd_progress', {});
+            } catch (refreshError) {
+                console.warn('Could not refresh progress view:', refreshError);
+            }
+            
             Swal.fire({
                 icon: 'success',
-                title: 'Activity Submitted',
-                text: 'Your CPD activity has been submitted successfully.',
-                confirmButtonText: 'OK'
+                title: 'Activity Submitted Successfully!',
+                html: `
+                    <div class="text-start">
+                        <p class="mb-2"><strong>Activity:</strong> ${activityData.activity_name}</p>
+                        <p class="mb-2"><strong>Hours:</strong> ${activityData.total_hours} total</p>
+                        <p class="mb-2"><strong>Status:</strong> <span class="badge bg-warning">Pending Verification</span></p>
+                    </div>
+                `,
+                confirmButtonText: 'View Activity Log'
             }).then(() => {
+                // Reset form
+                form.reset();
+                
+                // Refresh dashboard data
+                if (typeof cpdData !== 'undefined' && typeof refreshCpdData === 'function') {
+                    refreshCpdData();
+                }
+                
                 // Switch to activity log tab
                 if (typeof switchTab === 'function') {
                     switchTab('log-tab');
-                }
-                // Reset form
-                form.reset();
-                // Reload dashboard if on dashboard
-                if (typeof loadCpdDashboardData === 'function') {
-                    loadCpdDashboardData();
                 }
             });
         } else {

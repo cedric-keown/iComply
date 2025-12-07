@@ -628,28 +628,28 @@
                 <div class="row mb-4">
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value text-info">2</div>
+                            <div class="stat-value text-info" id="active-total-count">0</div>
                             <div class="stat-label">Total Active</div>
                             <div class="stat-sublabel">In progress</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value text-warning">1</div>
+                            <div class="stat-value text-warning" id="active-due-this-week">0</div>
                             <div class="stat-label">Due This Week</div>
                             <div class="stat-sublabel">6-week deadline</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value">0</div>
+                            <div class="stat-value" id="active-pending-info">0</div>
                             <div class="stat-label">Pending Info</div>
                             <div class="stat-sublabel">Awaiting client</div>
                         </div>
                     </div>
                     <div class="col-md-3 mb-4">
                         <div class="stat-card">
-                            <div class="stat-value text-success">14 days</div>
+                            <div class="stat-value text-success" id="active-average-age">0 days</div>
                             <div class="stat-label">Average Age</div>
                             <div class="stat-sublabel">Current cases</div>
                         </div>
@@ -662,36 +662,40 @@
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label">Status</label>
-                                <select class="form-select">
-                                    <option>All</option>
-                                    <option>Received</option>
-                                    <option>Acknowledged</option>
-                                    <option>In Progress</option>
-                                    <option>Pending Info</option>
-                                    <option>Resolved</option>
+                                <select class="form-select" id="active-filter-status" name="status">
+                                    <option value="All">All</option>
+                                    <option value="open">Open</option>
+                                    <option value="acknowledged">Acknowledged</option>
+                                    <option value="investigating">Investigating</option>
+                                    <option value="pending_info">Pending Info</option>
+                                    <option value="pending">Pending</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Priority</label>
-                                <select class="form-select">
-                                    <option>All</option>
-                                    <option>Standard</option>
-                                    <option>High</option>
-                                    <option>Critical</option>
+                                <select class="form-select" id="active-filter-priority" name="priority">
+                                    <option value="All">All</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="critical">Critical</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Category</label>
-                                <select class="form-select">
-                                    <option>All</option>
-                                    <option>Claims</option>
-                                    <option>Service</option>
-                                    <option>Product</option>
+                                <select class="form-select" id="active-filter-category" name="category">
+                                    <option value="All">All</option>
+                                    <option value="Claims">Claims</option>
+                                    <option value="Service">Service</option>
+                                    <option value="Product">Product</option>
+                                    <option value="Administrative">Administrative</option>
+                                    <option value="Financial">Financial</option>
+                                    <option value="Investment">Investment</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Search</label>
-                                <input type="text" class="form-control" placeholder="Reference, client, keywords...">
+                                <input type="search" class="form-control" id="active-filter-search" placeholder="Reference, client, keywords...">
                             </div>
                         </div>
                     </div>

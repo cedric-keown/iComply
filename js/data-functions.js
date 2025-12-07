@@ -295,6 +295,13 @@ var _dataFunctions = function () {
             }, token);
         },
 
+        linkUserToRepresentative: async function (userProfileId, representativeId, token = null) {
+            return await this.callFunction('link_user_to_representative', {
+                p_user_profile_id: userProfileId,
+                p_representative_id: representativeId
+            }, token);
+        },
+
         // ========================================================================
         // PHASE 2: REPRESENTATIVES & KEY INDIVIDUALS
         // ========================================================================
@@ -514,6 +521,8 @@ var _dataFunctions = function () {
                 p_class_1_applicable: data.class_1_applicable || false,
                 p_class_2_applicable: data.class_2_applicable || false,
                 p_class_3_applicable: data.class_3_applicable || false,
+                p_verifiable: data.verifiable !== undefined ? data.verifiable : true,
+                p_certificate_attached: data.certificate_attached || false,
                 p_uploaded_by: data.uploaded_by || null
             }, token);
         },
@@ -542,9 +551,57 @@ var _dataFunctions = function () {
             }, token);
         },
 
-        getCpdProgressSummary: async function (cycleId = null, token = null) {
+        getCpdProgressSummary: async function (cycleId = null, representativeId = null, token = null) {
             return await this.callFunction('get_cpd_progress_summary', {
+                p_representative_id: representativeId,
                 p_cpd_cycle_id: cycleId
+            }, token);
+        },
+        
+        // CPD Providers CRUD
+        getCpdProviders: async function (activeOnly = true, token = null) {
+            const query = activeOnly 
+                ? 'SELECT * FROM cpd_providers WHERE is_active = true ORDER BY provider_name'
+                : 'SELECT * FROM cpd_providers ORDER BY provider_name';
+            return await this.queryTable('cpd_providers', query, token);
+        },
+        
+        createCpdProvider: async function (data, token = null) {
+            return await this.insertRecord('cpd_providers', {
+                provider_name: data.provider_name,
+                provider_type: data.provider_type || 'other',
+                accreditation_number: data.accreditation_number || null,
+                contact_person: data.contact_person || null,
+                contact_email: data.contact_email || null,
+                contact_phone: data.contact_phone || null,
+                website_url: data.website_url || null,
+                is_accredited: data.is_accredited || false,
+                is_active: data.is_active !== false,
+                notes: data.notes || null
+            }, token);
+        },
+        
+        updateCpdProvider: async function (id, data, token = null) {
+            return await this.updateRecord('cpd_providers', id, {
+                provider_name: data.provider_name,
+                provider_type: data.provider_type,
+                accreditation_number: data.accreditation_number,
+                contact_person: data.contact_person,
+                contact_email: data.contact_email,
+                contact_phone: data.contact_phone,
+                website_url: data.website_url,
+                is_accredited: data.is_accredited,
+                is_active: data.is_active,
+                notes: data.notes,
+                updated_at: new Date().toISOString()
+            }, token);
+        },
+        
+        deleteCpdProvider: async function (id, token = null) {
+            // Soft delete by marking as inactive
+            return await this.updateRecord('cpd_providers', id, {
+                is_active: false,
+                updated_at: new Date().toISOString()
             }, token);
         },
 

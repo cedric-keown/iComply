@@ -2,7 +2,7 @@
 
 :root {
     --primary-color: #5CBDB4;
-    --text-color: #4A4A4A;
+    --text-color: #6c757d; /* Lighter gray for better readability */
     --bg-color: #FFFFFF;
     --light-grey: #F8F9FA;
     --success: #28A745;
@@ -73,6 +73,14 @@
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.cpd-hero-card h2,
+.cpd-hero-card .lead,
+.cpd-hero-card p,
+.cpd-hero-card strong,
+.cpd-hero-card span {
+    color: white !important;
 }
 
 /* Progress Circle */
