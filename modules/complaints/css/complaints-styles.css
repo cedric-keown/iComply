@@ -162,6 +162,7 @@
 .activity-list {
     list-style: none;
     padding: 0;
+    width: 100%; /* Ensure full width */
 }
 
 .activity-item {
@@ -169,10 +170,22 @@
     align-items: flex-start;
     padding: 15px 0;
     border-bottom: 1px solid #dee2e6;
+    width: 100%; /* Ensure all items same width */
 }
 
 .activity-item:last-child {
     border-bottom: none;
+}
+
+/* For card-based activity items */
+.activity-item.card {
+    width: 100% !important; /* Force all cards to full width */
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.activity-item.card .card-body {
+    padding: 1rem;
 }
 
 .activity-icon {
