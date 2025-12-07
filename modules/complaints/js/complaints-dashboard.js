@@ -420,16 +420,14 @@ function updateRecentActivity() {
         
         return `
             <div class="activity-item card mb-3">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1 me-3">
-                            <h6 class="mb-1">${complaint.complaint_reference_number || 'N/A'} - ${complaint.complainant_name || 'Unknown'}</h6>
-                            <p class="mb-1 text-muted">${complaint.complaint_category || 'N/A'}</p>
-                            <p class="mb-0 small text-muted">${date} • ${priorityBadge} • ${statusBadge}</p>
-                        </div>
-                        <div class="flex-shrink-0" style="width: 70px; text-align: right;">
-                            <button class="btn btn-sm btn-outline-primary" style="width: 65px;" onclick="viewComplaintDetails('${complaint.id}')">View</button>
-                        </div>
+                <div class="card-body" style="display: grid; grid-template-columns: 1fr 70px; gap: 12px; align-items: start;">
+                    <div>
+                        <h6 class="mb-1">${complaint.complaint_reference_number || 'N/A'} - ${complaint.complainant_name || 'Unknown'}</h6>
+                        <p class="mb-1 text-muted">${complaint.complaint_category || 'N/A'}</p>
+                        <p class="mb-0 small text-muted">${date} • ${priorityBadge} • ${statusBadge}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <button class="btn btn-sm btn-outline-primary" style="width: 65px;" onclick="viewComplaintDetails('${complaint.id}')">View</button>
                     </div>
                 </div>
             </div>
