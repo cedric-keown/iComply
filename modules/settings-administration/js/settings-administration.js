@@ -904,6 +904,9 @@ async function handleAddUserProfile(e) {
             }
         });
         
+        // Get selected representative link
+        const selectedRepId = document.getElementById('userRepresentativeLink')?.value || null;
+        
         let result;
         if (isEditMode) {
             // Update existing
@@ -917,6 +920,11 @@ async function handleAddUserProfile(e) {
                 fsp_number: fspNumber || null,
                 status: status
             });
+            
+            // Update representative link if changed
+            if (result && result.success) {
+                await updateRepresentativeLink(userId, selectedRepId);
+            }
         } else {
             // Create new
             result = await dataFunctions.createUserProfile({
@@ -972,7 +980,6 @@ async function handleAddUserProfile(e) {
  */
 async function editUserProfile(userId) {
     console.log('editUserProfile called with userId:', userId);
-    alert('Edit clicked! User ID: ' + userId); // Debug alert
     try {
         // Find user in current data
         const user = usersData.find(u => u.id === userId);
@@ -1017,6 +1024,9 @@ async function editUserProfile(userId) {
         document.getElementById('userFspNumber').value = user.fsp_number || '';
         document.getElementById('userStatus').value = user.status || 'active';
         
+        // Load and populate representative link dropdown
+        await loadRepresentativesForLinking(user.id);
+        
         // Store edit mode
         form.dataset.editMode = 'true';
         form.dataset.editUserId = userId;
@@ -1029,6 +1039,259 @@ async function editUserProfile(userId) {
             text: `Failed to load user: ${error.message}`,
             icon: 'error'
         });
+    }
+}
+
+/**
+ * Load Representatives for Linking
+ */
+let allRepresentativesForLinking = [];
+let currentUserRepLink = null;
+
+async function loadRepresentativesForLinking(userProfileId) {
+    try {
+        // Load all representatives
+        const result = await dataFunctions.getRepresentatives(null);
+        let reps = result;
+        
+        if (result && result.data) {
+            reps = result.data;
+        } else if (Array.isArray(result)) {
+            reps = result;
+        }
+        
+        allRepresentativesForLinking = reps || [];
+        
+        // Find currently linked representative
+        currentUserRepLink = allRepresentativesForLinking.find(r => r.user_profile_id === userProfileId);
+        
+        // Populate dropdown
+        populateRepresentativeDropdown(allRepresentativesForLinking);
+        
+        // Setup search
+        setupRepLinkSearch();
+        
+        // Show current link info
+        updateRepLinkInfo();
+        
+    } catch (error) {
+        console.error('Error loading representatives for linking:', error);
+    }
+}
+
+/**
+ * Populate Representative Dropdown
+ */
+function populateRepresentativeDropdown(reps) {
+    const repSelect = document.getElementById('userRepresentativeLink');
+    if (!repSelect) return;
+    
+    repSelect.innerHTML = '<option value="">No Representative Link</option>';
+    
+    // Sort alphabetically
+    const sortedReps = [...reps].sort((a, b) => {
+        const nameA = `${a.first_name || ''} ${a.surname || ''}`.trim().toLowerCase();
+        const nameB = `${b.first_name || ''} ${b.surname || ''}`.trim().toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+    
+    sortedReps.forEach(rep => {
+        const option = document.createElement('option');
+        option.value = rep.id;
+        
+        const name = `${rep.first_name || ''} ${rep.surname || ''}`.trim() || 'Unknown';
+        const repNumber = rep.representative_number || 'N/A';
+        const status = rep.status || 'active';
+        
+        // Show if already linked to another user
+        const linkStatus = rep.user_profile_id && rep.user_profile_id !== currentUserRepLink?.user_profile_id
+            ? ' [LINKED]' 
+            : '';
+        
+        option.textContent = `${name} (${repNumber}) - ${status.toUpperCase()}${linkStatus}`;
+        
+        // Select current link
+        if (currentUserRepLink && rep.id === currentUserRepLink.id) {
+            option.selected = true;
+        }
+        
+        // Disable if linked to someone else
+        if (rep.user_profile_id && rep.user_profile_id !== currentUserRepLink?.user_profile_id) {
+            option.disabled = true;
+        }
+        
+        repSelect.appendChild(option);
+    });
+}
+
+/**
+ * Setup Representative Link Search
+ */
+function setupRepLinkSearch() {
+    const searchInput = document.getElementById('repLinkSearch');
+    const repSelect = document.getElementById('userRepresentativeLink');
+    
+    if (!searchInput || !repSelect) return;
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase().trim();
+        
+        if (!searchTerm) {
+            populateRepresentativeDropdown(allRepresentativesForLinking);
+            return;
+        }
+        
+        const filtered = allRepresentativesForLinking.filter(rep => {
+            const name = `${rep.first_name || ''} ${rep.surname || ''}`.toLowerCase();
+            const repNumber = (rep.representative_number || '').toLowerCase();
+            
+            return name.includes(searchTerm) || repNumber.includes(searchTerm);
+        });
+        
+        populateRepresentativeDropdown(filtered);
+        
+        // Visual feedback
+        if (filtered.length > 0) {
+            searchInput.style.borderColor = '#198754'; // green
+        } else if (searchTerm) {
+            searchInput.style.borderColor = '#dc3545'; // red
+        } else {
+            searchInput.style.borderColor = '';
+        }
+    });
+}
+
+/**
+ * Update Representative Link Info Display
+ */
+function updateRepLinkInfo() {
+    const infoDiv = document.getElementById('currentRepLinkInfo');
+    if (!infoDiv) return;
+    
+    if (currentUserRepLink) {
+        const name = `${currentUserRepLink.first_name || ''} ${currentUserRepLink.surname || ''}`.trim() || 'Unknown';
+        const repNumber = currentUserRepLink.representative_number || 'N/A';
+        
+        infoDiv.innerHTML = `
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-link me-1"></i>
+                <strong>Currently Linked:</strong> ${name} (${repNumber})
+            </div>
+        `;
+    } else {
+        infoDiv.innerHTML = `
+            <div class="alert alert-warning mb-0">
+                <i class="fas fa-unlink me-1"></i>
+                <strong>Not Linked:</strong> This user cannot access the CPD module until linked to a representative.
+            </div>
+        `;
+    }
+}
+
+/**
+ * Clear Representative Link
+ */
+function clearRepLink() {
+    const searchInput = document.getElementById('repLinkSearch');
+    const repSelect = document.getElementById('userRepresentativeLink');
+    
+    if (searchInput) {
+        searchInput.value = '';
+        searchInput.style.borderColor = '';
+    }
+    
+    if (repSelect) {
+        repSelect.value = '';
+        populateRepresentativeDropdown(allRepresentativesForLinking);
+    }
+}
+
+/**
+ * Update Representative Link
+ * Links or unlinks a user profile from a representative record
+ */
+async function updateRepresentativeLink(userProfileId, newRepresentativeId) {
+    try {
+        // Use Supabase client directly to update representative
+        if (!window.supabase) {
+            console.warn('Supabase client not available, skipping representative link update');
+            return { success: true, message: 'Link update skipped (no Supabase client)' };
+        }
+        
+        // First, clear any existing link for this user profile
+        if (currentUserRepLink) {
+            const { error: clearError } = await window.supabase
+                .from('representatives')
+                .update({ user_profile_id: null, updated_at: new Date().toISOString() })
+                .eq('user_profile_id', userProfileId);
+            
+            if (clearError) {
+                console.error('Error clearing existing rep link:', clearError);
+            } else {
+                console.log('Cleared existing rep link for user:', userProfileId);
+            }
+        }
+        
+        // If a new representative was selected, create the link
+        if (newRepresentativeId && newRepresentativeId !== '') {
+            // First, clear this representative's existing link (if any)
+            await window.supabase
+                .from('representatives')
+                .update({ user_profile_id: null, updated_at: new Date().toISOString() })
+                .eq('id', newRepresentativeId)
+                .not('user_profile_id', 'is', null);
+            
+            // Now create the new link
+            const { data, error } = await window.supabase
+                .from('representatives')
+                .update({ 
+                    user_profile_id: userProfileId,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', newRepresentativeId)
+                .select('id, representative_number, first_name, surname');
+            
+            if (error) {
+                throw error;
+            }
+            
+            console.log('Created new rep link:', data);
+            
+            return {
+                success: true,
+                message: 'Representative link updated successfully',
+                data: data
+            };
+        } else {
+            return {
+                success: true,
+                message: 'Representative link removed'
+            };
+        }
+        
+    } catch (error) {
+        console.error('Error updating representative link:', error);
+        
+        // Fallback: Show instructions for manual SQL
+        Swal.fire({
+            icon: 'warning',
+            title: 'Manual Link Required',
+            html: `
+                <div class="text-start">
+                    <p>The representative link couldn't be updated automatically.</p>
+                    <p>Please run this SQL in Supabase:</p>
+                    <pre class="bg-light p-2 rounded"><code>UPDATE representatives
+SET user_profile_id = '${userProfileId}'
+WHERE id = '${newRepresentativeId}';</code></pre>
+                </div>
+            `,
+            width: '600px'
+        });
+        
+        return {
+            success: false,
+            error: error.message
+        };
     }
 }
 

@@ -1458,6 +1458,32 @@
                                 <option value="suspended">Suspended</option>
                             </select>
                         </div>
+                        <div class="mb-3" id="representativeLinkSection">
+                            <label class="form-label">
+                                <i class="fas fa-user-tie me-1"></i>Link to Representative
+                                <span class="text-muted">(Optional)</span>
+                            </label>
+                            <div class="input-group">
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="repLinkSearch" 
+                                    placeholder="Search by name or rep number..."
+                                    autocomplete="off">
+                                <button class="btn btn-outline-secondary" type="button" onclick="clearRepLink()" title="Clear selection">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <select class="form-select mt-2" id="userRepresentativeLink" size="5" style="max-height: 150px;">
+                                <option value="">No Representative Link</option>
+                                <!-- Populated by JavaScript -->
+                            </select>
+                            <small class="text-muted d-block mt-1">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Link this user to a Representative record to enable CPD module access.
+                            </small>
+                            <div id="currentRepLinkInfo" class="mt-2"></div>
+                        </div>
                         <div class="alert alert-warning">
                             <strong>Note:</strong> User profiles must be linked to an existing auth.users account. 
                             The user ID must match an existing authentication user. For new users, create the auth account first.
