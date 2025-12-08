@@ -238,8 +238,7 @@ var _dataFunctions = function () {
         // ----- USER PROFILES -----
 
         createUserProfile: async function (data, token = null) {
-            return await this.callFunction('create_user_profile', {
-                p_id: data.id, // UUID matching auth.users.id
+            const params = {
                 p_role_id: data.role_id,
                 p_first_name: data.first_name,
                 p_last_name: data.last_name,
@@ -249,7 +248,15 @@ var _dataFunctions = function () {
                 p_id_number: data.id_number || null,
                 p_fsp_number: data.fsp_number || null,
                 p_status: data.status || 'active'
-            }, token);
+            };
+            
+            // Only include p_id if provided (for linking to existing auth.users)
+            // Otherwise, database will auto-generate UUID
+            if (data.id) {
+                params.p_id = data.id;
+            }
+            
+            return await this.callFunction('create_user_profile', params, token);
         },
 
         getUserProfiles: async function (statusOrParams = 'active', token = null) {
